@@ -1,0 +1,43 @@
+#pragma once
+
+//clang-format off
+#include "er/reflection/the_great_table.h"
+#include "er/types/common_actions.h"
+#include "er/types/type_actions.h"
+
+// injected
+#include "{{origin}}"
+
+namespace rr {
+
+template <>
+struct TypeActions<{{name}}> {
+  static TypeInfo reflect(void* value, bool is_const) {
+
+    static constexpr ConstexprMap<{{name}}, {{length(constants)}}> constants{
+    // be aware of use sequential '{' with template engines
+    {
+      {
+        {% for item in constants -%}
+        {{"{"}}{{name}}::{{item.name}}, "{{item.alias}}"},
+        {% endfor %}
+    }}};
+
+    return Enum(static_cast<{{name}}*>(value), is_const, constants);
+  }
+};
+
+template <>
+TypeId TypeId::get({{name}}* /*unused*/) {
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<{{name}}>::reflect,        //
+                                                 &CommonActions<{{name}}>::type_name,    //
+                                                 &CommonActions<{{name}}>::type_size,    //
+                                                 &CommonActions<{{name}}>::call_new,     //
+                                                 &CommonActions<{{name}}>::call_delete,  //
+                                                 &CommonActions<{{name}}>::copy)));
+  return id;
+}
+
+}  // namespace rr
+
+//clang-format on

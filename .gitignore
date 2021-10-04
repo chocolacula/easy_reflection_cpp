@@ -1,0 +1,7 @@
+.idea
+.vscode
+.cache
+.DS_Store
+output
+cmake-build*
+build

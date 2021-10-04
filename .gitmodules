@@ -1,0 +1,12 @@
+[submodule "generator/inja"]
+	path = generator/inja
+	url = https://github.com/pantor/inja.git
+[submodule "generator/tclap"]
+	path = generator/tclap
+	url = https://github.com/mirror/tclap.git
+[submodule "library/RE-flex"]
+	path = library/RE-flex
+	url = https://github.com/Genivia/RE-flex.git
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://github.com/google/googletest.git

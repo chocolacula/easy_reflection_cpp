@@ -1,0 +1,22 @@
+Checks: >
+  *,
+  -altera-struct-pack-align,
+  -llvmlibc-*,
+  -cppcoreguidelines-pro-type-union-access,
+  -google-readability-todo,
+  -fuchsia-overloaded-operator,
+  -fuchsia-default-arguments-calls,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  google-explicit-constructor,
+  readability-isolate-declaration
+
+CheckOptions:
+  - { key: readability-identifier-naming.NamespaceCase,        value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberPrefix,  value: _          }
+  - { key: readability-identifier-naming.FunctionCase,         value: lower_case }
+  - { key: readability-identifier-naming.VariableCase,         value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase,        value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantCase,   value: CamelCase  }
+  - { key: readability-identifier-naming.GlobalConstantPrefix, value: k          }
+

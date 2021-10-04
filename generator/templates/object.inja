@@ -1,0 +1,49 @@
+#pragma once
+
+//clang-format off
+#include "er/reflection/the_great_table.h"
+#include "er/types/common_actions.h"
+#include "er/types/type_actions.h"
+
+// injected
+#include "{{origin}}"
+
+namespace rr {
+
+template <>
+struct TypeActions<{{name}}> {
+  static TypeInfo reflect(void* value, bool is_const) {
+    auto p = static_cast<{{name}}*>(value);
+
+    std::map<std::string_view, FieldInfo> map {
+      {% for item in fields_static -%}
+      {"{{item.alias}}", FieldInfo(&{{name}}::{{item.name}}, {{item.access}})},
+      {% endfor %}
+    };
+
+    if (p != nullptr) {
+      map.insert({
+        {% for item in fields -%}
+        {"{{item.alias}}", FieldInfo(&p->{{item.name}}, {{item.access}})},
+        {% endfor %}
+      });
+    }
+
+    return Object(Var(p, is_const), std::move(map));
+  }
+};
+
+template <>
+TypeId TypeId::get({{name}}* /*unused*/) {
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<{{name}}>::reflect,        //
+                                                 &CommonActions<{{name}}>::type_name,    //
+                                                 &CommonActions<{{name}}>::type_size,    //
+                                                 &CommonActions<{{name}}>::call_new,     //
+                                                 &CommonActions<{{name}}>::call_delete,  //
+                                                 &CommonActions<{{name}}>::copy)));
+  return id;
+}
+
+}  // namespace rr
+
+//clang-format on
