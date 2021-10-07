@@ -2,24 +2,20 @@
 
 #include <memory>
 
-#include "er/info/type_info/variants/array/array.h"
-#include "er/info/type_info/variants/map/map.h"
-#include "er/info/type_info/variants/object.h"
+#include "er/type_info/variants/array/array.h"
+#include "er/type_info/variants/map/map.h"
+#include "er/type_info/variants/object/object.h"
 #include "er/variable/var.h"
-
-namespace rf_yaml {
-class LexerYaml;
-}
+#include "lexer_yaml.yy.h"
 
 namespace rr {
 
 struct TypeInfo;
 
-class ParserYaml {
+class ParserYaml : rf_yaml::LexerYaml {
  public:
   ParserYaml(const char* input, size_t input_size);
   explicit ParserYaml(std::istream& stream);
-  ~ParserYaml();
 
   Expected<None> deserialize(TypeInfo* info);
 
@@ -55,7 +51,6 @@ class ParserYaml {
   static inline int64_t parse_int(const std::string& str);
   static inline double parse_double(const std::string& str);
 
-  std::unique_ptr<rf_yaml::LexerYaml> _lexer;
   wchar_t _token;
   std::unordered_map<std::string, Var> _anchors;
 };

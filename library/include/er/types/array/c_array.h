@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "er/reflection/the_great_table.h"
+#include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
 
 namespace rr {
@@ -13,11 +14,6 @@ struct TypeActions<T[size_v]> {
 
   static TypeInfo reflect(void* value, bool is_const) {
     return TypeInfo(Array(static_cast<T(*)[size_v]>(value), is_const));
-  }
-
-  static std::string_view type_name() {
-    static auto name = format("{}[{}]", TypeActions<T>::type_name(), size_v);
-    return name;
   }
 
   static size_t type_size() {
@@ -46,11 +42,11 @@ struct TypeActions<T[size_v]> {
 
 template <typename T, size_t size_v>
 TypeId TypeId::get(T (*)[size_v]) {
-  static TypeId id(TheGreatTable::record(Actions(&TypeActions<T[size_v]>::reflect,      //
-                                                 &TypeActions<T[size_v]>::type_name,    //
-                                                 &TypeActions<T[size_v]>::type_size,    //
-                                                 &TypeActions<T[size_v]>::call_new,     //
-                                                 &TypeActions<T[size_v]>::call_delete,  //
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<T[size_v]>::reflect,                  //
+                                                 &CommonActions<std::array<T, size_v>>::type_name,  //
+                                                 &TypeActions<T[size_v]>::type_size,                //
+                                                 &TypeActions<T[size_v]>::call_new,                 //
+                                                 &TypeActions<T[size_v]>::call_delete,              //
                                                  &TypeActions<T[size_v]>::copy)));
   return id;
 }

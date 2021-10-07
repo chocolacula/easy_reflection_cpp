@@ -11,12 +11,16 @@ include_directories(include)
 include_directories(RE-flex/include)
 
 set(SOURCES
-        src/reflection.cpp
+        src/reflection/reflection.cpp
         src/err_helper.cpp
         src/variable/var.cpp
         src/variable/box.cpp
-        src/serialization/parsing/parser_json.cpp
-        src/serialization/parsing/parser_yaml.cpp)
+        src/serialization/json/json.cpp
+        src/serialization/json/lexer_json.yy.cpp
+        src/serialization/json/parser_json.cpp
+        src/serialization/yaml/yaml.cpp
+        src/serialization/yaml/lexer_yaml.yy.cpp
+        src/serialization/yaml/parser_yaml.cpp)
 
 add_library(${PROJECT_NAME} ${SOURCES})
 

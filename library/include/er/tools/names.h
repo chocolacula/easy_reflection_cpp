@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <string_view>
 #include <vector>
 
@@ -32,6 +33,22 @@ struct Names {
 };
 
 #endif
+
+template <typename T, size_t size_v>
+struct Names<T[size_v]> {
+  static std::string_view get() {
+    static auto name = format("{}[{}]", Names<T>::get(), size_v);
+    return name;
+  }
+};
+
+template <typename T, size_t size_v>
+struct Names<std::array<T, size_v>> {
+  static std::string_view get() {
+    static auto name = format("std::varray<{}, {}>", Names<T>::get(), size_v);
+    return name;
+  }
+};
 
 template <>
 struct Names<std::string> {

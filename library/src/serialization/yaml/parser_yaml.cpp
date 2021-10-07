@@ -1,31 +1,27 @@
-#include "er/serialization/parsing/parser_yaml.h"
+#include "parser_yaml.h"
 
 #include <cctype>
 #include <cstddef>
 #include <memory>
 #include <string>
 
-#include "define_retry.h"
+#include "../define_retry.h"
 #include "er/expected.h"
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
-#include "lexers/lexer_yaml.yy.h"
 
 using namespace rr;
-using namespace rf_yaml;
 
-ParserYaml::ParserYaml(const char* input, size_t input_size)   //
-    : _lexer(std::make_unique<LexerYaml>(input, input_size)),  //
-      _token(static_cast<wchar_t>(_lexer->lex())) {
+ParserYaml::ParserYaml(const char* input, size_t input_size)  //
+    : LexerYaml(input, input_size),                           //
+      _token(static_cast<wchar_t>(lex())) {
 }
 
-ParserYaml::ParserYaml(std::istream& stream)        //
-    : _lexer(std::make_unique<LexerYaml>(stream)),  //
-      _token(static_cast<wchar_t>(_lexer->lex())) {
+ParserYaml::ParserYaml(std::istream& stream)  //
+    : LexerYaml(stream),                      //
+      _token(static_cast<wchar_t>(lex())) {
 }
-
-ParserYaml::~ParserYaml() = default;
 
 Expected<None> ParserYaml::deserialize(TypeInfo* info) {
   while (true) {
@@ -52,7 +48,7 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
   }
 
   if (_token == '*') {
-    auto anchor = _lexer->get_word();
+    auto anchor = get_word();
     auto var = _anchors[anchor.substr(1, anchor.size() - 1)];
     reflection::copy(info->var(), var);
 
@@ -62,7 +58,7 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
 
   std::string anchor;
   if (_token == '&') {
-    anchor = _lexer->get_word();
+    anchor = get_word();
     next();
   }
 
@@ -115,11 +111,11 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
   // a string could be a key in a map
   // or name of a field in an object
   // or be just a string value of something
-  auto ex = info->match([this](Bool& b) -> Expected<None> { return b.set(parse_bool(_lexer->get_word())); },
-                        [this](Integer& i) -> Expected<None> { return i.set(parse_int(_lexer->get_word())); },
-                        [this](Floating& f) -> Expected<None> { return f.set(parse_double(_lexer->get_word())); },
-                        [this](String& s) -> Expected<None> { return s.set(_lexer->get_word()); },
-                        [this](Enum& e) -> Expected<None> { return e.parse(_lexer->get_word()); },
+  auto ex = info->match([this](Bool& b) -> Expected<None> { return b.set(parse_bool(get_word())); },
+                        [this](Integer& i) -> Expected<None> { return i.set(parse_int(get_word())); },
+                        [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
+                        [this](String& s) -> Expected<None> { return s.set(get_word()); },
+                        [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
                         [this](Map& m) -> Expected<None> { return parse_map(m); },
                         [this](Object& o) -> Expected<None> { return parse_map([&]() { return add_to_obj(o); }); },
                         [this](auto&&) -> Expected<None> { return error_match(); });
@@ -395,7 +391,7 @@ Expected<None> ParserYaml::parse_flow_map(Map& map) {
 }
 
 inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
-  auto ex = obj.get_field(_lexer->get_word());
+  auto ex = obj.get_field(get_word());
   __retry(ex);
 
   auto info = reflection::reflect(ex.unwrap());
@@ -425,7 +421,7 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
 
 wchar_t ParserYaml::next() {
   if (_token != 0) {
-    _token = static_cast<wchar_t>(_lexer->lex());
+    _token = static_cast<wchar_t>(lex());
   }
   return _token;
 }
@@ -439,15 +435,15 @@ bool ParserYaml::is_new_line(int token) {
 }
 
 Error ParserYaml::error(const char* str) {
-  return Error(format("{}; {}", str, _lexer->get_position().to_string()));
+  return Error(format("{}; {}", str, get_position().to_string()));
 }
 
 Error ParserYaml::error_token(wchar_t token) {
-  return Error(format("Unexpected token '{}'; {}", token, _lexer->get_position().to_string()));
+  return Error(format("Unexpected token '{}'; {}", token, get_position().to_string()));
 }
 
 Error ParserYaml::error_match() {
-  return Error(format("Cannot match correct type; {}", _lexer->get_position().to_string()));
+  return Error(format("Cannot match correct type; {}", get_position().to_string()));
 }
 
 bool ParserYaml::parse_bool(const std::string& str) {

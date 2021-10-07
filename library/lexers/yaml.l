@@ -48,7 +48,7 @@
   #include <iomanip>  // std::setw
   #include <vector>   // to store YAML containers
 
-  #include "er/serialization/parsing/position.h"
+  #include "../position.h"
 }
 
 %class{

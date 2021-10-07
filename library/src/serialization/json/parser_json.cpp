@@ -1,4 +1,4 @@
-#include "er/serialization/parsing/parser_json.h"
+#include "parser_json.h"
 
 #include <cmath>
 #include <cstddef>
@@ -10,24 +10,20 @@
 #include <utility>
 #include <vector>
 
-#include "define_retry.h"
+#include "../define_retry.h"
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
-#include "lexers/lexer_json.yy.h"
 
 using namespace rr;
-using namespace rf_json;
 
 ParserJson::ParserJson(const char* input, size_t input_size)  //
-    : _lexer(std::make_unique<rf_json::LexerJson>(input, input_size)), _level(0) {
+    : LexerJson(input, input_size), _level(0) {
 }
 
 ParserJson::ParserJson(std::istream& stream)  //
-    : _lexer(std::make_unique<rf_json::LexerJson>(stream)), _level(0) {
+    : LexerJson(stream), _level(0) {
 }
-
-ParserJson::~ParserJson() = default;
 
 Expected<None> ParserJson::deserialize(TypeInfo* info) {
   return parse_next(info);
@@ -43,12 +39,12 @@ Expected<None> ParserJson::parse(TypeInfo* info, wchar_t token) {
     case 'f':
       return info->get<Bool>().set(false);
     case 'n':
-      return info->match([this](Integer& i) -> Expected<None> { return i.set(parse_int(_lexer->get_word())); },
-                         [this](Floating& f) -> Expected<None> { return f.set(parse_double(_lexer->get_word())); },
+      return info->match([this](Integer& i) -> Expected<None> { return i.set(parse_int(get_word())); },
+                         [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
                          [this](auto&&) -> Expected<None> { return error_match(); });
     case '$':
-      return info->match([this](String& s) -> Expected<None> { return s.set(_lexer->get_word()); },
-                         [this](Enum& e) -> Expected<None> { return e.parse(_lexer->get_word()); },
+      return info->match([this](String& s) -> Expected<None> { return s.set(get_word()); },
+                         [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
                          [this](auto&&) -> Expected<None> { return error_match(); });
     case '[':
       // clang-format off
@@ -142,7 +138,7 @@ Expected<None> ParserJson::parse_object(TypeInfo* info) {
       return error("Cannot reach a field value");
     }
 
-    auto field = info->get<Object>().get_field(_lexer->get_word()).unwrap();
+    auto field = info->get<Object>().get_field(get_word()).unwrap();
     __retry(parse_field(field));
 
     token = next();
@@ -170,10 +166,10 @@ Expected<None> ParserJson::parse_map(Map& map) {
 
   if (token == '$') {
     // if particular tag found parse it
-    auto pos = _lexer->get_word().find("!!map");
+    auto pos = get_word().find("!!map");
     if (pos != std::string::npos) {
 
-      auto kv = parse_tag(_lexer->get_word());
+      auto kv = parse_tag(get_word());
       __retry(kv);
 
       auto pair = kv.unwrap();
@@ -209,13 +205,12 @@ Expected<None> ParserJson::parse_map(Map& map) {
     Box key_box(map.key_type());
     Box val_box(map.val_type());
 
-    if (_lexer->get_word() == key) {
+    if (get_word() == key) {
       __retry(parse_field(key_box.var()));
-    } else if (_lexer->get_word() == val) {
+    } else if (get_word() == val) {
       __retry(parse_field(val_box.var()));
     } else {
-      return Error(format("Got an unexpected field '{}' while parse map; {}", _lexer->get_word(),
-                          _lexer->get_position().to_string()));
+      return Error(format("Got an unexpected field '{}' while parse map; {}", get_word(), get_position().to_string()));
     }
 
     token = next();
@@ -237,13 +232,12 @@ Expected<None> ParserJson::parse_map(Map& map) {
       return error("Cannot reach a field value");
     }
 
-    if (_lexer->get_word() == key) {
+    if (get_word() == key) {
       __retry(parse_field(key_box.var()));
-    } else if (_lexer->get_word() == val) {
+    } else if (get_word() == val) {
       __retry(parse_field(val_box.var()));
     } else {
-      return Error(format("Got an unexpected field '{}' while parse map; {}", _lexer->get_word(),
-                          _lexer->get_position().to_string()));
+      return Error(format("Got an unexpected field '{}' while parse map; {}", get_word(), get_position().to_string()));
     }
 
     __retry(map.insert(key_box.var(), val_box.var()));
@@ -269,19 +263,19 @@ Expected<None> ParserJson::parse_map(Map& map) {
 }
 
 wchar_t ParserJson::next() {
-  return static_cast<wchar_t>(_lexer->lex());
+  return static_cast<wchar_t>(lex());
 }
 
 Error ParserJson::error(const char* str) {
-  return Error(format("{}; {}", str, _lexer->get_position().to_string()));
+  return Error(format("{}; {}", str, get_position().to_string()));
 }
 
 Error ParserJson::error_token(wchar_t token) {
-  return Error(format("Unexpected token '{}'; {}", token, _lexer->get_position().to_string()));
+  return Error(format("Unexpected token '{}'; {}", token, get_position().to_string()));
 }
 
 Error ParserJson::error_match() {
-  return Error(format("Cannot match correct type; {}", _lexer->get_position().to_string()));
+  return Error(format("Cannot match correct type; {}", get_position().to_string()));
 }
 
 Expected<None> ParserJson::parse_field(Var new_var) {

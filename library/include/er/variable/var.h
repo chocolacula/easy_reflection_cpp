@@ -1,7 +1,7 @@
 #pragma once
 
 #include "er/expected.h"
-#include "er/info/type_id.h"
+#include "er/type_id.h"
 
 namespace rr {
 

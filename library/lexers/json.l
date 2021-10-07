@@ -21,7 +21,7 @@
   #include <iostream> // std::cout etc.
   #include <iomanip>  // std::setw
 
-  #include "er/serialization/parsing/position.h"
+  #include "../position.h"
 }
 
 %class{

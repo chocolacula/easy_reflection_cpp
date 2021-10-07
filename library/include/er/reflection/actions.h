@@ -1,6 +1,6 @@
 #pragma once
 
-#include "er/info/type_info/type_info.h"
+#include "er/type_info/type_info.h"
 #include "er/variable/var.h"
 
 namespace rr {

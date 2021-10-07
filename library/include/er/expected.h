@@ -37,6 +37,7 @@ struct Expected : public BASE {
     return std::get<ErrorT>(std::move(BASE::_content));
   }
 
+  /// throw an exception if Expected contains ErrorT value
   T unwrap() {
     if (is_error()) {
       throw std::runtime_error(error().what().data());

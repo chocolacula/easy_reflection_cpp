@@ -56,7 +56,7 @@ class Employee {
 ...
 ```
 
-in this case <b>private</b> fields will be omitted, to serialize them add:
+in this case <b>private</b> fields will be omitted, to reflect them add:
 
 ```cpp
 #include "er/attributes.h"
@@ -67,6 +67,27 @@ class Employee {
   std::string name;
 ...
 ```
+
+But note they are fields for <b>reflection</b> NOT for <b>serialization</b>. It's possible to use values or print them. Standard serializers skip non public and static fields, to change that, you have to write you own serializer. Just copy one to somewhere under ```rr::serialization``` namespace and change line:
+
+```cpp
+for (auto&& record : o.get_fields()) {
+```
+
+to something like:
+
+```cpp
+for (auto&& record : o.get_fields(Access::kPublic | Access::kProtected | Access::kPrivate)) {
+```
+
+Please be aware of using ```static``` fields. It's possible to have access to them by passing ```nullptr``` of particular type:
+
+```cpp
+Employee* ptr = nullptr;
+auto reflected = reflection::reflect(ptr);
+```
+
+If The fields could be set while serialization/deserialization process, it would be at least unexpected for other instances of a class. To exclude any non desired fields use ```ER_EXCLUDE``` attribute.
 
 Then setup the generator tool by editing ```config.yaml``` file, the most important key in the file is ```input:```. There are two options: add a file or a directory. ONLY path with a trailing slash is considered a directory. Please specify it explicitly.
 
@@ -96,7 +117,5 @@ The last step is use deserialization from json:
 auto employee = serialization::json::from_string<Employee>(str_from_mongo).unwrap();
 ...
 ```
-
-Please be aware of using ```static``` fields. It's possible to get/set ```static``` fields by passing ```nullptr``` of particular type. The fields could be set while serialization/deserialization process which is at least unexpected for other instances of a class. To exclude those or other non desired fields use ```ER_EXCLUDE``` attribute.
 
 Please see ```example/main.cpp``` for more details.

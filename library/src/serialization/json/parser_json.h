@@ -3,23 +3,19 @@
 #include <istream>
 
 #include "er/expected.h"
-#include "er/info/type_info/variants/array/array.h"
-#include "er/info/type_info/variants/map/map.h"
+#include "er/type_info/variants/array/array.h"
+#include "er/type_info/variants/map/map.h"
 #include "er/variable/var.h"
-
-namespace rf_json {
-class LexerJson;
-}
+#include "lexer_json.yy.h"
 
 namespace rr {
 
 struct TypeInfo;
 
-class ParserJson {
+class ParserJson : rf_json::LexerJson {
  public:
   ParserJson(const char* input, size_t input_size);
   explicit ParserJson(std::istream& stream);
-  ~ParserJson();
 
   Expected<None> deserialize(TypeInfo* info);
 
@@ -45,8 +41,6 @@ class ParserJson {
   inline Expected<std::pair<std::string, std::string>> parse_tag(const std::string& str);
   static inline int64_t parse_int(const std::string& str);
   static inline double parse_double(const std::string& str);
-
-  std::unique_ptr<rf_json::LexerJson> _lexer;
 
   static const size_t kMaxLevel = 100;  // to keep things secure: max JSON nesting depth
   static const size_t kMaxArr = 1000;   // to keep things secure: max JSON array and object size

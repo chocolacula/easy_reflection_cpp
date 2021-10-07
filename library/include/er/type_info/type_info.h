@@ -3,7 +3,6 @@
 #include <string>
 #include <string_view>
 
-#include "../field_info.h"
 #include "er/expected.h"
 #include "er/variant/variant.h"
 #include "variants/array/array.h"
@@ -12,7 +11,7 @@
 #include "variants/floating/floating.h"
 #include "variants/integer/integer.h"
 #include "variants/map/map.h"
-#include "variants/object.h"
+#include "variants/object/object.h"
 #include "variants/sequence/sequence.h"
 #include "variants/string.h"
 
