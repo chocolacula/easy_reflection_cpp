@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cfloat>
 #include <iomanip>
 #include <memory>
 #include <sstream>
@@ -21,7 +20,7 @@ struct Floating : IFloating {
     return _floating->var();
   }
 
-  double get() override {
+  double get() const override {
     return _floating->get();
   }
 
