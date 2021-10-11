@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "config.h"
 #include "er/serialization/yaml.h"
 #include "file_manager.h"
 #include "parser_cpp.h"
@@ -27,15 +26,14 @@
 
 int main(int argc, const char** argv) {
 
-  TCLAP::CmdLine cmd("Required Reflection code generator", ' ', VERSION);
+  TCLAP::CmdLine cmd("Easy Reflection code generator", ' ', VERSION);
 
   ::FileManager file_manager;
 
   TCLAP::ValueArg<std::string> c_arg("c", "config", "Explicitly specify path to the config file",  //
                                      false, file_manager.root() + "config.yaml", "path");
 
-  TCLAP::SwitchArg p_arg("p", "perf", "Print performance report",  //
-                         false);
+  TCLAP::SwitchArg p_arg("p", "perf", "Print performance report", false);
 
   cmd.add(c_arg);
   cmd.add(p_arg);
@@ -64,41 +62,62 @@ int main(int argc, const char** argv) {
     return -1;
   }
 
-  ParserCpp parser(*compdb,                              //
-                   file_manager.find_files(conf.input),  //
-                   std::filesystem::path(file_manager.correct_path(conf.output_dir)));
+  // correct pathes and find all files recursive inside input folders
+  file_manager.correct_config(&conf);
+
+  // check output directory
+  if (!std::filesystem::exists(conf.output_dir)) {
+    std::filesystem::create_directory(conf.output_dir);
+  }
+
+  // parse source files
+  ParserCpp parser(*compdb,     //
+                   conf.input,  //
+                   std::filesystem::path(conf.output_dir));
   auto parsed = parser.parse();
 
   auto time_2 = std::chrono::steady_clock::now();
 
+  // load templates
   inja::Environment env;
-  auto template_object = env.parse_template(file_manager.correct_path(conf.templates.object));
-  auto template_enum = env.parse_template(file_manager.correct_path(conf.templates.for_enum));
+  auto template_object = env.parse_template(conf.templates.object);
+  auto template_enum = env.parse_template(conf.templates.for_enum);
 
-  auto the_header = file_manager.create_reflection_header(conf.output_dir);
+  // create reflection.h header
+  auto the_header = ::FileManager::create_reflection_header(conf.output_dir);
 
-  auto reflected_dir = file_manager.correct_path(conf.output_dir) + "/reflected_types/";
+  // clear and make 'reflected_types' directory
+  auto reflected_dir = conf.output_dir + "reflected_types/";
 
   if (std::filesystem::exists(reflected_dir)) {
     std::filesystem::remove_all(reflected_dir);
   }
-
   std::filesystem::create_directory(reflected_dir);
 
+  // generate templates
   for (auto&& item : parsed) {
-    auto file_name = clear_name(item.first) + ".er.h";
+    std::string file_name = item.first;
+    {
+      auto pos = file_name.find_last_of(':');
 
-    std::ofstream output;
-    output.open(reflected_dir + file_name);
+      if (pos != std::string::npos) {
+        pos += 1;
+        file_name = file_name.substr(pos, file_name.length() - pos);
+      }
+    }
+    file_name += ".er.h";
+
+    std::ofstream output_file;
+    output_file.open(reflected_dir + file_name);
 
     const auto& json = item.second;
     if (json["id"].get<int>() == 0) {
-      env.render_to(output, template_object, json);
+      env.render_to(output_file, template_object, json);
     } else {
-      env.render_to(output, template_enum, json);
+      env.render_to(output_file, template_enum, json);
     }
     the_header << "#include \"reflected_types/" << file_name << "\"\n";
-    output.close();
+    output_file.close();
   }
 
   the_header.close();

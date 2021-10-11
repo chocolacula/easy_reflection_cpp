@@ -10,6 +10,8 @@
 #include <string_view>
 #include <vector>
 
+#include "config.h"
+
 #if defined(__linux__)
 #include <linux/limits.h>
 #elif defined(__APPLE__)
@@ -46,19 +48,18 @@ class FileManager {
     return _root;
   }
 
-  std::string correct_path(const std::string& path) {
-    if (path[0] == '/') {
-      return std::string(path);
-    }
+  void correct_config(Config* config) {
+    correct_path(&(config->compdb_dir));
+    correct_path(&(config->templates.for_enum));
+    correct_path(&(config->templates.object));
+    correct_path(&(config->output_dir));
 
-    auto t = _root;
-    t += path;
-    return t;
+    complete_files(&(config->input));
   }
 
-  std::ofstream create_reflection_header(const std::string& dir) {
+  static std::ofstream create_reflection_header(const std::string& dir) {
     std::ofstream header;
-    header.open(correct_path(dir) + "/reflection.h");
+    header.open(dir + "/reflection.h");
 
     header << R"(#pragma once
 
@@ -69,28 +70,6 @@ class FileManager {
 )";
 
     return header;
-  }
-
-  std::vector<std::string> find_files(const std::vector<std::string>& pathes) {
-    std::vector<std::string> result;
-
-    for (auto&& p : pathes) {
-      auto path = correct_path(p);
-
-      if (is_dir(path)) {
-        for (auto&& file_path : std::filesystem::recursive_directory_iterator(path)) {
-          result.push_back(file_path.path().string());
-        }
-      } else {
-        result.push_back(path);
-      }
-    }
-
-    return result;
-  }
-
-  static bool is_dir(const std::string& path) {
-    return path.back() == '/';
   }
 
  private:
@@ -104,15 +83,32 @@ class FileManager {
       str->erase(pos, str->length() - pos);
     }
   }
-};
 
-std::string clear_name(const std::string& qualified_name) {
-  auto pos = qualified_name.find_last_of(':');
+  void correct_path(std::string* path) {
+    if (path->front() != '/') {
+      path->insert(0, _root);
+    }
 
-  if (pos != std::string::npos) {
-    pos += 1;
-    return qualified_name.substr(pos, qualified_name.length() - pos);
+    if (std::filesystem::is_directory(*path)) {
+      *path += '/';
+    }
   }
 
-  return qualified_name;
-}
+  void complete_files(std::vector<std::string>* pathes) {
+    auto old = *pathes;
+    pathes->clear();
+
+    for (auto path : old) {
+      correct_path(&path);
+      std::filesystem::path fs_p = path;
+
+      if (std::filesystem::is_directory(fs_p)) {
+        for (auto&& file_path : std::filesystem::recursive_directory_iterator(fs_p)) {
+          pathes->push_back(file_path.path().string());
+        }
+      } else {
+        pathes->push_back(path);
+      }
+    }
+  }
+};

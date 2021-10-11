@@ -89,13 +89,16 @@ auto reflected = reflection::reflect(ptr);
 
 If The fields could be set while serialization/deserialization process, it would be at least unexpected for other instances of a class. To exclude any non desired fields use ```ER_EXCLUDE``` attribute.
 
-Then setup the generator tool by editing ```config.yaml``` file, the most important key in the file is ```input:```. There are two options: add a file or a directory. ONLY path with a trailing slash is considered a directory. Please specify it explicitly.
+Then setup the generator tool by editing ```config.yaml``` file. The most important key in the file is:
 
 ```yaml
 input:
-  - serializable_classes/ # directory
-  - serializable_classes/employee.h # file
+  - /path/to/analyzing/file1.h
+  - /path/to/analyzing/file2.h
+  - /path/to/analyzing/directory
 ```
+
+Any path could leeds to a directory or a file. The kind of path is determined by filesystem. All files in specified directory and its subdirectories will be analyzed automatically.
 
 > <b>Note:</b> Do not specify project's root directory it leads to whole project analysis which is long and definitely not what you want.
 
