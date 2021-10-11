@@ -11,7 +11,7 @@ template <typename T>
 struct StdList : public IList, public sequence::ErrHelper {
   StdList() = delete;
 
-  explicit StdList(std::list<T>* list, bool is_const)
+  StdList(std::list<T>* list, bool is_const)
       : _list(list),  //
         _is_const(is_const) {
   }

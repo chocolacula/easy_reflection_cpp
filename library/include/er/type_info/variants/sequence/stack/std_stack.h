@@ -12,7 +12,7 @@ template <typename T>
 struct StdStack : public IStack, public sequence::ErrHelper {
   StdStack() = delete;
 
-  explicit StdStack(std::stack<T>* stack, bool is_const)
+  StdStack(std::stack<T>* stack, bool is_const)
       : _stack(stack),  //
         _is_const(is_const) {
   }

@@ -11,7 +11,7 @@ template <typename T>
 struct StdSet : public ISet, public sequence::ErrHelper {
   StdSet() = delete;
 
-  explicit StdSet(std::set<T>* set, bool is_const)
+  StdSet(std::set<T>* set, bool is_const)
       : _set(set),  //
         _is_const(is_const) {
   }
@@ -57,12 +57,12 @@ struct StdSet : public ISet, public sequence::ErrHelper {
       return error("Cannot remove value with type: {} from set<{}>",  //
                    value.type(), nested_type);
     }
-    _set->pop();
+    _set->erase(*static_cast<const T*>(value.raw()));
     return None();
   }
 
   bool contains(Var value) override {
-    auto it = _set->template find(*static_cast<const T*>(value.raw()));
+    auto it = _set->find(*static_cast<const T*>(value.raw()));
     return it != _set->end();
   }
 

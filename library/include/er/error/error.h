@@ -40,6 +40,8 @@ struct Error {
     return *this;
   }
 
+  ~Error() = default;
+
   /// what() uses similar with plain exceptions interface
   /// returns what happened
   std::string_view what() const {

@@ -1,5 +1,7 @@
 #include "er/serialization/yaml.h"
 
+#include "er/reflection/reflection.h"
+#include "er/types/all_types.h"
 #include "parser_yaml.h"
 
 using namespace rr::serialization;

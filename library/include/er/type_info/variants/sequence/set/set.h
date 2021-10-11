@@ -11,7 +11,7 @@ struct Set : public ISet {
   Set() = delete;
 
   template <typename T>
-  explicit Set(std::set<T>* set, bool is_const) : _set(std::make_shared<StdSet<T>>(set, is_const)) {
+  Set(std::set<T>* set, bool is_const) : _set(std::make_shared<StdSet<T>>(set, is_const)) {
   }
 
   template <typename T>

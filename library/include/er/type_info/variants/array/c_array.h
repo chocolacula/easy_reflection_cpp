@@ -1,7 +1,7 @@
 #pragma once
 
-#include "iarray.h"
 #include "er/tools/format.h"
+#include "iarray.h"
 
 namespace rr {
 
@@ -13,7 +13,7 @@ struct CArray final : public IArray {
   }
 
   Var own_var() const override {
-    return Var(_array, TypeId::get<T(*)[size_v]>(), _is_const);
+    return Var(_array, TypeId::get<T[size_v]>(), _is_const);
   }
 
   TypeId nested_type() const override {

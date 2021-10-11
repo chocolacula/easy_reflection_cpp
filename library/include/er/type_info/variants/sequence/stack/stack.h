@@ -8,7 +8,7 @@ struct Stack : public IStack {
   Stack() = delete;
 
   template <typename T>
-  explicit Stack(std::stack<T>* stack, bool is_const) : _stack(std::make_shared<StdStack<T>>(stack, is_const)) {
+  Stack(std::stack<T>* stack, bool is_const) : _stack(std::make_shared<StdStack<T>>(stack, is_const)) {
   }
 
   Var own_var() const override {

@@ -11,7 +11,7 @@ template <typename T>
 struct StdVector : public IVector, public sequence::ErrHelper {
   StdVector() = delete;
 
-  explicit StdVector(std::vector<T>* vector, bool is_const)
+  StdVector(std::vector<T>* vector, bool is_const)
       : _vector(vector),  //
         _is_const(is_const) {
   }

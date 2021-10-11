@@ -12,7 +12,7 @@ template <typename T>
 struct StdQueue : public IQueue, public sequence::ErrHelper {
   StdQueue() = delete;
 
-  explicit StdQueue(std::queue<T>* queue, bool is_const)
+  StdQueue(std::queue<T>* queue, bool is_const)
       : _queue(queue),  //
         _is_const(is_const) {
   }

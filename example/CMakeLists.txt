@@ -15,7 +15,7 @@ set(SOURCES
 
 add_custom_command(
     OUTPUT generated/reflection.h
-    COMMAND er_gen -c ${CMAKE_SOURCE_DIR}/example/config.yaml
+    COMMAND er_gen -p -c ${CMAKE_SOURCE_DIR}/example/config.yaml
     DEPENDS data/bicycle.h data/color.h
     COMMENT "Generating reflection headers"
 )

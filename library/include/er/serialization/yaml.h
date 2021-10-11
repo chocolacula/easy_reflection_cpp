@@ -34,7 +34,7 @@ struct yaml {  // NOLINT namespace like name
   }
 
   template <typename T>
-  static Expected<std::string> to_string(const T& obj) {
+  static Expected<std::string> to_string(const T* obj) {
     auto info = reflection::reflect(obj);
 
     std::string result;

@@ -11,7 +11,7 @@ template <typename T>
 struct StdDeque : public IList, public sequence::ErrHelper {
   StdDeque() = delete;
 
-  explicit StdDeque(std::deque<T>* deque, bool is_const)
+  StdDeque(std::deque<T>* deque, bool is_const)
       : _deque(deque),  //
         _is_const(is_const) {
   }

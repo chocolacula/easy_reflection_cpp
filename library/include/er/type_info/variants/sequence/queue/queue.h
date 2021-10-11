@@ -10,7 +10,7 @@ struct Queue : public IQueue {
   Queue() = delete;
 
   template <typename T>
-  explicit Queue(std::queue<T>* queue, bool is_const) : _queue(std::make_shared<StdQueue<T>>(queue, is_const)) {
+  Queue(std::queue<T>* queue, bool is_const) : _queue(std::make_shared<StdQueue<T>>(queue, is_const)) {
   }
 
   Var own_var() const override {

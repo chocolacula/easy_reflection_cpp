@@ -10,7 +10,7 @@ struct Vector : public IVector {
   Vector() = delete;
 
   template <typename T>
-  explicit Vector(std::vector<T>* vector, bool is_const) : _vector(std::make_shared<StdVector<T>>(vector, is_const)) {
+  Vector(std::vector<T>* vector, bool is_const) : _vector(std::make_shared<StdVector<T>>(vector, is_const)) {
   }
 
   Var own_var() const override {

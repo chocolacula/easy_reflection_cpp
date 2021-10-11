@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstring>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@ namespace rr {
 /// size of both of them is a multiple of unsigned long(32 or 64 bits)
 /// if last two words are zeroes TightString contains std::string_view
 union TightString {
-
   TightString(const TightString& data) {
     if (data.is_owned()) {
       new (&owned) std::string(data.owned);
@@ -32,7 +32,7 @@ union TightString {
     return *this;
   }
 
-  TightString(TightString&& data) {
+  TightString(TightString&& data) noexcept {
     if (data.is_owned()) {
       new (&owned) std::string(std::move(data.owned));
     } else {
@@ -66,6 +66,7 @@ union TightString {
   }
 
   TightString() {
+    std::memset(&_raw[0], 0, sizeof(_raw));
   };
 
   ~TightString() {
