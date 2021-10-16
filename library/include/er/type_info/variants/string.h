@@ -23,6 +23,7 @@ struct String {
     return std::string_view(*static_cast<const std::string*>(_var.raw()));
   }
 
+  // TODO settting of std::string_view is BAD idea especially via serialization
   Expected<None> set(std::string_view value) {
     if (_var.is_const()) {
       return Error("Trying to set const value");

@@ -20,6 +20,10 @@ struct Floating : IFloating {
     return _floating->var();
   }
 
+  size_t size() override {
+    return _floating->size();
+  }
+
   double get() const override {
     return _floating->get();
   }

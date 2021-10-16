@@ -4,7 +4,7 @@
 #include <string>
 
 #include "er/expected.h"
-#include "er/reflection/reflection.h"
+#include "er/variable/var.h"
 
 namespace rr::serialization {
 
@@ -13,8 +13,7 @@ struct yaml {  // NOLINT namespace like name
   static Expected<T> from_string(std::string_view str) {
     T obj;
 
-    auto info = reflection::reflect(&obj);
-    auto exp = deserialize(str, &info);
+    auto exp = deserialize(Var(&obj), str);
     if (exp.is_error()) {
       return exp.error();
     }
@@ -25,8 +24,7 @@ struct yaml {  // NOLINT namespace like name
   static Expected<T> from_stream(std::istream& stream) {
     T obj;
 
-    auto info = reflection::reflect(&obj);
-    auto exp = deserialize(stream, &info);
+    auto exp = deserialize(Var(&obj), stream);
     if (exp.is_error()) {
       return exp.error();
     }
@@ -35,17 +33,21 @@ struct yaml {  // NOLINT namespace like name
 
   template <typename T>
   static Expected<std::string> to_string(const T* obj) {
-    auto info = reflection::reflect(obj);
-
     std::string result;
-    serialize(info, &result, 0);
+    serialize(&result, Var(obj));
     return result;
   }
 
+  template <typename T>
+  static void to_stream(std::ostream& stream, const T* obj) {
+    serialize(stream, Var(obj));
+  }
+
  private:
-  static void serialize(const TypeInfo& info, std::string* result, int indent);
-  static Expected<None> deserialize(std::string_view str, TypeInfo* info);
-  static Expected<None> deserialize(std::istream& stream, TypeInfo* info);
+  static void serialize(std::string* str, Var var);
+  static void serialize(std::ostream& stream, Var var);
+  static Expected<None> deserialize(Var var, std::string_view str);
+  static Expected<None> deserialize(Var var, std::istream& stream);
 };
 
 }  // namespace rr::serialization

@@ -1,0 +1,10 @@
+compdb_dir: ../build
+
+templates: #pathes to template files
+  enum: ../generator/templates/enum.inja
+  object: ../generator/templates/object.inja
+
+input:
+  - ../tests/data/
+
+output_dir: ../tests/generated

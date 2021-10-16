@@ -112,7 +112,23 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
   // or name of a field in an object
   // or be just a string value of something
   auto ex = info->match([this](Bool& b) -> Expected<None> { return b.set(parse_bool(get_word())); },
-                        [this](Integer& i) -> Expected<None> { return i.set(parse_int(get_word())); },
+                        [this](Integer& i) -> Expected<None> {
+                          auto* p = i.var().raw_mut();
+                          if (p == nullptr) {
+                            return Error("Trying to set const value");
+                          }
+
+                          auto w = get_word();
+                          if (w.front() == '-') {
+                            auto v = std::strtoll(&w[0], nullptr, 10);
+                            std::memcpy(p, &v, i.size());
+                          } else {
+                            auto v = std::strtoull(&w[0], nullptr, 10);
+                            std::memcpy(p, &v, i.size());
+                          }
+
+                          return None();
+                        },
                         [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
                         [this](String& s) -> Expected<None> { return s.set(get_word()); },
                         [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
@@ -287,6 +303,41 @@ Expected<None> ParserYaml::parse_map(Map& map) {
   return parse_map([&]() { return add_to_map(map, &info_k, &info_v, key_box.var(), val_box.var()); });
 }
 
+Expected<None> ParserYaml::parse_mapmap(std::function<Expected<None>()> add) {
+  if (_token == '{') {
+    return parse_flow_map(std::move(add));
+  }
+
+  while (_token != 'S' && !is_end(_token) && _token != '<') {
+
+    if (is_new_line(_token)) {
+      next();
+    }
+
+    // complex key
+    if (_token == '?') {
+      // parse complex key
+      // put it to the Box
+    }
+    // simple key
+    else if (_token == '$') {
+      // skip token and put the value to a 'word' variable
+      // and get it by calling get_word() further
+      next();
+    } else {
+      return error_token(_token);
+    }
+
+    if (_token == ':') {
+      // parse value whatewer it is: complex or not, array or enum etc.
+      __retry(add());
+    } else {
+      return error_token(_token);
+    }
+  }
+  return None();
+}
+
 Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
   if (_token == '{') {
     return parse_flow_map(std::move(add));
@@ -406,7 +457,7 @@ inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
 
 Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value) {
   // get a key
-  __retry(parse(info_key));
+  __retry(parse_str(info_key));
   next();
 
   // get a value
@@ -455,10 +506,6 @@ bool ParserYaml::parse_bool(const std::string& str) {
   std::transform(t.begin(), t.end(), t.begin(), [](char c) { return std::tolower(c); });
 
   return !(t == "false" || t == "off" || t == "no" || t == "n");
-}
-
-int64_t ParserYaml::parse_int(const std::string& str) {
-  return std::strtoll(&str[0], nullptr, 10);
 }
 
 double ParserYaml::parse_double(const std::string& str) {

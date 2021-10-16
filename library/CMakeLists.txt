@@ -19,7 +19,8 @@ set(SOURCES
         src/serialization/json/parser_json.cpp
         src/serialization/yaml/yaml.cpp
         src/serialization/yaml/lexer_yaml.yy.cpp
-        src/serialization/yaml/parser_yaml.cpp)
+        src/serialization/yaml/parser_yaml.cpp
+        src/serialization/binary/binary.cpp)
 
 add_library(${PROJECT_NAME} ${SOURCES})
 

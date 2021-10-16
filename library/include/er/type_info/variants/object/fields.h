@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "field_iterator.h"
 
 namespace rr {
@@ -7,6 +9,10 @@ namespace rr {
 struct Fields {
   explicit Fields(const std::map<std::string_view, FieldInfo>* map, Access access)  //
       : _map(map), _access(access) {
+  }
+
+  size_t size() const {
+    return _map->size();
   }
 
   FieldIterator begin() {
