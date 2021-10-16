@@ -1,89 +1,125 @@
 #include "er/serialization/json.h"
 
+#include <string_view>
+
+#include "../writers/stream_writer.h"
+#include "../writers/string_writer.h"
+#include "er/reflection/reflection.h"
+#include "er/type_info/type_info.h"
 #include "parser_json.h"
 
 using namespace rr::serialization;
 
-void json::serialize(const TypeInfo& info, std::string* result) {
+inline void append(IWriter* writer, std::string_view str) {
+  writer->write(str.data(), str.size());
+}
+
+inline void append(IWriter* writer, char ch) {
+  writer->write(ch);
+}
+
+void serialize_recursive(IWriter* writer, const TypeInfo& info) {
   info.match(
-      [result](const Object& o) {
-        *result += '{';
-        for (auto&& record : o.get_fields()) {
-          *result += '"';
-          *result += record.first;
-          *result += "\":";
+      [writer](const Object& o) {
+        auto fields = o.get_fields();
+
+        if (fields.size() == 0) {
+          append(writer, "{}");
+          return;
+        }
+
+        append(writer, '{');
+        for (auto&& record : fields) {
+          append(writer, '"');
+          append(writer, record.first);
+          append(writer, "\":");
 
           auto field_info = reflection::reflect(record.second.var());
-          serialize(field_info, result);
-          *result += ',';
+          serialize_recursive(writer, field_info);
+          append(writer, ',');
+        }
+        writer->step_back(1);
+        append(writer, '}');
+      },
+      [writer](const Bool& b) { append(writer, b.to_string()); },     //
+      [writer](const Integer& i) { append(writer, i.to_string()); },  //
+      [writer](const Floating& f) { append(writer, f.to_string(6)); },
+      [writer](const String& s) {
+        append(writer, '"');
+        append(writer, s.get());
+        append(writer, '"');
+      },
+      [writer](const Enum& e) {
+        append(writer, '"');
+        append(writer, e.to_string());
+        append(writer, '"');
+      },
+      [writer](const Map& m) {
+        if (m.size() == 0) {
+          append(writer, "[]");
+          return;
         }
 
-        if ((*result)[result->size() - 1] == ',') {
-          (*result)[result->size() - 1] = '}';
-        } else {
-          *result += '}';
-        }
-      },
-      [result](const Bool& b) { *result += b.to_string(); },     //
-      [result](const Integer& i) { *result += i.to_string(); },  //
-      [result](const Floating& f) { *result += f.to_string(6); },
-      [result](const String& s) {
-        *result += '"';
-        *result += s.get();
-        *result += '"';
-      },
-      [result](const Enum& e) {
-        *result += '"';
-        *result += e.to_string();
-        *result += '"';
-      },
-      [result](const Map& m) {
-        *result += '[';
-
-        m.for_each([result](Var key, Var value) {
+        append(writer, '[');
+        m.for_each([writer](Var key, Var value) {
           auto key_info = reflection::reflect(key);
-          *result += "{\"key\":";
-          serialize(key_info, result);
+          append(writer, "{\"key\":");
+          serialize_recursive(writer, key_info);
 
-          *result += ',';
+          append(writer, ',');
 
           auto value_info = reflection::reflect(value);
-          *result += "\"val\":";
-          serialize(value_info, result);
+          append(writer, "\"val\":");
+          serialize_recursive(writer, value_info);
 
-          *result += "},";
+          append(writer, "},");
         });
-
-        if ((*result)[result->size() - 1] == ',') {
-          (*result)[result->size() - 1] = ']';
-        } else {
-          *result += ']';
-        }
+        writer->step_back(1);
+        append(writer, ']');
       },
-      [result](const auto& as) {  // Array or Sequence
-        *result += "[";
+      [writer](const auto& as) {  // Array or Sequence
+        if (as.size() == 0) {
+          append(writer, "[]");
+          return;
+        }
 
-        as.for_each([result](Var entry) {
+        append(writer, '[');
+        as.for_each([writer](Var entry) {
           auto entry_info = reflection::reflect(entry);
 
-          serialize(entry_info, result);
-          *result += ",";
-        });
+          serialize_recursive(writer, entry_info);
 
-        if ((*result)[result->size() - 1] == ',') {
-          (*result)[result->size() - 1] = ']';
-        } else {
-          *result += ']';
-        }
+          append(writer, ',');
+        });
+        writer->step_back(1);
+        append(writer, ']');
       });
 }
 
-Expected<None> json::deserialize(std::string_view str, TypeInfo* info) {
-  ParserJson parser(str.data(), str.size());
-  return parser.deserialize(info);
+void json::serialize(std::string* str, Var var) {
+  StringWriter string_w(str);
+  auto info = reflection::reflect(var);
+
+  serialize_recursive(&string_w, info);
 }
 
-Expected<None> json::deserialize(std::istream& stream, TypeInfo* info) {
+void json::serialize(std::ostream& stream, Var var) {
+  StreamWriter stream_w(stream);
+  auto info = reflection::reflect(var);
+
+  serialize_recursive(&stream_w, info);
+}
+
+Expected<None> json::deserialize(Var var, std::string_view str) {
+  ParserJson parser(str.data(), str.size());
+  auto info = reflection::reflect(var);
+
+  return parser.deserialize(&info);
+}
+
+Expected<None> json::deserialize(Var var, std::istream& stream) {
   ParserJson parser(stream);
-  return parser.deserialize(info);
+  auto info = reflection::reflect(var);
+
+  return parser.deserialize(&info);
 }

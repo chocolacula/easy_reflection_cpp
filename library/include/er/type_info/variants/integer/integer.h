@@ -15,8 +15,16 @@ struct Integer : IInteger {
   Integer(T* value, bool is_const) : _integer(std::make_shared<Int<T>>(value, is_const)) {
   }
 
-  Var var() override {
+  Var var() const override {
     return _integer->var();
+  }
+
+  size_t size() const override {
+    return _integer->size();
+  }
+
+  bool is_signed() const override {
+    return _integer->is_signed();
   }
 
   int64_t get() const override {

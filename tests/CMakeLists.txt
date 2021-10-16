@@ -1,19 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
 
 cmake_policy(SET CMP0048 NEW)
-project(test VERSION 0.1.0)
+project(tests VERSION 0.1.0)
+
+add_definitions(-DROOT="${CMAKE_SOURCE_DIR}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_subdirectory(googletest)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
 include_directories(../library/include)
 include_directories(../googletest/googletest/include)
 
+add_subdirectory(googletest)
 set(SOURCES
-	library.cpp)
+    library.cpp
+    serialization.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_custom_command(
+    OUTPUT generated/reflection.h
+    COMMAND er_gen -p -c ${CMAKE_SOURCE_DIR}/tests/config.yaml
+    DEPENDS data/tresholds.h data/various.h
+    COMMENT "Generating reflection headers"
+)
 
-target_link_libraries(${PROJECT_NAME} gtest_main)
+add_executable(${PROJECT_NAME} ${SOURCES} generated/reflection.h)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
+
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})

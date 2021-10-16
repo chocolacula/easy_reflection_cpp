@@ -43,7 +43,7 @@ struct StdStack : public IStack, public sequence::ErrHelper {
   }
 
   void clear() override {
-    for (auto i = 0; i < _stack->size(); i++) {
+    while (!_stack->empty()) {
       _stack->pop();
     }
   }

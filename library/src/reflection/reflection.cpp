@@ -16,7 +16,7 @@ TypeInfo reflection::reflect(Var variable) {
 
 std::string reflection::sprint(const TypeInfo& info) {
   std::string result;
-  sprint(info, &result);
+  sprint(info, &result, 0);
   return result;
 }
 

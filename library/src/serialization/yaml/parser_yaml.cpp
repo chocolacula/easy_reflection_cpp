@@ -49,10 +49,13 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
 
   if (_token == '*') {
     auto anchor = get_word();
-    auto var = _anchors[anchor.substr(1, anchor.size() - 1)];
-    reflection::copy(info->var(), var);
+    auto& box = _anchors[anchor.substr(1, anchor.size() - 1)];
+    __retry(reflection::copy(info->var(), box.var()));
 
     next();
+    if (is_new_line(_token)) {
+      next();
+    }
     return None();
   }
 
@@ -60,6 +63,9 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
   if (_token == '&') {
     anchor = get_word();
     next();
+    if (is_new_line(_token)) {
+      next();
+    }
   }
 
   Expected<None> ex = None();
@@ -100,7 +106,10 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
   }
 
   if (!anchor.empty() && anchor[0] == '&') {
-    _anchors[anchor.substr(1, anchor.size() - 1)] = info->var();
+    auto name = anchor.substr(1, anchor.size() - 1);
+    _anchors.emplace(name, Box(info->var().type()));
+
+    reflection::copy(_anchors[name].var(), info->var());
   }
 
   return ex;
@@ -112,7 +121,23 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
   // or name of a field in an object
   // or be just a string value of something
   auto ex = info->match([this](Bool& b) -> Expected<None> { return b.set(parse_bool(get_word())); },
-                        [this](Integer& i) -> Expected<None> { return i.set(parse_int(get_word())); },
+                        [this](Integer& i) -> Expected<None> {
+                          auto* p = i.var().raw_mut();
+                          if (p == nullptr) {
+                            return Error("Trying to set const value");
+                          }
+
+                          auto w = get_word();
+                          if (w.front() == '-') {
+                            auto v = std::strtoll(&w[0], nullptr, 10);
+                            std::memcpy(p, &v, i.size());
+                          } else {
+                            auto v = std::strtoull(&w[0], nullptr, 10);
+                            std::memcpy(p, &v, i.size());
+                          }
+
+                          return None();
+                        },
                         [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
                         [this](String& s) -> Expected<None> { return s.set(get_word()); },
                         [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
@@ -151,9 +176,10 @@ Expected<None> ParserYaml::parse_seq(TypeInfo* info) {
         return parse_seq(a.nested_type(), [&](size_t i, Var var) { return add_to_array(a, i, var); });
       },
       [this](Sequence& s) -> Expected<None> {
+        s.clear();
         return parse_seq(s.nested_type(), [&](size_t, Var var) { return s.push(var); });
       },
-      [this](auto&&) -> Expected<None> { return error_match(); });
+      [this](auto&& a) -> Expected<None> { return error_match(); });
 }
 
 Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add) {
@@ -167,7 +193,7 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
   Box box(nested_type);
   auto info = reflection::reflect(box.var());
 
-  while (true) {
+  while (!is_end(_token)) {
     if (_token == '>') {
       next();
       ++level;
@@ -189,8 +215,8 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
     next();  // skip '-' itself
 
     __retry(parse(&info));
-    i++;
     __retry(add(i, box.var()));
+    i++;
   }
   return None();
 }
@@ -284,6 +310,7 @@ Expected<None> ParserYaml::parse_map(Map& map) {
   auto info_k = reflection::reflect(key_box.var());
   auto info_v = reflection::reflect(val_box.var());
 
+  map.clear();
   return parse_map([&]() { return add_to_map(map, &info_k, &info_v, key_box.var(), val_box.var()); });
 }
 
@@ -294,15 +321,11 @@ Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
 
   while (_token != 'S' && !is_end(_token) && _token != '<') {
 
-    if (is_new_line(_token) || _token == '$') {
+    if (is_new_line(_token)) {
       next();
     }
 
-    if (_token == ':') {
-      __retry(add());
-    } else {
-      return error_token(_token);
-    }
+    __retry(add());
   }
   return None();
 }
@@ -387,10 +410,19 @@ Expected<None> ParserYaml::parse_flow_map(Map& map) {
   auto info_key = reflection::reflect(box_key.var());
   auto info_val = reflection::reflect(box_val.var());
 
+  map.clear();
   return parse_flow_map([&]() { return add_to_map(map, &info_key, &info_val, box_key.var(), box_val.var()); });
 }
 
 inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
+  if (_token == '$') {
+    next();
+  }
+
+  if (_token != ':') {
+    return error_token(_token);
+  }
+
   auto ex = obj.get_field(get_word());
   __retry(ex);
 
@@ -406,17 +438,24 @@ inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
 
 Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value) {
   // get a key
-  __retry(parse(info_key));
+  if (_token == '$') {
+    __retry(parse_str(info_key));
+  } else if (_token == '?') {
+    next();
+    __retry(parse(info_key));
+  } else {
+    return error_token(_token);
+  }
+
+  if (_token != ':') {
+    return error_token(_token);
+  }
   next();
 
   // get a value
   __retry(parse(info_value));
-  if (_token == '<') {
-    next();
-  }
 
-  map.insert(var_key, var_value);
-  return None();
+  return map.insert(var_key, var_value);
 }
 
 wchar_t ParserYaml::next() {
@@ -455,10 +494,6 @@ bool ParserYaml::parse_bool(const std::string& str) {
   std::transform(t.begin(), t.end(), t.begin(), [](char c) { return std::tolower(c); });
 
   return !(t == "false" || t == "off" || t == "no" || t == "n");
-}
-
-int64_t ParserYaml::parse_int(const std::string& str) {
-  return std::strtoll(&str[0], nullptr, 10);
 }
 
 double ParserYaml::parse_double(const std::string& str) {

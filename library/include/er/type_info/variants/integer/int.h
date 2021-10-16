@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include "er/tools/format.h"
 #include "iinteger.h"
@@ -10,6 +11,18 @@ namespace rr {
 template <typename T>
 struct Int : IInteger {
   Int(T* value, bool is_const) : _value(value), _is_const(is_const) {
+  }
+
+  Var var() const override {
+    return Var(_value, _is_const);
+  }
+
+  size_t size() const override {
+    return sizeof(T);
+  }
+
+  bool is_signed() const override {
+    return std::is_signed_v<T>;
   }
 
   int64_t get() const override {
@@ -31,10 +44,6 @@ struct Int : IInteger {
 
     *_value = value;
     return None();
-  }
-
-  Var var() override {
-    return Var(_value, _is_const);
   }
 
   std::string to_string() const override {

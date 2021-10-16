@@ -5,7 +5,7 @@
 #include "er/type_info/variants/array/array.h"
 #include "er/type_info/variants/map/map.h"
 #include "er/type_info/variants/object/object.h"
-#include "er/variable/var.h"
+#include "er/variable/box.h"
 #include "lexer_yaml.yy.h"
 
 namespace rr {
@@ -34,6 +34,7 @@ class ParserYaml : rf_yaml::LexerYaml {
   Expected<None> parse_map(std::function<Expected<None>()> add);
   Expected<None> parse_flow_map(std::function<Expected<None>()> add);
   inline Expected<None> parse_flow_map(Map& map);
+  Expected<None> parse_map_value(Map& map);
 
   inline Expected<None> add_to_obj(Object& obj);
   inline Expected<None> add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value);
@@ -52,7 +53,7 @@ class ParserYaml : rf_yaml::LexerYaml {
   static inline double parse_double(const std::string& str);
 
   wchar_t _token;
-  std::unordered_map<std::string, Var> _anchors;
+  std::unordered_map<std::string, Box> _anchors;
 };
 
 }  // namespace rr

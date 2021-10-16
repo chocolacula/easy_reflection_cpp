@@ -1,22 +1,32 @@
 #pragma once
 
+#include <string>
+
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
 #include "er/type_info/variants/object/access.h"
 
 namespace rr {
 
-void sprint(const TypeInfo& info, std::string* result) {
+void sprint(const TypeInfo& info, std::string* result, int indention) {
   info.match(
-      [result](const Object& o) {
+      [result, indention](const Object& o) {
+        if (!result->empty()) {
+          *result += '\n';
+        }
         for (auto&& record : o.get_fields(Access::kAll)) {
+          // indent a row
+          *result += std::string(indention, ' ');
           // add the field name and trailing whitespace
           *result += record.first;
           *result += ": ";
 
           auto field_info = reflection::reflect(record.second.var());
-          sprint(field_info, result);
-          *result += '\n';
+          sprint(field_info, result, indention + 2);
+
+          if (result->back() != '\n') {
+            *result += '\n';
+          }
         }
       },
       [result](const Bool& b) { *result += b.to_string(); },     //
@@ -28,40 +38,45 @@ void sprint(const TypeInfo& info, std::string* result) {
         *result += "'";
       },
       [result](const Enum& e) { *result += e.to_string(); },
-      [result](const Map& m) {
-        *result += "[";
+      [result, indention](const Map& m) {
+        if (m.size() == 0) {
+          *result += "[]\n";
+          return;
+        }
 
-        m.for_each([result](Var key, Var value) {
+        *result += "[";
+        m.for_each([result, indention](Var key, Var value) {
           auto key_info = reflection::reflect(key);
-          sprint(key_info, result);
+          sprint(key_info, result, indention);
+
+          if (result->back() == '\n') {
+            *result += std::string(indention, ' ');
+          }
 
           *result += ": ";
 
           auto value_info = reflection::reflect(value);
-          sprint(value_info, result);
+          sprint(value_info, result, indention);
 
           *result += ", ";
         });
-        if ((*result)[result->size() - 2] == ',') {
-          result->replace(result->size() - 2, 2, "]");
-        } else {
-          *result += "]";
-        }
+        result->resize(result->size() - 2);
+        *result += "]";
       },
-      [result](const auto& as) {  // Array or Sequence
-        *result += "[";
+      [result, indention](const auto& as) {  // Array or Sequence
+        if (as.size() == 0) {
+          *result += "[]\n";
+        }
 
-        as.for_each([result](Var entry) {
+        *result += "[";
+        as.for_each([result, indention](Var entry) {
           auto entry_info = reflection::reflect(entry);
 
-          sprint(entry_info, result);
+          sprint(entry_info, result, indention);
           *result += ", ";
         });
-        if ((*result)[result->size() - 2] == ',') {
-          result->replace(result->size() - 2, 2, "]");
-        } else {
-          *result += "]";
-        }
+        result->resize(result->size() - 2);
+        *result += "]";
       });
 }
 

@@ -16,6 +16,10 @@ struct Float : IFloating {
     return Var(_value, _is_const);
   }
 
+  size_t size() override {
+    return sizeof(T);
+  }
+
   double get() const override {
     return *_value;
   }
@@ -24,7 +28,7 @@ struct Float : IFloating {
     if (_is_const) {
       return Error("Trying to set const value");
     }
-    if (std::numeric_limits<T>::max() < value || std::numeric_limits<T>::min() > value) {
+    if (std::numeric_limits<T>::max() < value || -std::numeric_limits<T>::max() > value) {
       return Error("The value too big to set float variable");
     }
 

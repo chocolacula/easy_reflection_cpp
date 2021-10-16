@@ -42,7 +42,7 @@ struct StdQueue : public IQueue, public sequence::ErrHelper {
   }
 
   void clear() override {
-    for (auto i = 0; i < _queue->size(); i++) {
+    while (!_queue->empty()) {
       _queue->pop();
     }
   }

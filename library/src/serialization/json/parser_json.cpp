@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <functional>
 #include <map>
 #include <memory>
@@ -39,9 +40,26 @@ Expected<None> ParserJson::parse(TypeInfo* info, wchar_t token) {
     case 'f':
       return info->get<Bool>().set(false);
     case 'n':
-      return info->match([this](Integer& i) -> Expected<None> { return i.set(parse_int(get_word())); },
-                         [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
-                         [this](auto&&) -> Expected<None> { return error_match(); });
+      return info->match(
+          [this](Integer& i) -> Expected<None> {
+            auto* p = i.var().raw_mut();
+            if (p == nullptr) {
+              return Error("Trying to set const value");
+            }
+
+            auto w = get_word();
+            if (w.front() == '-') {
+              auto v = std::strtoll(&w[0], nullptr, 10);
+              std::memcpy(p, &v, i.size());
+            } else {
+              auto v = std::strtoull(&w[0], nullptr, 10);
+              std::memcpy(p, &v, i.size());
+            }
+
+            return None();
+          },
+          [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
+          [this](auto&&) -> Expected<None> { return error_match(); });
     case '$':
       return info->match([this](String& s) -> Expected<None> { return s.set(get_word()); },
                          [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
@@ -53,6 +71,7 @@ Expected<None> ParserJson::parse(TypeInfo* info, wchar_t token) {
               return parse_array(a.nested_type(), [&](size_t i, Var var) { return add_to_array(a, i, var); });
             },
             [this](Sequence& s) -> Expected<None> {
+              s.clear();
               return parse_array(s.nested_type(), [&](size_t, Var var) { return s.push(var); });
             },
             [this](Map& m) -> Expected<None> {
@@ -90,6 +109,8 @@ Expected<None> ParserJson::parse_array(TypeId nested_type, std::function<Expecte
 
   for (size_t len = 0; len < kMaxArr; ++len) {
 
+    // TODO split implementation for sequence and array
+    // use array iteration instead of boxing and copying
     auto ex = parse(&boxed_info, token)
                   .match_move([&, len](None&&) -> Expected<None> { return add(len, box.var()); },
                               [](Error&& err) -> Expected<None> { return err; });
@@ -158,6 +179,8 @@ Expected<None> ParserJson::parse_map(Map& map) {
   if (++_level > kMaxLevel) {
     return error("Max depth level exceeded");
   }
+
+  map.clear();
 
   auto token = next();
 
@@ -297,10 +320,6 @@ Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(const std::s
   auto val = str.substr(pos2 + 1, str.size() - (pos2 + 1));
 
   return std::make_pair(std::move(key), std::move(val));
-}
-
-int64_t ParserJson::parse_int(const std::string& str) {
-  return std::strtoll(&str[0], nullptr, 10);
 }
 
 double ParserJson::parse_double(const std::string& str) {
