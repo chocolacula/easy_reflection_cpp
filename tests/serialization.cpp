@@ -1,3 +1,4 @@
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -53,9 +54,10 @@ void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_TRUE(std::abs(lhs.f32 - rhs.f32) < 0.1 &&  //
               std::abs(lhs.f64 - rhs.f64) < 0.1);   //
 
-  ASSERT_TRUE(std::memcmp(&lhs.arr[0],  //
-                          &rhs.arr[0],  //
-                          sizeof(lhs.arr) / sizeof(lhs.arr[0])) == 0);
+  auto n = sizeof(lhs.arr) / sizeof(lhs.arr[0]);
+  for (auto i = 0; i < n; i++) {
+    ASSERT_EQ(lhs.arr[i], rhs.arr[i]);
+  }
 
   ASSERT_EQ(lhs.str, rhs.str);
   ASSERT_EQ(lhs.std_arr, rhs.std_arr);
@@ -90,8 +92,17 @@ TEST(SerializationYaml, Thresholds) {
   compare_tresolds(struct1, struct2);
 }
 
+TEST(SerializationBinary, Thresholds) {
+  Tresholds struct1;
+
+  auto binary_data = rr::serialization::binary::to_vector(&struct1).unwrap();
+  auto struct2 = rr::serialization::binary::from_vector<Tresholds>(binary_data).unwrap();
+
+  compare_tresolds(struct1, struct2);
+}
+
 TEST(SerializationJson, BackAndForth) {
-  Various struct1;
+  auto struct1 = Various::make_default();
 
   auto str = rr::serialization::json::to_string(&struct1).unwrap();
   auto struct2 = rr::serialization::json::from_string<Various>(str).unwrap();
@@ -106,10 +117,9 @@ TEST(SerializationJson, BackAndForth) {
 }
 
 TEST(SerializationYaml, BackAndForth) {
-  Various struct1;
+  auto struct1 = Various::make_default();
 
   auto str = rr::serialization::yaml::to_string(&struct1).unwrap();
-  std::cout << str << std::endl;
   auto struct2 = rr::serialization::yaml::from_string<Various>(str).unwrap();
 
   compare_various(struct1, struct2);
@@ -121,17 +131,20 @@ TEST(SerializationYaml, BackAndForth) {
   compare_various(struct1, struct3);
 }
 
-TEST(SerializationBinary, Thresholds) {
-  Tresholds struct1;
+TEST(SerializationYaml, Anchors) {
+  auto struct1 = Various::make_default();
 
-  auto binary_data = rr::serialization::binary::to_vector(&struct1).unwrap();
-  auto struct2 = rr::serialization::binary::from_vector<Tresholds>(binary_data).unwrap();
+  std::ifstream input;
+  input.open(std::string(ROOT) + "/tests/data/various_anchors.yaml");
 
-  compare_tresolds(struct1, struct2);
+  std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+  auto struct2 = rr::serialization::yaml::from_string<Various>(str).unwrap();
+
+  compare_various(struct1, struct2);
 }
 
 TEST(SerializationBinary, BackAndForth) {
-  Various struct1;
+  auto struct1 = Various::make_default();
 
   auto binary_data = rr::serialization::binary::to_vector(&struct1).unwrap();
   auto struct2 = rr::serialization::binary::from_vector<Various>(binary_data).unwrap();

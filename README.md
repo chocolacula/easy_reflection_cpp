@@ -5,6 +5,16 @@ It parses C++ sourcecode for special attributes. In the simplest situation you o
 The main idea is use kinda dynamic typing and <b>Run Time Type Checking</b> for some type agnostic operations, like copying or taking name of a type.<br>
 It makes possible determine a variable type and do right job - print, serialize/deserialize or whatever.
 
+## Features
+
+- translate enums to string and vise versa
+- support stl containers like ```std::vector```, ```std::list```, ```std::map```, etc.
+- native serialization directly to an object and without third parties for:
+  - <b>json</b>
+  - <b>yaml 1.2</b> even with anchors, but keep in mind that variables behind anchors have to have the same type.
+  - binary with <b>Variable Length Quantity</b> to reduce number of bytes
+- debug printing
+
 ## Installation
 
 At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/docs/LibASTMatchersTutorial.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Arch Linux</b> repos or built from source with options:
@@ -17,7 +27,7 @@ change the file if needed.
 
 > <b>Note:</b> Compile Clang from sources takes <b>A LOT</b> of time, literally hours with freezes and fails on average laptop, think about using precompiled libs from your distro.
 
-> <b>Note:</b> If you faced with errors like ```stddef.h``` or ```stdarg.h``` not found, check include folders, perhaps you need few symlinks. It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
+> <b>Note:</b> If you faced errors like ```stddef.h``` or ```stdarg.h``` not found, check include folders, perhaps you need few symlinks. It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
 
 The next step is update all submodules<br>
 

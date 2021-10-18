@@ -6,7 +6,11 @@ namespace rr {
 
 struct Box {
   Box(const Box& other) = delete;
-  Box(Box&& other) = default;
+  Box& operator=(const Box& other) = delete;
+
+  Box() = default;
+  Box(Box&& other) noexcept = default;
+  Box& operator=(Box&& other) noexcept = default;
 
   explicit Box(TypeId id);
   ~Box();

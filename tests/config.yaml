@@ -5,6 +5,7 @@ templates: #pathes to template files
   object: ../generator/templates/object.inja
 
 input:
-  - ../tests/data/
+  - ../tests/data/tresholds.h
+  - ../tests/data/various.h
 
 output_dir: ../tests/generated
