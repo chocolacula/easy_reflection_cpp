@@ -10,8 +10,8 @@ It makes possible determine a variable type and do right job - print, serialize/
 - translate enums to string and vise versa
 - support stl containers like ```std::vector```, ```std::list```, ```std::map```, etc.
 - native serialization directly to an object and without third parties for:
-  - <b>json</b>
-  - <b>yaml 1.2</b> even with anchors, but keep in mind that variables behind anchors have to have the same type.
+  - <b>JSON</b>
+  - <b>YAML 1.2</b> even with anchors, but keep in mind that variables behind anchors have to have the same type.
   - binary with <b>Variable Length Quantity</b> to reduce number of bytes
 - debug printing
 
