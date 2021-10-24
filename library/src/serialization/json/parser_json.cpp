@@ -108,9 +108,6 @@ Expected<None> ParserJson::parse_array(TypeId nested_type, std::function<Expecte
   auto boxed_info = reflection::reflect(box.var());
 
   for (size_t len = 0; len < kMaxArr; ++len) {
-
-    // TODO split implementation for sequence and array
-    // use array iteration instead of boxing and copying
     auto ex = parse(&boxed_info, token)
                   .match_move([&, len](None&&) -> Expected<None> { return add(len, box.var()); },
                               [](Error&& err) -> Expected<None> { return err; });

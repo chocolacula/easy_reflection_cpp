@@ -17,7 +17,7 @@ It makes possible determine a variable type and do right job - print, serialize/
 
 ## Installation
 
-At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/docs/LibASTMatchersTutorial.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Arch Linux</b> repos or built from source with options:
+At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/docs/LibASTMatchersTutorial.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Ubuntu</b> or <b>Arch Linux</b> repos or built from source with options:
 ```
 -DLLVM_LINK_LLVM_DYLIB=ON
 -DCLANG_LINK_CLANG_DYLIB=ON
