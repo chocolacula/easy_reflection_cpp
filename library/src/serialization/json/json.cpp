@@ -6,6 +6,7 @@
 #include "../writers/string_writer.h"
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
+#include "er/types/all_types.h"
 #include "parser_json.h"
 
 using namespace er::serialization;
