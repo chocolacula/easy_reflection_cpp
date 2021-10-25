@@ -6,7 +6,7 @@
 #include "istack.h"
 #include "stack_iterator.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdStack : public IStack, public sequence::ErrHelper {
@@ -80,4 +80,4 @@ struct StdStack : public IStack, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

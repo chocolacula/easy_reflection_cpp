@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-cmake_policy(SET CMP0048 NEW)
-project(er_gen VERSION 0.1.0)
+project(er_gen VERSION ${CMAKE_PROJECT_VERSION})
 
 add_definitions(-DVERSION="${PROJECT_VERSION}")
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

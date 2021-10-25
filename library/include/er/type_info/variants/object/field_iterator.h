@@ -6,7 +6,7 @@
 #include "access.h"
 #include "field_info.h"
 
-namespace rr {
+namespace er {
 
 class FieldIterator {
   using const_iterator = std::map<std::string_view, FieldInfo>::const_iterator;
@@ -46,4 +46,4 @@ class FieldIterator {
   Access _access;
 };
 
-}  // namespace rr
+}  // namespace er

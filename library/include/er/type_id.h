@@ -14,7 +14,7 @@
 
 #include "er/tools/traits.h"
 
-namespace rr {
+namespace er {
 
 /// copyable value type with single one int under the hood
 /// represent sequential type id
@@ -86,4 +86,4 @@ struct TypeId {
   }
 };
 
-}  // namespace rr
+}  // namespace er

@@ -12,7 +12,7 @@
 #include "group_reader.h"
 #include "group_writer.h"
 
-using namespace rr::serialization;
+using namespace er::serialization;
 
 inline void serialize_recursive(GroupWriter* writer, const TypeInfo& info) {
   info.match(

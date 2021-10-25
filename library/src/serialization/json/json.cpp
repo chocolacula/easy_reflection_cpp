@@ -8,7 +8,7 @@
 #include "er/type_info/type_info.h"
 #include "parser_json.h"
 
-using namespace rr::serialization;
+using namespace er::serialization;
 
 inline void append(IWriter* writer, std::string_view str) {
   writer->write(str.data(), str.size());

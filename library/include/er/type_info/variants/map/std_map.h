@@ -4,7 +4,7 @@
 
 #include "imap.h"
 
-namespace rr {
+namespace er {
 
 template <typename KeyT, typename ValueT>
 struct StdMap final : public IMap {
@@ -93,4 +93,4 @@ struct StdMap final : public IMap {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

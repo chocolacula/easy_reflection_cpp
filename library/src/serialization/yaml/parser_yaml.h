@@ -8,7 +8,7 @@
 #include "er/variable/box.h"
 #include "lexer_yaml.yy.h"
 
-namespace rr {
+namespace er {
 
 struct TypeInfo;
 
@@ -56,6 +56,6 @@ class ParserYaml : rf_yaml::LexerYaml {
   std::unordered_map<std::string, Box> _anchors;
 };
 
-}  // namespace rr
+}  // namespace er
 
 #undef __retry

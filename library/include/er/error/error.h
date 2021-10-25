@@ -2,7 +2,7 @@
 
 #include "tight_string.h"
 
-namespace rr {
+namespace er {
 
 struct Error {
   explicit Error(const char* message) : _data(message) {
@@ -62,4 +62,4 @@ struct Error {
   TightString _data;
 };
 
-}  // namespace rr
+}  // namespace er

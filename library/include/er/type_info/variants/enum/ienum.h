@@ -2,7 +2,7 @@
 
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IEnum {
 
@@ -11,4 +11,4 @@ struct IEnum {
   virtual Expected<None> parse(std::string_view name) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

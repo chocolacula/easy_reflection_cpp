@@ -3,7 +3,7 @@
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 
-using namespace rr;
+using namespace er;
 
 Box::Box(TypeId id) : _type(id) {
   auto* ptr = reflection::call_new(id, &_data.stack_mem[0], kMemSize);

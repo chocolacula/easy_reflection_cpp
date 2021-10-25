@@ -6,7 +6,7 @@
 #include "stack/stack.h"
 #include "vector/vector.h"
 
-namespace rr {
+namespace er {
 
 #define BASE Variant<Vector, Stack, Queue, List, Set>
 
@@ -75,4 +75,4 @@ struct Sequence : public BASE, public ISequence {
 
 #undef BASE
 
-}  // namespace rr
+}  // namespace er

@@ -10,5 +10,5 @@ void println() {
 
 template <typename... Ts>
 void println(std::string_view fmt, Ts&&... args) {
-  std::cout << rr::format(fmt, std::forward<Ts>(args)...) << std::endl;
+  std::cout << er::format(fmt, std::forward<Ts>(args)...) << std::endl;
 }

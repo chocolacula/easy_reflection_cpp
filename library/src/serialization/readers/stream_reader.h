@@ -5,7 +5,7 @@
 
 #include "ireader.h"
 
-namespace rr {
+namespace er {
 
 template <unsigned int size>
 struct StreamReader final : IReader {
@@ -24,4 +24,4 @@ struct StreamReader final : IReader {
   mutable char _buff[size];
 };
 
-}  // namespace rr
+}  // namespace er

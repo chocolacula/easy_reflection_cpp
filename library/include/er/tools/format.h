@@ -9,7 +9,7 @@
 #include "append_buf.h"
 #include "traits.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 static typename std::enable_if_t<is_string_v<std::remove_reference_t<T>>, void>  //
@@ -94,4 +94,4 @@ std::string format(std::string_view fmt, Ts&&... args) {
   return result;
 }
 
-}  // namespace rr
+}  // namespace er

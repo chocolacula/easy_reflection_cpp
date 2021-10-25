@@ -9,7 +9,7 @@
 
 #include "../readers/ireader.h"
 
-namespace rr {
+namespace er {
 
 struct GroupReader {
   GroupReader(const GroupReader& other) = delete;
@@ -75,4 +75,4 @@ struct GroupReader {
   }
 };
 
-}  // namespace rr
+}  // namespace er

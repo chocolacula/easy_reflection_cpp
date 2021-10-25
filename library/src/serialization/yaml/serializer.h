@@ -6,7 +6,7 @@
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
 
-namespace rr {
+namespace er {
 
 inline void append(IWriter* writer, std::string_view str) {
   writer->write(str.data(), str.size());
@@ -100,4 +100,4 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info, int indent) {
       });
 }
 
-}  // namespace rr
+}  // namespace er

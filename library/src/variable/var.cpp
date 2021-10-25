@@ -4,7 +4,7 @@
 #include "er/tools/format.h"
 #include "er/types/all_types.h"
 
-using namespace rr;
+using namespace er;
 
 Var::Var() : _value(nullptr), _type(), _is_const(true) {
 }

@@ -6,7 +6,7 @@
 #include "error/error.h"
 #include "variant/variant.h"
 
-namespace rr {
+namespace er {
 
 #define BASE Variant<T, ErrorT>
 
@@ -48,4 +48,4 @@ struct Expected : public BASE {
 
 #undef BASE
 
-}  // namespace rr
+}  // namespace er

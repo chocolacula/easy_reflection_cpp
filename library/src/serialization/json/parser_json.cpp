@@ -16,7 +16,7 @@
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
 
-using namespace rr;
+using namespace er;
 
 ParserJson::ParserJson(const char* input, size_t input_size)  //
     : LexerJson(input, input_size), _level(0) {

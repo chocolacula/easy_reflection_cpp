@@ -6,7 +6,7 @@
 
 #include "overloaded.h"
 
-namespace rr {
+namespace er {
 
 // declaring a slightly more readable state of nothing
 using None = std::monostate;
@@ -56,4 +56,4 @@ struct Variant {
   std::variant<T...> _content;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -35,6 +35,10 @@ The next step is update all submodules<br>
 git submodule update --init --recursive
 ```
 
+### Docker
+
+The repository also provides a ```Dockerfile``` which initializes ```Ubuntu 20.04``` environment, clones the project, builds it and runs tests on startup.
+
 ## How to use
 
 Lets assume you are developer of a company employees registry and have a class:
@@ -78,7 +82,7 @@ class Employee {
 ...
 ```
 
-But note they are fields for <b>reflection</b> NOT for <b>serialization</b>. It's possible to use values or print them. Standard serializers skip non public and static fields, to change that, you have to write you own serializer. Just copy one to somewhere under ```rr::serialization``` namespace and change line:
+But note they are fields for <b>reflection</b> NOT for <b>serialization</b>. It's possible to use values or print them. Standard serializers skip non public and static fields, to change that, you have to write you own serializer. Just copy one to somewhere under ```er::serialization``` namespace and change line:
 
 ```cpp
 for (auto&& record : o.get_fields()) {

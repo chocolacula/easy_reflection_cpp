@@ -49,7 +49,7 @@ int main(int argc, const char** argv) {
     return -1;
   }
 
-  auto conf = rr::serialization::yaml::from_stream<Config>(input).unwrap();
+  auto conf = er::serialization::yaml::from_stream<Config>(input).unwrap();
   input.close();
 
   auto time_1 = std::chrono::steady_clock::now();
@@ -131,7 +131,7 @@ int main(int argc, const char** argv) {
   auto analysis = std::chrono::duration<double>(time_2 - time_1).count();
   auto generation = std::chrono::duration<double>(time_3 - time_2).count();
 
-  std::cout << rr::format("Takes for analysis {} sec, generation {}  sec, all {}  sec\n",  //
+  std::cout << er::format("Takes for analysis {} sec, generation {}  sec, all {}  sec\n",  //
                           analysis, generation, analysis + generation);
 
   return 0;

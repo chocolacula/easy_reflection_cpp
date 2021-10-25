@@ -5,7 +5,7 @@
 
 #include "iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct StreamWriter final : IWriter {
   StreamWriter() = delete;
@@ -30,4 +30,4 @@ struct StreamWriter final : IWriter {
   std::ostream& _stream;
 };
 
-}  // namespace rr
+}  // namespace er

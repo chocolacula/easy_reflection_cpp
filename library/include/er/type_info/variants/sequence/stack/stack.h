@@ -2,7 +2,7 @@
 
 #include "std_stack.h"
 
-namespace rr {
+namespace er {
 
 struct Stack : public IStack {
   Stack() = delete;
@@ -51,4 +51,4 @@ struct Stack : public IStack {
   std::shared_ptr<IStack> _stack;
 };
 
-}  // namespace rr
+}  // namespace er

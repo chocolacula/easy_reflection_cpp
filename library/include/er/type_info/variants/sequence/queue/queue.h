@@ -4,7 +4,7 @@
 
 #include "std_queue.h"
 
-namespace rr {
+namespace er {
 
 struct Queue : public IQueue {
   Queue() = delete;
@@ -57,4 +57,4 @@ struct Queue : public IQueue {
   std::shared_ptr<IQueue> _queue;
 };
 
-}  // namespace rr
+}  // namespace er

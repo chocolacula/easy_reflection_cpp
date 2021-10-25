@@ -4,7 +4,7 @@
 
 #include "enum_impl.h"
 
-namespace rr {
+namespace er {
 
 /// container of all field names matched to Var structs
 /// just a registry of types and value pointers
@@ -31,4 +31,4 @@ struct Enum final : IEnum {
   std::shared_ptr<IEnum> _enum;
 };
 
-}  // namespace rr
+}  // namespace er

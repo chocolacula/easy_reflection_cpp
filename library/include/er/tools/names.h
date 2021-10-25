@@ -11,7 +11,7 @@
 #include <cxxabi.h>
 #endif
 
-namespace rr {
+namespace er {
 
 #ifdef __GNUG__
 
@@ -136,4 +136,4 @@ struct Names<std::unordered_map<KeyT, ValueT>> {
   }
 };
 
-}  // namespace rr
+}  // namespace er

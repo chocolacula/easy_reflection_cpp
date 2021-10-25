@@ -3,7 +3,7 @@
 #include "er/expected.h"
 #include "er/type_id.h"
 
-namespace rr {
+namespace er {
 
 /// The abstraction from type and const modifier
 /// all types represented like a pointer + type id + const flag
@@ -55,4 +55,4 @@ struct Var {
   static Error error(TypeId type, TypeId desired_type);
 };
 
-}  // namespace rr
+}  // namespace er

@@ -5,7 +5,7 @@
 #include "er/tools/format.h"
 #include "iarray.h"
 
-namespace rr {
+namespace er {
 
 template <typename T, size_t size_v>
 struct StdArray final : public IArray {
@@ -78,4 +78,4 @@ struct StdArray final : public IArray {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

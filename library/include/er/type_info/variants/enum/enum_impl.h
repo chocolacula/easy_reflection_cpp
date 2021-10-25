@@ -3,7 +3,7 @@
 #include "er/constexpr_map.h"
 #include "ienum.h"
 
-namespace rr {
+namespace er {
 
 template <typename T, size_t size_v>
 struct EnumImpl final : public IEnum {
@@ -41,4 +41,4 @@ struct EnumImpl final : public IEnum {
   const ConstexprMap<T, size_v>& _all_constants;
 };
 
-}  // namespace rr
+}  // namespace er

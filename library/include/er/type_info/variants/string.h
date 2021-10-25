@@ -5,7 +5,7 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct String {
 
@@ -46,4 +46,4 @@ struct String {
   static const inline TypeId _shared_type = TypeId::get<std::string_view>();
 };
 
-}  // namespace rr
+}  // namespace er

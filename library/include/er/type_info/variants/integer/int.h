@@ -6,7 +6,7 @@
 #include "er/tools/format.h"
 #include "iinteger.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct Int : IInteger {
@@ -55,4 +55,4 @@ struct Int : IInteger {
   const bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

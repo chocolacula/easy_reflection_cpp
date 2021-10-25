@@ -4,7 +4,7 @@
 
 #include "field_iterator.h"
 
-namespace rr {
+namespace er {
 
 struct Fields {
   explicit Fields(const std::map<std::string_view, FieldInfo>* map, Access access)  //
@@ -28,4 +28,4 @@ struct Fields {
   Access _access;
 };
 
-}  // namespace rr
+}  // namespace er

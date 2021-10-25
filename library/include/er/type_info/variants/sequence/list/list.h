@@ -5,7 +5,7 @@
 #include "std_deque.h"
 #include "std_list.h"
 
-namespace rr {
+namespace er {
 
 struct List : public IList {
   List() = delete;
@@ -70,4 +70,4 @@ struct List : public IList {
   std::shared_ptr<IList> _list;
 };
 
-}  // namespace rr
+}  // namespace er

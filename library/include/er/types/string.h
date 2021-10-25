@@ -3,7 +3,7 @@
 #include "common_actions.h"
 #include "er/reflection/the_great_table.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StringActions {
@@ -25,4 +25,4 @@ TypeId::get(T* ptr) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er

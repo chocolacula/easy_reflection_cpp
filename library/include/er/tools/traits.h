@@ -15,7 +15,7 @@
 
 #include "er/expected.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct is_expected : std::false_type {};
@@ -100,4 +100,4 @@ struct is_class {
 template <typename T>
 inline constexpr bool is_class_v = is_class<T>::value;  // NOLINT std like name
 
-}  // namespace rr
+}  // namespace er

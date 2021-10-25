@@ -2,7 +2,7 @@
 
 #include "../isequence.h"
 
-namespace rr {
+namespace er {
 
 struct IQueue : public ISequence {
   virtual void for_each(std::function<void(Var)> callback) = 0;
@@ -11,4 +11,4 @@ struct IQueue : public ISequence {
   virtual Expected<Var> back() = 0;
 };
 
-}  // namespace rr
+}  // namespace er

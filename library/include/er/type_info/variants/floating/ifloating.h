@@ -6,7 +6,7 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IFloating {
   virtual Var var() = 0;
@@ -16,4 +16,4 @@ struct IFloating {
   virtual std::string to_string(int precision) const = 0;
 };
 
-}  // namespace rr
+}  // namespace er

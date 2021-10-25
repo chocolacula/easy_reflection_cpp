@@ -2,7 +2,7 @@
 
 #include "er/type_info/type_info.h"
 
-namespace rr::reflection {
+namespace er::reflection {
 
 TypeInfo reflect(Var variable);
 
@@ -40,4 +40,4 @@ void call_delete(Var variable, bool in_place);
 
 Expected<None> copy(Var to, Var from);
 
-}  // namespace rr::reflection
+}  // namespace er::reflection

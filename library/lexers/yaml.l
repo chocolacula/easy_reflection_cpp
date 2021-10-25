@@ -56,8 +56,8 @@
   LexerYaml(const char* input, size_t input_size) : LexerYaml(reflex::Input(input, input_size)){
   }
 
-  rr::Position get_position() {
-    return rr::Position{.column = columno(), .line_number = lineno()};
+  er::Position get_position() {
+    return er::Position{.column = columno(), .line_number = lineno()};
   }
 
   inline std::string& get_word() {

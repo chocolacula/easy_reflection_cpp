@@ -7,7 +7,7 @@
 #include "er/types/all_types.h"
 #include "sprint.h"
 
-using namespace rr;
+using namespace er;
 
 TypeInfo reflection::reflect(Var variable) {
   return TheGreatTable::data()[variable.type().number()].reflect(const_cast<void*>(variable.raw()),

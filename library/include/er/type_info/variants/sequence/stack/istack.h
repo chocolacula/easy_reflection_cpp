@@ -2,7 +2,7 @@
 
 #include "../isequence.h"
 
-namespace rr {
+namespace er {
 
 struct IStack : public ISequence {
   using ISequence::for_each;
@@ -11,4 +11,4 @@ struct IStack : public ISequence {
   virtual Expected<Var> top() = 0;
 };
 
-}  // namespace rr
+}  // namespace er

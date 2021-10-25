@@ -5,8 +5,8 @@
 #include "er/tools/format.h"
 #include "er/types/all_types.h"
 
-using namespace rr;
-using namespace rr::sequence;
+using namespace er;
+using namespace er::sequence;
 
 Error ErrHelper::error(std::string_view message, TypeId type, TypeId nested_type) {
   return Error(format(message,                      //

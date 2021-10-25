@@ -8,7 +8,7 @@
 // injected
 #include "../../data/various.h"
 
-namespace rr {
+namespace er {
 
 template <>
 struct TypeActions<Various::ComplexValue> {
@@ -42,6 +42,6 @@ TypeId TypeId::get(Various::ComplexValue* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er
 
 //clang-format on

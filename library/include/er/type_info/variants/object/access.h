@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace rr {
+namespace er {
 
 /// Represent common access modifiers kPublic, kProtected, kPrivate and kStatic
 /// DO NOT edit names, they used as text by generator
@@ -23,4 +23,4 @@ inline Access operator&(Access lhs, Access rhs) {
   return static_cast<Access>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
 }
 
-}  // namespace rr
+}  // namespace er

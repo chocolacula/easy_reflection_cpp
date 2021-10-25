@@ -11,7 +11,7 @@
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
 
-using namespace rr;
+using namespace er;
 
 ParserYaml::ParserYaml(const char* input, size_t input_size)  //
     : LexerYaml(input, input_size),                           //

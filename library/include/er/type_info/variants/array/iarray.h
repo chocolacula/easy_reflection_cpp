@@ -4,7 +4,7 @@
 
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IArray {
   virtual Var own_var() const = 0;
@@ -19,4 +19,4 @@ struct IArray {
   virtual Expected<None> fill(Var filler) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

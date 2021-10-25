@@ -10,7 +10,7 @@
 #include "er/variable/var.h"
 #include "fields.h"
 
-namespace rr {
+namespace er {
 
 /// container of all field names matched to Var structs
 /// just a registry of types and value pointers
@@ -40,4 +40,4 @@ struct Object {
   Var _var;
 };
 
-}  // namespace rr
+}  // namespace er

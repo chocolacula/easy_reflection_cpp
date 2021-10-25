@@ -15,7 +15,7 @@
 #include "variants/sequence/sequence.h"
 #include "variants/string.h"
 
-namespace rr {
+namespace er {
 
 #define BASE Variant<Bool, Integer, Floating, String, Enum, Object, Array, Sequence, Map>
 
@@ -81,4 +81,4 @@ class TypeInfo : public BASE {
 
 #undef BASE
 
-}  // namespace rr
+}  // namespace er

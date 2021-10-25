@@ -8,7 +8,7 @@
 // injected
 #include "../../data/color.h"
 
-namespace rr {
+namespace er {
 
 template <>
 struct TypeActions<Colors> {
@@ -42,6 +42,6 @@ TypeId TypeId::get(Colors* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er
 
 //clang-format on

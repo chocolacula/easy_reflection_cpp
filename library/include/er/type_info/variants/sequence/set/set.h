@@ -5,7 +5,7 @@
 #include "std_set.h"
 #include "std_unordered_set.h"
 
-namespace rr {
+namespace er {
 
 struct Set : public ISet {
   Set() = delete;
@@ -54,4 +54,4 @@ struct Set : public ISet {
   std::shared_ptr<ISet> _set;
 };
 
-}  // namespace rr
+}  // namespace er

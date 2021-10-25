@@ -6,7 +6,7 @@
 #include "access.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 class FieldInfo {
  public:
@@ -47,4 +47,4 @@ class FieldInfo {
   Access _access;
 };
 
-}  // namespace rr
+}  // namespace er

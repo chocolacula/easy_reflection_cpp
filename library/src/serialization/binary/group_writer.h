@@ -9,7 +9,7 @@
 
 #include "../writers/iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct GroupWriter {
   GroupWriter(const GroupWriter& other) = delete;
@@ -116,4 +116,4 @@ struct GroupWriter {
   }
 };
 
-}  // namespace rr
+}  // namespace er

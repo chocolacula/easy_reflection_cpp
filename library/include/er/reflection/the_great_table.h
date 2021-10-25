@@ -3,7 +3,7 @@
 #include "actions.h"
 #include "er/types/unknown.h"
 
-namespace rr {
+namespace er {
 
 /// the main component of reflection system - big table with function pointers
 /// each reflectable type has to have a record in the table
@@ -34,4 +34,4 @@ struct TheGreatTable {
   }
 };
 
-}  // namespace rr
+}  // namespace er

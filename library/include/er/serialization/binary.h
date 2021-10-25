@@ -6,7 +6,7 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr::serialization {
+namespace er::serialization {
 
 struct binary {  // NOLINT namespace like name
   template <typename T>
@@ -49,4 +49,4 @@ struct binary {  // NOLINT namespace like name
   static Expected<None> deserialize(Var var, std::istream& stream);
 };
 
-}  // namespace rr::serialization
+}  // namespace er::serialization

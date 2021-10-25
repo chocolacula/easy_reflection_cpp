@@ -5,7 +5,7 @@
 
 #include "iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct StringWriter final : IWriter {
   StringWriter() = delete;
@@ -29,4 +29,4 @@ struct StringWriter final : IWriter {
   std::string* _string;
 };
 
-}  // namespace rr
+}  // namespace er

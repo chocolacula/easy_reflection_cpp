@@ -5,7 +5,7 @@
 #include "../err_helper.h"
 #include "iset.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
@@ -71,4 +71,4 @@ struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

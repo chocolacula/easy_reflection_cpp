@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace rr {
+namespace er {
 
 /// union object to tightly pack std::string and std::string_view together
 /// the main idea to determine which one is in the memory is
@@ -93,4 +93,4 @@ union TightString {
   }
 };
 
-}  // namespace rr
+}  // namespace er

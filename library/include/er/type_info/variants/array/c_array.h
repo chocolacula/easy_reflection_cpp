@@ -3,7 +3,7 @@
 #include "er/tools/format.h"
 #include "iarray.h"
 
-namespace rr {
+namespace er {
 
 template <typename T, size_t size_v>
 struct CArray final : public IArray {
@@ -80,4 +80,4 @@ struct CArray final : public IArray {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

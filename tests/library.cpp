@@ -3,7 +3,7 @@
 #include "er/error/error.h"
 #include "gtest/gtest.h"
 
-using namespace rr;
+using namespace er;
 
 TEST(TightString, Sizeof) {
   ASSERT_TRUE(sizeof(std::string) > sizeof(std::string_view));

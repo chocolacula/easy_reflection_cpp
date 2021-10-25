@@ -6,7 +6,7 @@
 #include "iinteger.h"
 #include "int.h"
 
-namespace rr {
+namespace er {
 
 struct Integer : IInteger {
   Integer() = delete;
@@ -43,4 +43,4 @@ struct Integer : IInteger {
   std::shared_ptr<IInteger> _integer;
 };
 
-}  // namespace rr
+}  // namespace er

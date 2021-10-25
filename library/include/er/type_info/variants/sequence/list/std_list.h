@@ -5,7 +5,7 @@
 #include "../err_helper.h"
 #include "ilist.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdList : public IList, public sequence::ErrHelper {
@@ -90,4 +90,4 @@ struct StdList : public IList, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

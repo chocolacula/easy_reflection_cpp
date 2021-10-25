@@ -2,7 +2,7 @@
 
 #include "er/type_info/type_info.h"
 
-namespace rr {
+namespace er {
 
 struct UnknownActions {
   static TypeInfo reflect(void* /*value*/, bool /*is_const*/) {
@@ -34,4 +34,4 @@ struct UnknownActions {
   // The Great Table put references to HelperUnknown methods itself
 };
 
-}  // namespace rr
+}  // namespace er

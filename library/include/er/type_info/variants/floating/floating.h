@@ -7,7 +7,7 @@
 #include "./float.h"
 #include "ifloating.h"
 
-namespace rr {
+namespace er {
 
 struct Floating : IFloating {
   Floating() = delete;
@@ -40,4 +40,4 @@ struct Floating : IFloating {
   std::shared_ptr<IFloating> _floating;
 };
 
-}  // namespace rr
+}  // namespace er

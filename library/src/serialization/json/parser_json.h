@@ -8,7 +8,7 @@
 #include "er/variable/var.h"
 #include "lexer_json.yy.h"
 
-namespace rr {
+namespace er {
 
 struct TypeInfo;
 
@@ -47,4 +47,4 @@ class ParserJson : rf_json::LexerJson {
   size_t _level;
 };
 
-}  // namespace rr
+}  // namespace er

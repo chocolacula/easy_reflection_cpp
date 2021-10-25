@@ -5,7 +5,7 @@
 #include "../err_helper.h"
 #include "ivector.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdVector : public IVector, public sequence::ErrHelper {
@@ -94,4 +94,4 @@ struct StdVector : public IVector, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -4,7 +4,7 @@
 
 #include "std_vector.h"
 
-namespace rr {
+namespace er {
 
 struct Vector : public IVector {
   Vector() = delete;
@@ -65,4 +65,4 @@ struct Vector : public IVector {
   std::shared_ptr<IVector> _vector;
 };
 
-}  // namespace rr
+}  // namespace er

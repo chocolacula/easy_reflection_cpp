@@ -2,7 +2,7 @@
 
 #include "../isequence.h"
 
-namespace rr {
+namespace er {
 
 struct ISet : public ISequence {
   using ISequence::for_each;
@@ -10,4 +10,4 @@ struct ISet : public ISequence {
   virtual bool contains(Var value) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

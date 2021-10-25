@@ -5,7 +5,7 @@
 #include "expected.h"
 #include "tools/format.h"
 
-namespace rr {
+namespace er {
 
 /// the analogue of tree based map container with fixed type of second argument
 /// and the same log(N) search performance
@@ -147,4 +147,4 @@ class ConstexprMap {
   };
 };
 
-}  // namespace rr
+}  // namespace er

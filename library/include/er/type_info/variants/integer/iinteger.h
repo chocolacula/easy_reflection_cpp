@@ -6,7 +6,7 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IInteger {
   virtual Var var() const = 0;
@@ -17,4 +17,4 @@ struct IInteger {
   virtual std::string to_string() const = 0;
 };
 
-}  // namespace rr
+}  // namespace er

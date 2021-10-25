@@ -6,7 +6,7 @@
 #include "std_map.h"
 #include "std_unordered_map.h"
 
-namespace rr {
+namespace er {
 
 struct Map final : public IMap {
   Map() = delete;
@@ -61,4 +61,4 @@ struct Map final : public IMap {
   std::shared_ptr<IMap> _map;
 };
 
-}  // namespace rr
+}  // namespace er

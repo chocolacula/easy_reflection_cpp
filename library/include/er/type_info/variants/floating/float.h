@@ -5,7 +5,7 @@
 
 #include "ifloating.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct Float : IFloating {
@@ -48,4 +48,4 @@ struct Float : IFloating {
   const bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

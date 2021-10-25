@@ -5,7 +5,7 @@
 
 #include "ireader.h"
 
-namespace rr {
+namespace er {
 struct VectorReader final : IReader {
   VectorReader() = delete;
 
@@ -24,4 +24,4 @@ struct VectorReader final : IReader {
   mutable size_t _i;
 };
 
-}  // namespace rr
+}  // namespace er

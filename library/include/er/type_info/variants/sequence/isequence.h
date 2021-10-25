@@ -4,7 +4,7 @@
 
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct ISequence {
   virtual Var own_var() const = 0;
@@ -15,4 +15,4 @@ struct ISequence {
   virtual Expected<None> push(Var value) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

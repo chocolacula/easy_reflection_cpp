@@ -6,7 +6,7 @@
 #include "iqueue.h"
 #include "queue_iterator.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdQueue : public IQueue, public sequence::ErrHelper {
@@ -79,4 +79,4 @@ struct StdQueue : public IQueue, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

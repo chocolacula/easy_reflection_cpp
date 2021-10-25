@@ -2,7 +2,7 @@
 
 #include "var.h"
 
-namespace rr {
+namespace er {
 
 struct Box {
   Box(const Box& other) = delete;
@@ -30,4 +30,4 @@ struct Box {
   } _data;
 };
 
-}  // namespace rr
+}  // namespace er

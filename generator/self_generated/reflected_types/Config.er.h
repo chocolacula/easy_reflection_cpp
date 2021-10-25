@@ -8,7 +8,7 @@
 // injected
 #include "../../config.h"
 
-namespace rr {
+namespace er {
 
 template <>
 struct TypeActions<Config> {
@@ -44,6 +44,6 @@ TypeId TypeId::get(Config* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er
 
 //clang-format on

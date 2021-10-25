@@ -7,7 +7,7 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct Bool {
   Bool(bool* value, bool is_const) : _value(value), _is_const(is_const) {
@@ -38,4 +38,4 @@ struct Bool {
   const bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -8,7 +8,7 @@
 // injected
 #include "{{origin}}"
 
-namespace rr {
+namespace er {
 
 template <>
 struct TypeActions<{{name}}> {
@@ -38,6 +38,6 @@ TypeId TypeId::get({{name}}* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er
 
 //clang-format on

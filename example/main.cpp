@@ -7,7 +7,7 @@
 #include "generated/reflection.h"
 #include "print.h"
 
-using namespace rr;
+using namespace er;
 
 int main() {
   // You can get an Enum constant string representation by reflecting them

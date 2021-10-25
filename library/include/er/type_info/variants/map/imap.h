@@ -4,7 +4,7 @@
 
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IMap {
   virtual Var own_var() const = 0;
@@ -18,4 +18,4 @@ struct IMap {
   virtual Expected<None> remove(Var key) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

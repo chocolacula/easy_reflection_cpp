@@ -5,7 +5,7 @@
 #include "c_array.h"
 #include "std_array.h"
 
-namespace rr {
+namespace er {
 
 struct Array final : public IArray {
   Array() = delete;
@@ -62,4 +62,4 @@ struct Array final : public IArray {
   std::shared_ptr<IArray> _array;
 };
 
-}  // namespace rr
+}  // namespace er
