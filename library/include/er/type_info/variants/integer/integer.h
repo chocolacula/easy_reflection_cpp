@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "iinteger.h"
 #include "int.h"
@@ -27,12 +28,34 @@ struct Integer : IInteger {
     return _integer->is_signed();
   }
 
-  int64_t get() const override {
-    return _integer->get();
+  int64_t as_signed() const override {
+    return _integer->as_signed();
   }
 
-  Expected<None> set(int64_t value) override {
-    return _integer->set(value);
+  uint64_t as_unsigned() const override {
+    return _integer->as_unsigned();
+  }
+
+  template <typename T>
+  typename std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T>,  //
+                            Expected<None>>
+  set(T value) {
+    return _integer->set_signed(value);
+  }
+
+  template <typename T>
+  typename std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>,  //
+                            Expected<None>>
+  set(T value) {
+    return _integer->set_unsigned(value);
+  }
+
+  Expected<None> set_signed(int64_t value) override {
+    return _integer->set_signed(value);
+  }
+
+  Expected<None> set_unsigned(uint64_t value) override {
+    return _integer->set_unsigned(value);
   }
 
   std::string to_string() const override {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 #include "er/tools/format.h"
@@ -25,21 +26,38 @@ struct Int : IInteger {
     return std::is_signed_v<T>;
   }
 
-  int64_t get() const override {
+  int64_t as_signed() const override {
     return *_value;
   }
 
-  Expected<None> set(int64_t value) override {
+  uint64_t as_unsigned() const override {
+    return *_value;
+  }
+
+  Expected<None> set_signed(int64_t value) override {
     if (_is_const) {
       return Error("Trying to set const value");
     }
+
     if (std::numeric_limits<T>::max() < value || std::numeric_limits<T>::min() > value) {
       return Error(format("The value is too big to fit {} byte variable", sizeof(*_value)));
     }
 
-    auto is_signed = std::is_signed_v<T>;
-    if (value < 0 && !is_signed) {
+    if (value < 0 && !is_signed()) {
       return Error("Cannot assign negative value to unsigned");
+    }
+
+    *_value = value;
+    return None();
+  }
+
+  Expected<None> set_unsigned(uint64_t value) override {
+    if (_is_const) {
+      return Error("Trying to set const value");
+    }
+
+    if (std::numeric_limits<T>::max() < value || std::numeric_limits<T>::min() > value) {
+      return Error(format("The value is too big to fit {} byte variable", sizeof(*_value)));
     }
 
     *_value = value;

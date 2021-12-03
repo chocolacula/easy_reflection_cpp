@@ -90,25 +90,31 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
           deserialize_recursive(&field_info, reader);
         }
       },
-      [&reader](Bool& b) { b.set(reader.read_integer() == 1); },  //
-      [&reader](Integer& i) { i.set(reader.read_integer()); },    //
-      [&reader](Floating& f) { f.set(reader.read_float()); },     //
+      [&reader](Bool& b) { b.set(reader.read_unsigned() == 1); },  //
+      [&reader](Integer& i) {
+        if (i.is_signed()) {
+          i.set_signed(reader.read_signeg());
+        } else {
+          i.set_unsigned(reader.read_unsigned());
+        }
+      },                                                       //
+      [&reader](Floating& f) { f.set(reader.read_float()); },  //
       [&reader](String& s) {
         std::string str;
-        auto n = reader.read_integer();
+        auto n = reader.read_unsigned();
 
         for (auto i = 0; i < n; i++) {
-          str.push_back(static_cast<char>(reader.read_integer()));
+          str.push_back(static_cast<char>(reader.read_unsigned()));
         }
 
         s.set(str);
       },
       [&reader](Enum& e) {
         std::string str;
-        auto n = reader.read_integer();
+        auto n = reader.read_unsigned();
 
         for (auto i = 0; i < n; i++) {
-          str.push_back(static_cast<char>(reader.read_integer()));
+          str.push_back(static_cast<char>(reader.read_unsigned()));
         }
 
         e.parse(str);
@@ -118,7 +124,7 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
         Box val_box(m.val_type());
         m.clear();
 
-        auto n = reader.read_integer();
+        auto n = reader.read_unsigned();
         for (auto i = 0; i < n; i++) {
           auto key_info = reflection::reflect(key_box.var());
           deserialize_recursive(&key_info, reader);
@@ -130,7 +136,7 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
         }
       },
       [&reader](Array& a) {
-        auto n = reader.read_integer();
+        auto n = reader.read_unsigned();
 
         size_t i = 0;
         a.for_each([&reader, &i, n](Var entry) {
@@ -147,7 +153,7 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
         Box entry_box(s.nested_type());
         s.clear();
 
-        auto n = reader.read_integer();
+        auto n = reader.read_unsigned();
         for (auto i = 0; i < n; i++) {
           auto entry_info = reflection::reflect(entry_box.var());
           deserialize_recursive(&entry_info, reader);

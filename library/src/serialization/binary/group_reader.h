@@ -19,11 +19,15 @@ struct GroupReader {
     _header = *static_cast<const uint8_t*>(_reader->read(1));
   }
 
-  int64_t read_integer() const {
+  int64_t read_signeg() const {
     auto neg = is_negative();
     auto value = read_one();
 
     return static_cast<int64_t>(neg ? -value : value);
+  }
+
+  uint64_t read_unsigned() const {
+    return read_one();
   }
 
   double read_float() const {
