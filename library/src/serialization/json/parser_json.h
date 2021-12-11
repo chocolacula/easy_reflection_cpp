@@ -38,9 +38,9 @@ class ParserJson : rf_json::LexerJson {
   inline Error error_match();
 
   inline Expected<None> parse_field(Var new_var);
-  inline Expected<std::pair<std::string, std::string>> parse_tag(const std::string& str);
-  static inline int64_t parse_int(const std::string& str);
-  static inline double parse_double(const std::string& str);
+  inline Expected<std::pair<std::string, std::string>> parse_tag(std::string_view str);
+  static inline int64_t parse_int(std::string_view str);
+  static inline double parse_double(std::string_view str);
 
   static const size_t kMaxLevel = 100;  // to keep things secure: max JSON nesting depth
   static const size_t kMaxArr = 1000;   // to keep things secure: max JSON array and object size

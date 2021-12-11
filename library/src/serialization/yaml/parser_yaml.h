@@ -48,9 +48,9 @@ class ParserYaml : rf_yaml::LexerYaml {
   inline Error error_token(wchar_t token);
   inline Error error_match();
 
-  static inline bool parse_bool(const std::string& str);
-  static inline int64_t parse_int(const std::string& str);
-  static inline double parse_double(const std::string& str);
+  static inline bool parse_bool(std::string_view str);
+  static inline int64_t parse_int(std::string_view str);
+  static inline double parse_double(std::string_view str);
 
   wchar_t _token;
   std::unordered_map<std::string, Box> _anchors;

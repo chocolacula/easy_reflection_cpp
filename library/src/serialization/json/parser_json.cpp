@@ -303,7 +303,7 @@ Expected<None> ParserJson::parse_field(Var new_var) {
   return parse_next(&info);
 }
 
-Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(const std::string& str) {
+Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(std::string_view str) {
   auto pos1 = str.find('|');
   if (pos1 == std::string::npos) {
     return error("Cannot find '|' in the tag");
@@ -313,12 +313,12 @@ Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(const std::s
     return error("Cannot find ':' in the tag");
   }
 
-  auto key = str.substr(pos1 + 1, pos2 - (pos1 + 1));
-  auto val = str.substr(pos2 + 1, str.size() - (pos2 + 1));
+  auto key = std::string(str.substr(pos1 + 1, pos2 - (pos1 + 1)));
+  auto val = std::string(str.substr(pos2 + 1, str.size() - (pos2 + 1)));
 
   return std::make_pair(std::move(key), std::move(val));
 }
 
-double ParserJson::parse_double(const std::string& str) {
+double ParserJson::parse_double(std::string_view str) {
   return std::strtod(&str[0], nullptr);
 }

@@ -80,7 +80,7 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
     return er::Position{.column = columno(), .line_number = lineno()};
   }
 
-  inline std::string& get_word() {
+  inline std::string_view get_word() {
     return _word;
   }
 

@@ -47,8 +47,9 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
     next();
   }
 
+  std::string anchor;
   if (_token == '*') {
-    auto anchor = get_word();
+    anchor = get_word();
     auto& box = _anchors[anchor.substr(1, anchor.size() - 1)];
     __retry(reflection::copy(info->var(), box.var()));
 
@@ -59,7 +60,6 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
     return None();
   }
 
-  std::string anchor;
   if (_token == '&') {
     anchor = get_word();
     next();
@@ -485,17 +485,17 @@ Error ParserYaml::error_match() {
   return Error(format("Cannot match correct type; {}", get_position().to_string()));
 }
 
-bool ParserYaml::parse_bool(const std::string& str) {
+bool ParserYaml::parse_bool(std::string_view str) {
   if (str.size() > 5) {  // 5 is length of the longest variant 'false'
     return true;
   }
 
-  std::string t = str;
+  auto t = std::string(str);
   std::transform(t.begin(), t.end(), t.begin(), [](char c) { return std::tolower(c); });
 
   return !(t == "false" || t == "off" || t == "no" || t == "n");
 }
 
-double ParserYaml::parse_double(const std::string& str) {
+double ParserYaml::parse_double(std::string_view str) {
   return std::strtod(&str[0], nullptr);
 }
