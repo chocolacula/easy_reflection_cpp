@@ -23,24 +23,16 @@ inline void serialize_recursive(GroupWriter* writer, const TypeInfo& info) {
           serialize_recursive(writer, field_info);
         }
       },
-      [writer](const Bool& b) { writer->write(b.get()); },                                    //
-      [writer](const Integer& i) { writer->write(i.var().raw(), i.size(), i.is_signed()); },  //
-      [writer](const Floating& f) { writer->write(f.get()); },                                //
+      [writer](const Bool& b) { writer->write(b.get()); },
+      [writer](const Integer& i) { writer->write(i.var().raw(), i.size(), i.is_signed()); },
+      [writer](const Floating& f) { writer->write(f.get()); },
       [writer](const String& s) {
         auto str = s.get();
-
-        writer->write(str.size());
-        for (auto&& ch : str) {
-          writer->write(ch);
-        }
+        writer->write(str);
       },
       [writer](const Enum& e) {
         auto str = e.to_string();
-
-        writer->write(str.size());
-        for (auto&& ch : str) {
-          writer->write(ch);
-        }
+        writer->write(str);
       },
       [writer](const Map& m) {
         writer->write(m.size());
@@ -90,35 +82,17 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
           deserialize_recursive(&field_info, reader);
         }
       },
-      [&reader](Bool& b) { b.set(reader.read_unsigned() == 1); },  //
+      [&reader](Bool& b) { b.set(reader.read_unsigned() == 1); },
       [&reader](Integer& i) {
         if (i.is_signed()) {
           i.set_signed(reader.read_signeg());
         } else {
           i.set_unsigned(reader.read_unsigned());
         }
-      },                                                       //
+      },
       [&reader](Floating& f) { f.set(reader.read_float()); },  //
-      [&reader](String& s) {
-        std::string str;
-        auto n = reader.read_unsigned();
-
-        for (auto i = 0; i < n; i++) {
-          str.push_back(static_cast<char>(reader.read_unsigned()));
-        }
-
-        s.set(str);
-      },
-      [&reader](Enum& e) {
-        std::string str;
-        auto n = reader.read_unsigned();
-
-        for (auto i = 0; i < n; i++) {
-          str.push_back(static_cast<char>(reader.read_unsigned()));
-        }
-
-        e.parse(str);
-      },
+      [&reader](String& s) { s.set(reader.read_string()); },   //
+      [&reader](Enum& e) { e.parse(reader.read_string()); },
       [&reader](Map& m) {
         Box key_box(m.key_type());
         Box val_box(m.val_type());
@@ -175,7 +149,7 @@ Expected<None> binary::deserialize(Var var, const std::vector<uint8_t>& vector) 
 }
 
 Expected<None> binary::deserialize(Var var, std::istream& stream) {
-  StreamReader<8> stream_r(stream);
+  StreamReader stream_r(stream);
   GroupReader group_r(&stream_r);
 
   auto info = reflection::reflect(var);

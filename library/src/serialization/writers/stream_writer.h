@@ -23,7 +23,7 @@ struct StreamWriter final : IWriter {
 
   void step_back(size_t bytes) override {
     ssize_t pos = _stream.tellp();
-    _stream.seekp(static_cast<ssize_t>(pos - bytes));
+    _stream.seekp(pos - static_cast<ssize_t>(bytes));
   }
 
  private:

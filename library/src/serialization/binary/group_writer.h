@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 #include "../writers/iwriter.h"
 
@@ -29,12 +30,21 @@ struct GroupWriter {
     write_one(static_cast<uint64_t>(value), false);
   }
 
-  void write(char value) {
+  void write(size_t value) {
     write_one(value, false);
   }
 
-  void write(size_t value) {
-    write_one(value, false);
+  void write(std::string_view str) {
+    // write string size to the group
+    write_one(str.size(), false);
+
+    // write the group to the stream if it wasn't while writing size
+    if (_word != 0) {
+      flush_header();
+    }
+
+    // write the string to the stream
+    _writer->write(str.data(), str.size());
   }
 
   void write(const void* ptr, size_t size, bool is_signed) {
@@ -100,11 +110,15 @@ struct GroupWriter {
     // get next word in the header, push one if needed
     _word++;
     if (_word > 1) {
-      _writer->write(&_group[0], _i);
-      _group[0] = 0;
-      _i = 1;
-      _word = 0;
+      flush_header();
     }
+  }
+
+  inline void flush_header() {
+    _writer->write(&_group[0], _i);
+    _group[0] = 0;
+    _i = 1;
+    _word = 0;
   }
 
   inline bool is_negative() {
