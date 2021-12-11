@@ -129,10 +129,11 @@ int main(int argc, const char** argv) {
   }
 
   auto analysis = std::chrono::duration<double>(time_2 - time_1).count();
-  auto generation = std::chrono::duration<double>(time_3 - time_2).count();
+  auto generation = std::chrono::duration_cast<std::chrono::milliseconds>(time_3 - time_2).count();
+  auto all = std::chrono::duration<double>(time_3 - time_1).count();
 
-  std::cout << er::format("Takes for analysis {} sec, generation {}  sec, all {}  sec\n",  //
-                          analysis, generation, analysis + generation);
+  std::cout << er::format("Takes for analysis {} sec, generation {} ms, all {} sec\n",  //
+                          analysis, generation, all);
 
   return 0;
 }
