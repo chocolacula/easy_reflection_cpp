@@ -7,5 +7,6 @@ templates: #pathes to template files
 input:
   - ../tests/data/tresholds.h
   - ../tests/data/various.h
+  - ../tests/data/big.h
 
 output_dir: ../tests/generated

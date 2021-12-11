@@ -18,6 +18,8 @@ struct Box {
   Var var();
   Box clone();
 
+  bool uses_heap() const;
+
  private:
   TypeId _type;
   bool _optimized;

@@ -13,7 +13,7 @@ namespace er {
 template <>
 struct TypeActions<Various> {
   static TypeInfo reflect(void* value, bool is_const) {
-    auto p = static_cast<Various*>(value);
+    auto* p = static_cast<Various*>(value);
 
     std::map<std::string_view, FieldInfo> map {
       

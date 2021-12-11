@@ -22,7 +22,7 @@ class FieldIterator {
     // all static fields are valid no matter public or private
     do {
       ++_it;
-    } while ((_it->second.access() & _access) == Access::kNone && _it != _end);
+    } while (_it != _end && (_it->second.access() & _access) == Access::kNone);
     return *this;
   };
 

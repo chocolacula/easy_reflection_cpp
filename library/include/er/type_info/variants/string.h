@@ -23,7 +23,7 @@ struct String {
     return std::string_view(*static_cast<const std::string*>(_var.raw()));
   }
 
-  // TODO settting of std::string_view is BAD idea especially via serialization
+  // TODO setting std::string_view is BAD idea especially via serialization
   Expected<None> set(std::string_view value) {
     if (_var.is_const()) {
       return Error("Trying to set const value");
@@ -32,7 +32,7 @@ struct String {
     if (_var.type() == _shared_type) {
       *static_cast<std::string_view*>(_var.raw_mut()) = value;
     } else {
-      *static_cast<std::string*>(_var.raw_mut()) = value;
+      *static_cast<std::string*>(_var.raw_mut()) = std::string(value);
     }
     return None();
   }

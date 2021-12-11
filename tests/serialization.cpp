@@ -3,16 +3,34 @@
 #include <string>
 #include <string_view>
 
-#include "data/tresholds.h"
-#include "data/various.h"
-#include "er/reflection/reflection.h"
 #include "er/serialization/binary.h"
 #include "er/serialization/json.h"
 #include "er/serialization/yaml.h"
+#include "er/tools/format.h"
+#include "er/variable/box.h"
 #include "generated/reflection.h"
 #include "gtest/gtest.h"
 
 using namespace er;
+
+// TODO move generated definitions in separate object file and this test to library.cpp
+TEST(Box, Allocation) {
+  {  // keep it in separate code block to check for correct deletion
+    auto type = TypeId::get<Big>();
+    Box box(type);
+
+    auto* big_ptr = static_cast<Big*>(box.var().raw_mut());
+    ASSERT_NE(big_ptr, nullptr);
+    ASSERT_TRUE(box.uses_heap());
+  }
+
+  auto type = TypeId::get<uint64_t>();
+  Box box(type);
+
+  auto* int_ptr = static_cast<uint64_t*>(box.var().raw_mut());
+  ASSERT_NE(int_ptr, nullptr);
+  ASSERT_FALSE(box.uses_heap());
+}
 
 void compare_tresolds(const Tresholds& lhs, const Tresholds& rhs) {
   ASSERT_TRUE(lhs.u8_max == rhs.u8_max &&    //
@@ -104,8 +122,22 @@ TEST(SerializationBinary, Thresholds) {
 TEST(SerializationJson, BackAndForth) {
   auto struct1 = Various::make_default();
 
+  auto time_1 = std::chrono::steady_clock::now();
+
   auto str = er::serialization::json::to_string(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
   auto struct2 = er::serialization::json::from_string<Various>(str).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "JSON serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, str.size());
 
   compare_various(struct1, struct2);
 
@@ -119,8 +151,22 @@ TEST(SerializationJson, BackAndForth) {
 TEST(SerializationYaml, BackAndForth) {
   auto struct1 = Various::make_default();
 
+  auto time_1 = std::chrono::steady_clock::now();
+
   auto str = er::serialization::yaml::to_string(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
   auto struct2 = er::serialization::yaml::from_string<Various>(str).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "YAML serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, str.size());
 
   compare_various(struct1, struct2);
 
@@ -146,8 +192,22 @@ TEST(SerializationYaml, Anchors) {
 TEST(SerializationBinary, BackAndForth) {
   auto struct1 = Various::make_default();
 
+  auto time_1 = std::chrono::steady_clock::now();
+
   auto binary_data = er::serialization::binary::to_vector(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
   auto struct2 = er::serialization::binary::from_vector<Various>(binary_data).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "Binary serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, binary_data.size());
 
   compare_various(struct1, struct2);
 

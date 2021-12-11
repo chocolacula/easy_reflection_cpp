@@ -46,6 +46,7 @@ void* reflection::call_new(TypeId id, void* place, size_t place_size) {
 
 void reflection::call_delete(Var variable, bool in_place) {
   TheGreatTable::data()[variable.type().number()].call_delete(variable.raw_mut(), in_place);
+  variable.dispose();
 }
 
 Expected<None> reflection::copy(Var to, Var from) {

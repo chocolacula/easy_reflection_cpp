@@ -13,7 +13,7 @@ namespace er {
 template <>
 struct TypeActions<Various::ComplexValue> {
   static TypeInfo reflect(void* value, bool is_const) {
-    auto p = static_cast<Various::ComplexValue*>(value);
+    auto* p = static_cast<Various::ComplexValue*>(value);
 
     std::map<std::string_view, FieldInfo> map {
       

@@ -40,6 +40,12 @@ bool Var::is_const() const {
   return _is_const;
 }
 
+void Var::dispose() {
+  _value = nullptr;
+  _type = TypeId();
+  _is_const = true;
+}
+
 Error Var::error(TypeId type, TypeId desired_type) {
   return Error(format("Cannot cast {} to {}",       //
                       reflection::type_name(type),  //

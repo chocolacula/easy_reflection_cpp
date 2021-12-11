@@ -30,10 +30,11 @@ struct Var {
 
   bool is_const() const;
 
+  void dispose();
+
   /// runtime type check and cast
   template <typename T>
   Expected<T*> rt_cast() const {
-
     if (std::is_const_v<T> == false && _is_const) {
       return Error("The type under Var has const qualifier, cannot cast to mutable");
     }

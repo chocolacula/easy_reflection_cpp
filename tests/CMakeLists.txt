@@ -10,9 +10,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
 include_directories(../library/include)
-include_directories(../googletest/googletest/include)
 
 add_subdirectory(googletest)
+
 set(SOURCES
     library.cpp
     serialization.cpp)
