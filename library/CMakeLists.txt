@@ -23,11 +23,11 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/library/RE-flex/lib/libreflex.a)
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/RE-flex/lib/libreflex.a)
     message("make RE-flex library")
     execute_process(
         COMMAND ./build.sh
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/library/RE-flex)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/library/RE-flex/lib/libreflex.a)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/RE-flex/lib/libreflex.a)

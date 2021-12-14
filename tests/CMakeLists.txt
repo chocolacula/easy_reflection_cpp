@@ -11,22 +11,22 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
 include_directories(../library/include)
 
-add_subdirectory(googletest)
-
 set(SOURCES
     library.cpp
-    serialization.cpp)
+    serialization.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
 add_custom_command(
-    OUTPUT generated/reflection.h
-    COMMAND er_gen -p -c ${CMAKE_SOURCE_DIR}/tests/config.yaml
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
+    COMMAND er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
     DEPENDS data/tresholds.h data/various.h
-    COMMENT "Generating reflection headers"
-)
+    COMMENT "Generating reflection headers")
 
-add_executable(${PROJECT_NAME} ${SOURCES} generated/reflection.h)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main)
+find_package(GTest CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest_main)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 
 include(GoogleTest)

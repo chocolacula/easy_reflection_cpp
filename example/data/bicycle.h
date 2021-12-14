@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "color.h"
+#include "colors.h"
 #include "er/attributes.h"
 
 ER_REFLECT()

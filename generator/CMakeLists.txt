@@ -15,20 +15,24 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
 include_directories(../library/include)
-include_directories(inja/include)
-include_directories(inja/third_party/include)
-include_directories(tclap/include)
+
+find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
+include_directories(${TCLAP_INCLUDE_DIRS})
 
 find_package(LLVM REQUIRED)
 include_directories(${LLVM_INCLUDE_DIR})
 link_directories(${LLVM_LIBRARY_DIR})
 
+find_package(inja CONFIG REQUIRED)
+
 set(SOURCES
-        main.cpp)
+    main.cpp
+    self_generated/reflection.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 
 # configure_file(config.yaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.yaml COPYONLY)

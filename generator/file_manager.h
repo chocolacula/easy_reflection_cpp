@@ -57,21 +57,6 @@ class FileManager {
     complete_files(&(config->input));
   }
 
-  static std::ofstream create_reflection_header(const std::string& dir) {
-    std::ofstream header;
-    header.open(dir + "/reflection.h");
-
-    header << R"(#pragma once
-
-#include "er/reflection/reflection.h"
-#include "er/types/all_types.h"
-
-// generated
-)";
-
-    return header;
-  }
-
  private:
   std::string _root;
 

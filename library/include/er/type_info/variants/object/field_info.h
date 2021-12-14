@@ -18,6 +18,9 @@ class FieldInfo {
   constexpr FieldInfo(T* ptr, Access acc) : _var(ptr), _access(acc) {
   }
 
+  FieldInfo(FieldInfo&& other) = default;
+  FieldInfo(const FieldInfo& other) = default;
+
   Var var() const {
     return _var;
   }

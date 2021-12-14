@@ -1,12 +1,9 @@
-#pragma once
+#include "{{name_short}}.er.h"
 
-//clang-format off
+// clang-format off
 #include "er/reflection/the_great_table.h"
 #include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
-
-// injected
-#include "{{origin}}"
 
 namespace er {
 
@@ -40,4 +37,4 @@ TypeId TypeId::get({{name}}* /*unused*/) {
 
 }  // namespace er
 
-//clang-format on
+// clang-format on

@@ -5,6 +5,7 @@
 
 #include "er/attributes.h"
 
+/// has size more then Box can optimize in a stack memory
 ER_REFLECT()
 struct Big {
   uint64_t int1;

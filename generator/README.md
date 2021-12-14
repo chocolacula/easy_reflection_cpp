@@ -10,6 +10,7 @@ format of an object entity is
 {
   "id" : 0, // 0 is object id
   "name" : string,  // full name including all namespaces
+  "name_short" : string, // only object name
   "origin" : string, // file path to origin file for analysis
   "bases" : [
     {
@@ -40,6 +41,7 @@ format of an enum entity is
 {
   "id" : 1, // 1 is enum id
   "name" : string,  // full name including all namespaces
+  "name_short" : string, // only enum name
   "origin" : string, // file path to origin file for analysis
   "constants" : [
     {

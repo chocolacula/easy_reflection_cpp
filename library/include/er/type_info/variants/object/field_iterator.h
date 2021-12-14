@@ -36,7 +36,7 @@ class FieldIterator {
     return _it != other._it;
   };
 
-  item operator*() const noexcept {
+  const item& operator*() const noexcept {
     return *_it;
   };
 

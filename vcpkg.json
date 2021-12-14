@@ -1,0 +1,11 @@
+{
+  "name": "reflection-cpp",
+  "version": "1.0.0",
+  "dependencies": [
+    "gtest",
+    "benchmark",
+    "inja",
+    "tclap",
+    "yaml-cpp"
+  ]
+}

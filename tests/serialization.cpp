@@ -7,30 +7,10 @@
 #include "er/serialization/json.h"
 #include "er/serialization/yaml.h"
 #include "er/tools/format.h"
-#include "er/variable/box.h"
 #include "generated/reflection.h"
 #include "gtest/gtest.h"
 
 using namespace er;
-
-// TODO move generated definitions in separate object file and this test to library.cpp
-TEST(Box, Allocation) {
-  {  // keep it in separate code block to check for correct deletion
-    auto type = TypeId::get<Big>();
-    Box box(type);
-
-    auto* big_ptr = static_cast<Big*>(box.var().raw_mut());
-    ASSERT_NE(big_ptr, nullptr);
-    ASSERT_TRUE(box.uses_heap());
-  }
-
-  auto type = TypeId::get<uint64_t>();
-  Box box(type);
-
-  auto* int_ptr = static_cast<uint64_t*>(box.var().raw_mut());
-  ASSERT_NE(int_ptr, nullptr);
-  ASSERT_FALSE(box.uses_heap());
-}
 
 void compare_tresolds(const Tresholds& lhs, const Tresholds& rhs) {
   ASSERT_TRUE(lhs.u8_max == rhs.u8_max &&    //

@@ -3,7 +3,7 @@
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 
-// generated
+// generated:
 #include "reflected_types/Big.er.h"
 #include "reflected_types/Numbers.er.h"
 #include "reflected_types/Tresholds.er.h"

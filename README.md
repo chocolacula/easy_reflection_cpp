@@ -36,9 +36,17 @@ The next step is update all submodules<br>
 git submodule update --init --recursive
 ```
 
+One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies and it should be prepared first:
+
+```shell
+vcpkg/bootstrap-vcpkg.sh
+```
+
+All other dependencies will be installed by CMake automatically.
+
 ### Docker
 
-The repository also provides a ```Dockerfile``` which initializes ```Ubuntu 20.04``` environment, clones the project, builds it and runs tests on startup.
+The repository also provides a ```Dockerfile``` which initializes ```Ubuntu 20.04``` environment, copy project files, builds it and runs tests on startup.
 
 ## How to use
 

@@ -4,14 +4,14 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/various.h"
+#include "{{origin}}"
 
 namespace er {
 
 template <>
-struct TypeActions<Various>;
+struct TypeActions<{{name}}>;
 
 template <>
-TypeId TypeId::get(Various* /*unused*/);
+TypeId TypeId::get({{name}}* /*unused*/);
 
 }  // namespace er
