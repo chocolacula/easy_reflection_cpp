@@ -21,7 +21,7 @@ struct TypeActions<Colors> {
         {Colors::kBlue, "kBlue"},
         {Colors::kBlack, "kBlack"},
         {Colors::kGray, "kGray"},
-
+        
     }}};
 
     return Enum(static_cast<Colors*>(value), is_const, constants);

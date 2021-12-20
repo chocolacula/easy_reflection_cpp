@@ -13,7 +13,7 @@ struct TypeActions<Bicycle> {
     auto* p = static_cast<Bicycle*>(value);
 
     std::map<std::string_view, FieldInfo> map {
-
+      
     };
 
     if (p != nullptr) {
@@ -25,7 +25,7 @@ struct TypeActions<Bicycle> {
         {"weight", FieldInfo(&p->frame_weight, Access::kPublic)},
         {"wheel_size", FieldInfo(&p->wheel_size_inch, Access::kPublic)},
         {"colors", FieldInfo(&p->colors, Access::kPublic)},
-
+        
       });
     }
 

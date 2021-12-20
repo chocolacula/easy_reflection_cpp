@@ -50,6 +50,7 @@ class FileManager {
 
   void correct_config(Config* config) {
     correct_path(&(config->compdb_dir));
+    correct_path(&(config->templates.header));
     correct_path(&(config->templates.for_enum));
     correct_path(&(config->templates.object));
     correct_path(&(config->output_dir));

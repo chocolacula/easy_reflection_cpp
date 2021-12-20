@@ -145,7 +145,9 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
                         [this](Object& o) -> Expected<None> { return parse_map([&]() { return add_to_obj(o); }); },
                         [this](auto&&) -> Expected<None> { return error_match(); });
   __retry(ex);
-  next();
+  if (_token != '<') {
+    next();
+  }
 
   if (is_new_line(_token) || is_end(_token)) {
     next();

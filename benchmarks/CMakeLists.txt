@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(example VERSION ${CMAKE_PROJECT_VERSION})
+project(benchmarks VERSION ${CMAKE_PROJECT_VERSION})
+
+add_definitions(-DPROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -10,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 include_directories(../library/include)
 
 set(SOURCES
-    main.cpp
+    serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
 add_custom_command(
@@ -18,12 +20,13 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
     COMMAND er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
     DEPENDS
-        data/bicycle.h
-        data/colors.h
-    COMMENT "Generating reflection headers")
+        data/user_profile.h
+    COMMENT "Generating reflection headers"
+)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
+find_package(benchmark CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE benchmark::benchmark_main)
 
-# configure_file(config.yaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.yaml COPYONLY)
+target_link_libraries(${PROJECT_NAME} PRIVATE reflection)

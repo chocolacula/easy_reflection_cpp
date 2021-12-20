@@ -161,9 +161,11 @@ TEST(SerializationYaml, Anchors) {
   auto struct1 = Various::make_default();
 
   std::ifstream input;
-  input.open(std::string(PROJECT_ROOT) + "/tests/data/various_anchors.yaml");
+  input.open(std::string(PROJECT_ROOT) + "/data/various_anchors.yaml");
 
   std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+  input.close();
+
   auto struct2 = er::serialization::yaml::from_string<Various>(str).unwrap();
 
   compare_various(struct1, struct2);

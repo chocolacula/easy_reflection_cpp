@@ -44,6 +44,8 @@ vcpkg/bootstrap-vcpkg.sh
 
 All other dependencies will be installed by CMake automatically.
 
+> <b>Note:</b> The project version is obtaining by ```python3``` from ```vcpkg.json``` manifest file. It will be installed at least as <b>gcc</b> dependency, otherwise please install it manually.
+
 ### Docker
 
 The repository also provides a ```Dockerfile``` which initializes ```Ubuntu 20.04``` environment, copy project files, builds it and runs tests on startup.
@@ -125,18 +127,33 @@ Any path could leeds to a directory or a file. The kind of path is determined by
 
 > <b>Note:</b> Do not specify project's root directory it leads to whole project analysis which is long and definitely not what you want.
 
-Run generator like:
+Specify output directory for generated files:
+
+```yaml
+output_dir: project_path/generated
+```
+
+Run the generator binary ```er_gen``` like:
 ```shell
 er_gen -c <path to config.yaml>
 ```
 
-All generated headers will be included to one big ```reflection.h``` header. You only need include it and have fun with desired reflection in C++. With this fact <b>CMake</b> makes generation a little bit simpler with ```add_custom_command()``` set ```reflection.h``` in ```OUTPUT``` parameter and all files will be generated just before building the project.
+All generated headers will be included in single ```reflection.h``` header. All source code will be inside ```reflection.cpp```. You should add the source code file to the project's sources.
+With this fact <b>CMake</b> makes generation a little bit simpler with ```add_custom_command()``` set ```reflection.cpp``` in ```OUTPUT``` parameter and all files will be generated just before building the project.
 
 Generated headers have relative path to origin file with source code. It doesn't give you a 100% guarantee of your project structure consistency, but still makes possible to use generated files on multiple machines with different storage configuration. And it's generally fine to commit them to a repository.
 
+And of course link the reflection library
+
+```cmake
+target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
+```
+
+Then you only need include the header and have fun with desired reflection in C++.
 The last step is use deserialization from json:
 
 ```cpp
+#include "generated/reflection.h"
 #include "er/serialization/json.h"
 
 ...
