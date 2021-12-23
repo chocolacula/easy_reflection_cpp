@@ -18,8 +18,13 @@ class FieldInfo {
   constexpr FieldInfo(T* ptr, Access acc) : _var(ptr), _access(acc) {
   }
 
+  FieldInfo(Var var, Access acc) : _var(var), _access(acc) {
+  }
+
   FieldInfo(FieldInfo&& other) = default;
   FieldInfo(const FieldInfo& other) = default;
+  FieldInfo& operator=(FieldInfo&& other) = default;
+  FieldInfo& operator=(const FieldInfo& other) = default;
 
   Var var() const {
     return _var;
@@ -27,6 +32,10 @@ class FieldInfo {
 
   Access access() const {
     return _access;
+  }
+
+  bool is_const() const {
+    return _var.is_const();
   }
 
   bool is_public() const {

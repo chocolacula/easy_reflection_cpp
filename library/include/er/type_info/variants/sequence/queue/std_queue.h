@@ -3,6 +3,8 @@
 #include <queue>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
+#include "er/variant/variant.h"
 #include "iqueue.h"
 #include "queue_iterator.h"
 
@@ -15,6 +17,24 @@ struct StdQueue : public IQueue, public sequence::ErrHelper {
   StdQueue(std::queue<T>* queue, bool is_const)
       : _queue(queue),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_queue);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _queue = static_cast<std::queue<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _queue = static_cast<std::queue<T>*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -38,6 +58,12 @@ struct StdQueue : public IQueue, public sequence::ErrHelper {
 
     for (auto it = QueueIterator<T>::begin(_queue); it != QueueIterator<T>::end(_queue); ++it) {
       callback(Var(&(*it), nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto it = QueueIterator<T>::begin(_queue); it != QueueIterator<T>::end(_queue); ++it) {
+      callback(&(*it));
     }
   }
 

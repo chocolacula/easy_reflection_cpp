@@ -38,8 +38,12 @@ struct Variant {
   }
 
   template <typename SomeT>
-  bool is() {
+  [[nodiscard]] inline bool is() const {
     return std::holds_alternative<SomeT>(_content);
+  }
+
+  [[nodiscard]] inline size_t variant_idx() const {
+    return _content.index();
   }
 
   template <typename SomeT>
@@ -50,6 +54,16 @@ struct Variant {
       throw std::runtime_error("The instance of requested type doesn't exist");
     }
     return *pointer;
+  }
+
+  template <typename SomeT>
+  inline const SomeT& unsafe_get() const {
+    return std::get<SomeT>(_content);
+  }
+
+  template <typename SomeT>
+  inline SomeT& unsafe_get() {
+    return std::get<SomeT>(_content);
   }
 
  protected:

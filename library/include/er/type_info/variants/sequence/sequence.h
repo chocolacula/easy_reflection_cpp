@@ -48,6 +48,14 @@ struct Sequence : public BASE, public ISequence {
       : BASE(Set(set, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return match([=](auto&& s) { return s.assign(var); });
+  }
+
+  void unsafe_assign(void* ptr) override {
+    match([=](auto&& s) { return s.unsafe_assign(ptr); });
+  }
+
   Var own_var() const override {
     return match([](auto&& s) -> Var { return s.own_var(); });
   }
@@ -58,6 +66,10 @@ struct Sequence : public BASE, public ISequence {
 
   void for_each(std::function<void(Var)> callback) const override {
     match([&](auto&& s) { s.for_each(callback); });
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    match([&](auto&& s) { s.unsafe_for_each(callback); });
   }
 
   void clear() override {

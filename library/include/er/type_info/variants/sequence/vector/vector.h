@@ -13,6 +13,14 @@ struct Vector : public IVector {
   Vector(std::vector<T>* vector, bool is_const) : _vector(std::make_shared<StdVector<T>>(vector, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _vector->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _vector->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _vector->own_var();
   }
@@ -27,6 +35,10 @@ struct Vector : public IVector {
 
   void for_each(std::function<void(Var)> callback) override {
     _vector->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _vector->unsafe_for_each(callback);
   }
 
   void clear() override {

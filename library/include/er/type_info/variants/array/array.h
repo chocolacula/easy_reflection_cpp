@@ -18,6 +18,14 @@ struct Array final : public IArray {
   Array(std::array<T, size_v>* array, bool is_const) : _array(std::make_shared<StdArray<T, size_v>>(array, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _array->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _array->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _array->own_var();
   }
@@ -52,6 +60,10 @@ struct Array final : public IArray {
 
   void for_each(std::function<void(Var)> callback) override {
     _array->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _array->unsafe_for_each(callback);
   }
 
   size_t size() const override {

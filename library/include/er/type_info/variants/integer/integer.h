@@ -16,6 +16,14 @@ struct Integer : IInteger {
   Integer(T* value, bool is_const) : _integer(std::make_shared<Int<T>>(value, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _integer->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _integer->unsafe_assign(ptr);
+  }
+
   Var var() const override {
     return _integer->var();
   }

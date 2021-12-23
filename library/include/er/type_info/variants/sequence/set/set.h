@@ -18,6 +18,14 @@ struct Set : public ISet {
   Set(std::unordered_set<T>* set, bool is_const) : _set(std::make_shared<StdUnorderedSet<T>>(set, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _set->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _set->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _set->own_var();
   }
@@ -28,6 +36,10 @@ struct Set : public ISet {
 
   void for_each(std::function<void(Var)> callback) const override {
     _set->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _set->unsafe_for_each(callback);
   }
 
   void clear() override {

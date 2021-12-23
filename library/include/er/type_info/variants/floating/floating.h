@@ -16,6 +16,14 @@ struct Floating : IFloating {
   Floating(T* value, bool is_const) : _floating(std::make_shared<Float<T>>(value, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _floating->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _floating->unsafe_assign(ptr);
+  }
+
   Var var() override {
     return _floating->var();
   }

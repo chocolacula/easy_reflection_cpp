@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "dependencies": [
     "gtest",
-    "benchmark",
     "inja",
     "tclap",
+    "benchmark",
+    "rapidjson",
     "yaml-cpp"
   ]
 }

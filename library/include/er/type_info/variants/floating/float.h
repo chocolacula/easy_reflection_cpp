@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iomanip>
+#include <limits>
 #include <sstream>
 
+#include "er/reflection/type_name.h"
 #include "ifloating.h"
 
 namespace er {
@@ -10,6 +12,24 @@ namespace er {
 template <typename T>
 struct Float : IFloating {
   Float(T* value, bool is_const) : _value(value), _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_value);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _value = static_cast<T*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _value = static_cast<T*>(ptr);
+    _is_const = false;
   }
 
   Var var() override {
@@ -45,7 +65,7 @@ struct Float : IFloating {
 
  private:
   T* _value;
-  const bool _is_const;
+  bool _is_const;
 };
 
 }  // namespace er

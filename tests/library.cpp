@@ -1,6 +1,9 @@
 #include <string_view>
 
-// #include "er/error/error.h"
+#include "data/various.h"
+#include "er/reflection/reflection.h"
+#include "er/type_info/type_info.h"
+#include "er/type_info/variants/floating/floating.h"
 #include "er/variable/box.h"
 #include "generated/reflection.h"
 #include "gtest/gtest.h"
@@ -62,4 +65,51 @@ TEST(Box, Allocation) {
     ASSERT_NE(ptr, nullptr);
     ASSERT_FALSE(box.uses_heap());
   }
+}
+
+TEST(TypeInfo, VariantIndex) {
+  bool b;
+  auto info = er::reflection::reflect(&b);
+  ASSERT_TRUE(info.is<Bool>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kBool);
+
+  int i;
+  info = er::reflection::reflect(&i);
+  ASSERT_TRUE(info.is<Integer>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kInteger);
+
+  float f;
+  info = er::reflection::reflect(&f);
+  ASSERT_TRUE(info.is<Floating>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kFloating);
+
+  std::string str;
+  info = er::reflection::reflect(&str);
+  ASSERT_TRUE(info.is<String>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kString);
+
+  Numbers e;
+  info = er::reflection::reflect(&e);
+  ASSERT_TRUE(info.is<Enum>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kEnum);
+
+  Various::ComplexValue o;
+  info = er::reflection::reflect(&o);
+  ASSERT_TRUE(info.is<Object>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kObject);
+
+  int a[4];
+  info = er::reflection::reflect(&a);
+  ASSERT_TRUE(info.is<Array>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kArray);
+
+  std::vector<int> seq;
+  info = er::reflection::reflect(&seq);
+  ASSERT_TRUE(info.is<Sequence>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kSequence);
+
+  std::unordered_map<int, int> m;
+  info = er::reflection::reflect(&m);
+  ASSERT_TRUE(info.is<Map>());
+  ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kMap);
 }

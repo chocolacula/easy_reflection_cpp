@@ -16,27 +16,25 @@ struct TypeActions<Tresholds> {
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"u8_max", FieldInfo(&p->u8_max, Access::kPublic)},
-        {"u16_max", FieldInfo(&p->u16_max, Access::kPublic)},
-        {"u32_max", FieldInfo(&p->u32_max, Access::kPublic)},
-        {"u64_max", FieldInfo(&p->u64_max, Access::kPublic)},
-        {"i8_min", FieldInfo(&p->i8_min, Access::kPublic)},
-        {"i8_max", FieldInfo(&p->i8_max, Access::kPublic)},
-        {"i16_min", FieldInfo(&p->i16_min, Access::kPublic)},
-        {"i16_max", FieldInfo(&p->i16_max, Access::kPublic)},
-        {"i32_min", FieldInfo(&p->i32_min, Access::kPublic)},
-        {"i32_max", FieldInfo(&p->i32_max, Access::kPublic)},
-        {"i64_min", FieldInfo(&p->i64_min, Access::kPublic)},
-        {"i64_max", FieldInfo(&p->i64_max, Access::kPublic)},
-        {"f32_min", FieldInfo(&p->f32_min, Access::kPublic)},
-        {"f32_max", FieldInfo(&p->f32_max, Access::kPublic)},
-        {"f64_min", FieldInfo(&p->f64_min, Access::kPublic)},
-        {"f64_max", FieldInfo(&p->f64_max, Access::kPublic)},
-        
-      });
-    }
+    map.insert({
+      {"u8_max", FieldInfo(&p->u8_max, Access::kPublic)},
+      {"u16_max", FieldInfo(&p->u16_max, Access::kPublic)},
+      {"u32_max", FieldInfo(&p->u32_max, Access::kPublic)},
+      {"u64_max", FieldInfo(&p->u64_max, Access::kPublic)},
+      {"i8_min", FieldInfo(&p->i8_min, Access::kPublic)},
+      {"i8_max", FieldInfo(&p->i8_max, Access::kPublic)},
+      {"i16_min", FieldInfo(&p->i16_min, Access::kPublic)},
+      {"i16_max", FieldInfo(&p->i16_max, Access::kPublic)},
+      {"i32_min", FieldInfo(&p->i32_min, Access::kPublic)},
+      {"i32_max", FieldInfo(&p->i32_max, Access::kPublic)},
+      {"i64_min", FieldInfo(&p->i64_min, Access::kPublic)},
+      {"i64_max", FieldInfo(&p->i64_max, Access::kPublic)},
+      {"f32_min", FieldInfo(&p->f32_min, Access::kPublic)},
+      {"f32_max", FieldInfo(&p->f32_max, Access::kPublic)},
+      {"f64_min", FieldInfo(&p->f64_min, Access::kPublic)},
+      {"f64_max", FieldInfo(&p->f64_max, Access::kPublic)},
+      
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

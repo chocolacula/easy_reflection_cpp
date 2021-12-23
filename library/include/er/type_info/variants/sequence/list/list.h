@@ -18,6 +18,14 @@ struct List : public IList {
   List(std::deque<T>* deque, bool is_const) : _list(std::make_shared<StdDeque<T>>(deque, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _list->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _list->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _list->own_var();
   }
@@ -32,6 +40,10 @@ struct List : public IList {
 
   void for_each(std::function<void(Var)> callback) override {
     _list->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _list->unsafe_for_each(callback);
   }
 
   void clear() override {

@@ -21,6 +21,14 @@ struct Map final : public IMap {
       : _map(std::make_shared<StdUnorderedMap<KeyT, ValueT>>(map, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _map->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _map->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _map->own_var();
   }
@@ -39,6 +47,10 @@ struct Map final : public IMap {
 
   void for_each(std::function<void(Var, Var)> callback) override {
     return _map->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*, void*)> callback) const override {
+    return _map->unsafe_for_each(callback);
   }
 
   void clear() override {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "std_stack.h"
 
 namespace er {
@@ -9,6 +11,14 @@ struct Stack : public IStack {
 
   template <typename T>
   Stack(std::stack<T>* stack, bool is_const) : _stack(std::make_shared<StdStack<T>>(stack, is_const)) {
+  }
+
+  Expected<None> assign(Var var) override {
+    return _stack->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _stack->unsafe_assign(ptr);
   }
 
   Var own_var() const override {
@@ -25,6 +35,10 @@ struct Stack : public IStack {
 
   void for_each(std::function<void(Var)> callback) override {
     _stack->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _stack->unsafe_for_each(callback);
   }
 
   void clear() override {

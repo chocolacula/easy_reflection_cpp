@@ -18,13 +18,11 @@ struct TypeActions<{{name}}> {
       {% endfor %}
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {% for item in fields -%}
-        {"{{item.alias}}", FieldInfo(&p->{{item.name}}, {{item.access}})},
-        {% endfor %}
-      });
-    }
+    map.insert({
+      {% for item in fields -%}
+      {"{{item.alias}}", FieldInfo(&p->{{item.name}}, {{item.access}})},
+      {% endfor %}
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

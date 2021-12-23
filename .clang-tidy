@@ -3,6 +3,9 @@ Checks: >
   -altera-struct-pack-align,
   -llvmlibc-*,
   -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-const-cast,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -google-readability-todo,
   -fuchsia-overloaded-operator,
   -fuchsia-default-arguments-calls,
@@ -12,11 +15,10 @@ Checks: >
   readability-isolate-declaration
 
 CheckOptions:
-  - { key: readability-identifier-naming.NamespaceCase,        value: lower_case }
-  - { key: readability-identifier-naming.PrivateMemberPrefix,  value: _          }
-  - { key: readability-identifier-naming.FunctionCase,         value: lower_case }
-  - { key: readability-identifier-naming.VariableCase,         value: lower_case }
-  - { key: readability-identifier-naming.ParameterCase,        value: lower_case }
-  - { key: readability-identifier-naming.GlobalConstantCase,   value: CamelCase  }
-  - { key: readability-identifier-naming.GlobalConstantPrefix, value: k          }
-
+  - { key: readability-identifier-naming.NamespaceCase, value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberPrefix, value: _ }
+  - { key: readability-identifier-naming.FunctionCase, value: lower_case }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase, value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantCase, value: CamelCase }
+  - { key: readability-identifier-naming.GlobalConstantPrefix, value: k }

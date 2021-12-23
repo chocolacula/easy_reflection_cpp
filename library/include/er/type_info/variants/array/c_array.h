@@ -1,5 +1,6 @@
 #pragma once
 
+#include "er/reflection/type_name.h"
 #include "er/tools/format.h"
 #include "iarray.h"
 
@@ -10,6 +11,24 @@ struct CArray final : public IArray {
   CArray() = delete;
 
   CArray(T (*array)[size_v], bool is_const) : _array(reinterpret_cast<T*>(array)), _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_array);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _array = static_cast<T*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _array = static_cast<T*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -33,6 +52,12 @@ struct CArray final : public IArray {
 
     for (auto i = 0; i < size_v; ++i) {
       callback(Var(&(_array[i]), nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto i = 0; i < size_v; ++i) {
+      callback(&(_array[i]));
     }
   }
 

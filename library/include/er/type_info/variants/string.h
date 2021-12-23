@@ -3,7 +3,10 @@
 #include <string>
 
 #include "er/expected.h"
+#include "er/reflection/type_name.h"
+#include "er/tools/format.h"
 #include "er/variable/var.h"
+#include "er/variant/variant.h"
 
 namespace er {
 
@@ -13,6 +16,21 @@ struct String {
   }
 
   String(std::string* str, bool is_const) : _var(str, is_const) {
+  }
+
+  Expected<None> assign(Var var) {
+    if (var.type() != _var.type()) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(_var.type())));
+    }
+
+    _var = var;
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) {
+    _var = Var(ptr, _var.type(), _var.is_const());
   }
 
   std::string_view get() const {
@@ -42,7 +60,7 @@ struct String {
   }
 
  private:
-  const Var _var;
+  Var _var;
   static const inline TypeId _shared_type = TypeId::get<std::string_view>();
 };
 

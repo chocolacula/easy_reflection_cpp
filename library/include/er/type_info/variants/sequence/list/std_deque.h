@@ -3,6 +3,7 @@
 #include <deque>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
 #include "ilist.h"
 
 namespace er {
@@ -14,6 +15,24 @@ struct StdDeque : public IList, public sequence::ErrHelper {
   StdDeque(std::deque<T>* deque, bool is_const)
       : _deque(deque),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_deque);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _deque = static_cast<std::deque<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _deque = static_cast<std::deque<T>*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -37,6 +56,12 @@ struct StdDeque : public IList, public sequence::ErrHelper {
 
     for (auto&& entry : *_deque) {
       callback(Var(&entry, nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto&& entry : *_deque) {
+      callback(&entry);
     }
   }
 

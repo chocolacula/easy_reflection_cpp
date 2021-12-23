@@ -16,13 +16,11 @@ struct TypeActions<UserProfile::Activity> {
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"photo_url", FieldInfo(&p->photo_url, Access::kPublic)},
-        {"grade", FieldInfo(&p->grade, Access::kPublic)},
-        
-      });
-    }
+    map.insert({
+      {"photo_url", FieldInfo(&p->photo_url, Access::kPublic)},
+      {"grade", FieldInfo(&p->grade, Access::kPublic)},
+      
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

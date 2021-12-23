@@ -15,6 +15,14 @@ struct Enum final : IEnum {
       : _enum(std::make_shared<EnumImpl<T, size>>(value, is_const, all_constants)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _enum->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _enum->unsafe_assign(ptr);
+  }
+
   Var var() const override {
     return _enum->var();
   }

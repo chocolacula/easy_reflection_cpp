@@ -12,4 +12,4 @@ struct Overloaded : Ts... {
 template <typename... Ts>
 Overloaded(Ts...) -> Overloaded<Ts...>;
 
-} // namespace er
+}  // namespace er

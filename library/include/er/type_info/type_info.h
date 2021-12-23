@@ -5,6 +5,8 @@
 
 #include "er/expected.h"
 #include "er/variant/variant.h"
+
+// all variants
 #include "variants/array/array.h"
 #include "variants/bool.h"
 #include "variants/enum/enum.h"
@@ -54,28 +56,35 @@ class TypeInfo : public BASE {
   TypeInfo(Map value) : BASE(value) {  // NOLINT implicit constructor
   }
 
-  std::string_view what_is() {
-    return match([](Bool&) -> std::string_view { return "Bool"; },          //
-                 [](Integer&) -> std::string_view { return "Integer"; },    //
-                 [](Floating&) -> std::string_view { return "Float"; },     //
-                 [](String&) -> std::string_view { return "String"; },      //
-                 [](Enum&) -> std::string_view { return "Enum"; },          //
-                 [](Object&) -> std::string_view { return "Object"; },      //
-                 [](Array&) -> std::string_view { return "Array"; },        //
-                 [](Sequence&) -> std::string_view { return "Sequence"; },  //
-                 [](Map&) -> std::string_view { return "Map"; });
+  Expected<None> assign(Var var) {
+    return match([=](auto&& v) { return v.assign(var); });
+  }
+
+  void unsafe_assign(void* ptr) {
+    match([=](auto&& m) { m.unsafe_assign(ptr); });
   }
 
   Var var() {
-    return match([](Bool& b) -> Var { return b.var(); },          //
-                 [](Integer& i) -> Var { return i.var(); },       //
-                 [](Floating& f) -> Var { return f.var(); },      //
-                 [](String& s) -> Var { return s.var(); },        //
-                 [](Enum& e) -> Var { return e.var(); },          //
-                 [](Object& o) -> Var { return o.var(); },        //
-                 [](Array& a) -> Var { return a.own_var(); },     //
+    return match([](Array& a) -> Var { return a.own_var(); },     //
                  [](Sequence& s) -> Var { return s.own_var(); },  //
-                 [](Map& m) -> Var { return m.own_var(); });
+                 [](Map& m) -> Var { return m.own_var(); },       //
+                 [](auto&& v) { return v.var(); });
+  }
+
+  enum class Kind {
+    kBool = 0,
+    kInteger = 1,
+    kFloating = 2,
+    kString = 3,
+    kEnum = 4,
+    kObject = 5,
+    kArray = 6,
+    kSequence = 7,
+    kMap = 8
+  };
+
+  [[nodiscard]] Kind get_kind() const {
+    return static_cast<Kind>(variant_idx());
   }
 };
 

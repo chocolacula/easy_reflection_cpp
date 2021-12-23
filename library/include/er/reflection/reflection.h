@@ -1,6 +1,7 @@
 #pragma once
 
 #include "er/type_info/type_info.h"
+#include "type_name.h"
 
 namespace er::reflection {
 
@@ -32,7 +33,6 @@ void print(const T* pointer) {
   print(reflect(pointer));
 }
 
-std::string_view type_name(TypeId id);
 size_t type_size(TypeId id);
 
 void* call_new(TypeId id, void* place, size_t place_size);

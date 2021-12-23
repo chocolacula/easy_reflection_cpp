@@ -16,13 +16,11 @@ struct TypeActions<Various::ComplexValue> {
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"v1", FieldInfo(&p->v1, Access::kPublic)},
-        {"v2", FieldInfo(&p->v2, Access::kPublic)},
-        
-      });
-    }
+    map.insert({
+      {"v1", FieldInfo(&p->v1, Access::kPublic)},
+      {"v2", FieldInfo(&p->v2, Access::kPublic)},
+      
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

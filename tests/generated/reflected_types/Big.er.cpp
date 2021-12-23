@@ -16,19 +16,17 @@ struct TypeActions<Big> {
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"int1", FieldInfo(&p->int1, Access::kPublic)},
-        {"int2", FieldInfo(&p->int2, Access::kPublic)},
-        {"int3", FieldInfo(&p->int3, Access::kPublic)},
-        {"int4", FieldInfo(&p->int4, Access::kPublic)},
-        {"str1", FieldInfo(&p->str1, Access::kPublic)},
-        {"str2", FieldInfo(&p->str2, Access::kPublic)},
-        {"str3", FieldInfo(&p->str3, Access::kPublic)},
-        {"str4", FieldInfo(&p->str4, Access::kPublic)},
-        
-      });
-    }
+    map.insert({
+      {"int1", FieldInfo(&p->int1, Access::kPublic)},
+      {"int2", FieldInfo(&p->int2, Access::kPublic)},
+      {"int3", FieldInfo(&p->int3, Access::kPublic)},
+      {"int4", FieldInfo(&p->int4, Access::kPublic)},
+      {"str1", FieldInfo(&p->str1, Access::kPublic)},
+      {"str2", FieldInfo(&p->str2, Access::kPublic)},
+      {"str3", FieldInfo(&p->str3, Access::kPublic)},
+      {"str4", FieldInfo(&p->str4, Access::kPublic)},
+      
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

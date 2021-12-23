@@ -16,18 +16,16 @@ struct TypeActions<Bicycle> {
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"id", FieldInfo(&p->id, Access::kPublic)},
-        {"is_hardtail", FieldInfo(&p->is_hardtail, Access::kPublic)},
-        {"manufacturer", FieldInfo(&p->manufacturer, Access::kPublic)},
-        {"model", FieldInfo(&p->model, Access::kPublic)},
-        {"weight", FieldInfo(&p->frame_weight, Access::kPublic)},
-        {"wheel_size", FieldInfo(&p->wheel_size_inch, Access::kPublic)},
-        {"colors", FieldInfo(&p->colors, Access::kPublic)},
-        
-      });
-    }
+    map.insert({
+      {"id", FieldInfo(&p->id, Access::kPublic)},
+      {"is_hardtail", FieldInfo(&p->is_hardtail, Access::kPublic)},
+      {"manufacturer", FieldInfo(&p->manufacturer, Access::kPublic)},
+      {"model", FieldInfo(&p->model, Access::kPublic)},
+      {"weight", FieldInfo(&p->frame_weight, Access::kPublic)},
+      {"wheel_size", FieldInfo(&p->wheel_size_inch, Access::kPublic)},
+      {"colors", FieldInfo(&p->colors, Access::kPublic)},
+      
+    });
 
     return Object(Var(p, is_const), std::move(map));
   }

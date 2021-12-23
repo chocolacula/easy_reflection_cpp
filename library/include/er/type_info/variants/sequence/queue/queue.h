@@ -13,6 +13,14 @@ struct Queue : public IQueue {
   Queue(std::queue<T>* queue, bool is_const) : _queue(std::make_shared<StdQueue<T>>(queue, is_const)) {
   }
 
+  Expected<None> assign(Var var) override {
+    return _queue->assign(var);
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _queue->unsafe_assign(ptr);
+  }
+
   Var own_var() const override {
     return _queue->own_var();
   }
@@ -27,6 +35,10 @@ struct Queue : public IQueue {
 
   void for_each(std::function<void(Var)> callback) override {
     _queue->for_each(callback);
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    _queue->unsafe_for_each(callback);
   }
 
   void clear() override {

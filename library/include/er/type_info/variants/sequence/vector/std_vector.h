@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
 #include "ivector.h"
 
 namespace er {
@@ -14,6 +15,23 @@ struct StdVector : public IVector, public sequence::ErrHelper {
   StdVector(std::vector<T>* vector, bool is_const)
       : _vector(vector),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_vector);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _vector = static_cast<std::vector<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _vector = static_cast<std::vector<T>*>(ptr);
   }
 
   Var own_var() const override {
@@ -37,6 +55,12 @@ struct StdVector : public IVector, public sequence::ErrHelper {
 
     for (auto&& entry : *_vector) {
       callback(Var(&entry, nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto&& entry : *_vector) {
+      callback(&entry);
     }
   }
 

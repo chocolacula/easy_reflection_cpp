@@ -16,11 +16,11 @@ struct Fields {
   }
 
   FieldIterator begin() {
-    return FieldIterator(_map->begin(), _map->end(), _access);
+    return {_map->begin(), _map->end(), _access};
   }
 
   FieldIterator end() {
-    return FieldIterator(_map->end(), _map->end(), _access);
+    return {_map->end(), _map->end(), _access};
   }
 
  private:

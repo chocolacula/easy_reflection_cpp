@@ -3,6 +3,7 @@
 #include <stack>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
 #include "istack.h"
 #include "stack_iterator.h"
 
@@ -15,6 +16,24 @@ struct StdStack : public IStack, public sequence::ErrHelper {
   StdStack(std::stack<T>* stack, bool is_const)
       : _stack(stack),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_stack);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _stack = static_cast<std::stack<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _stack = static_cast<std::stack<T>*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -39,6 +58,12 @@ struct StdStack : public IStack, public sequence::ErrHelper {
 
     for (auto it = StackIterator<T>::begin(_stack); it != StackIterator<T>::end(_stack); ++it) {
       callback(Var(&(*it), nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto it = StackIterator<T>::begin(_stack); it != StackIterator<T>::end(_stack); ++it) {
+      callback(&(*it));
     }
   }
 

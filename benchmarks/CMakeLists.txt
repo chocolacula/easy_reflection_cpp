@@ -30,3 +30,9 @@ find_package(benchmark CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE benchmark::benchmark_main)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
+
+find_package(RapidJSON CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE rapidjson)
+
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
