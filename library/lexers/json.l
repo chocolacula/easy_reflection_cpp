@@ -14,7 +14,7 @@
 %option lexer=LexerJson
 %option namespace=rf_json
 
-%o fast freespace dotall unicode noline
+%o fast freespace dotall unicode noline noindent
 
 %top{
   #include <cstdlib>  // strtoul(), strtod()

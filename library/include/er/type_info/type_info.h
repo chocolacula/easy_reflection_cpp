@@ -15,7 +15,7 @@
 #include "variants/map/map.h"
 #include "variants/object/object.h"
 #include "variants/sequence/sequence.h"
-#include "variants/string.h"
+#include "variants/string/string.h"
 
 namespace er {
 
@@ -72,11 +72,13 @@ class TypeInfo : public BASE {
   }
 
   enum class Kind {
+    // more or less primitive kinds
     kBool = 0,
     kInteger = 1,
     kFloating = 2,
     kString = 3,
     kEnum = 4,
+    // others kinds bealow are complex
     kObject = 5,
     kArray = 6,
     kSequence = 7,

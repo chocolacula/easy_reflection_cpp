@@ -34,7 +34,7 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info) {
       append(writer, info.unsafe_get<Integer>().to_string());
       break;
     case TypeInfo::Kind::kFloating:
-      append(writer, info.unsafe_get<Floating>().to_string());
+      append(writer, info.unsafe_get<Floating>().to_string(6));
       break;
     case TypeInfo::Kind::kString:
       append(writer, '"');
@@ -118,7 +118,6 @@ inline void serialize_sequence(const SeqT& seq, IWriter* writer) {
   auto info = reflection::reflect(Var(nullptr, seq.nested_type(), false));
   seq.unsafe_for_each([writer, &info](void* ptr) {
     info.unsafe_assign(ptr);
-
     serialize_recursive(writer, info);
 
     append(writer, ',');

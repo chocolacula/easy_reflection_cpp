@@ -69,6 +69,7 @@ void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_EQ(lhs.map, rhs.map);
   ASSERT_EQ(lhs.un_map, rhs.un_map);
 
+  ASSERT_EQ(lhs.obj, rhs.obj);
   ASSERT_EQ(lhs.monstro, rhs.monstro);
 }
 
@@ -161,7 +162,7 @@ TEST(SerializationYaml, Anchors) {
   auto struct1 = Various::make_default();
 
   std::ifstream input;
-  input.open(std::string(PROJECT_ROOT) + "/data/various_anchors.yaml");
+  input.open(std::string(PROJECT_ROOT) + "/data/yaml/various_anchors.yaml");
 
   std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
   input.close();

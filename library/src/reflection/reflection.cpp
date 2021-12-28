@@ -36,6 +36,12 @@ std::string_view reflection::type_name(TypeId id) {
   return TheGreatTable::data()[id.number()].type_name();
 }
 
+#ifndef NDEBUG
+std::string_view reflection::type_name(uint32_t id) {
+  return TheGreatTable::data()[id].type_name();
+}
+#endif
+
 size_t reflection::type_size(TypeId id) {
   return TheGreatTable::data()[id.number()].type_size();
 }

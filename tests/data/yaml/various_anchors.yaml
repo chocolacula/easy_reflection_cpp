@@ -22,29 +22,20 @@ map:
   2: kTwo
   3: kThree
 monstro:
-  -
-    ?
-      v1: 222
+  - ? v1: 222
       v2: some string
-    :
-      -
-        - -1
+    : - - -1
         - 2
         - &five 5
-      -
-        - -1
+      - - -1
         - 2
         - *five
-    ?
-      v1: 333
+    ? v1: 333
       v2: the second string
-    :
-      -
-        - 16
+    : - - 16
         - 38
         - 87
-      -
-        - 38
+      - - 38
         - 41
         - 44
 obj:

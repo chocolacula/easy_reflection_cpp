@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -91,8 +92,9 @@ BENCHMARK(json_er_deserialization);
 static void yaml_er_serialization(benchmark::State& state) {
   auto profile = er::serialization::yaml::from_string<UserProfile>(SetUp::yaml()).unwrap();
 
+  std::string str;
   for (auto _ : state) {
-    auto str = er::serialization::yaml::to_string(&profile).unwrap();
+    str = er::serialization::yaml::to_string(&profile).unwrap();
 
     benchmark::DoNotOptimize(str);
   }
