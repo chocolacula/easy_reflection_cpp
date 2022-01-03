@@ -42,10 +42,10 @@ struct StdArray final : public IArray {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto i = 0; i < size_v; ++i) {
-      callback(Var(&_array[i], nested_type, true));
+      callback(Var(&(*_array)[i], nested_type, true));
     }
   }
 

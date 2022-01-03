@@ -1,90 +1,100 @@
 #pragma once
 
-#include "list/list.h"
-#include "queue/queue.h"
-#include "set/set.h"
-#include "stack/stack.h"
-#include "vector/vector.h"
+#include "list/std_deque.h"
+#include "list/std_list.h"
+#include "queue/std_queue.h"
+#include "set/std_set.h"
+#include "set/std_unordered_set.h"
+#include "stack/std_stack.h"
+#include "vector/std_vector.h"
 
 namespace er {
 
-#define BASE Variant<Vector, Stack, Queue, List, Set>
-
-struct Sequence : public BASE, public ISequence {
+struct Sequence {
   Sequence() = delete;
 
   template <typename T>
-  Sequence(std::vector<T>* vector, bool is_const)  //
-      : BASE(Vector(vector, is_const)) {
+  Sequence(std::vector<T>* vector, bool is_const) {
+    new (_mem) StdVector<T>(vector, is_const);
   }
 
   template <typename T>
-  Sequence(std::list<T>* list, bool is_const)  //
-      : BASE(List(list, is_const)) {
+  Sequence(std::list<T>* list, bool is_const) {
+    new (_mem) StdList<T>(list, is_const);
   }
 
   template <typename T>
-  Sequence(std::deque<T>* deque, bool is_const)  //
-      : BASE(List(deque, is_const)) {
+  Sequence(std::deque<T>* deque, bool is_const) {
+    new (_mem) StdDeque<T>(deque, is_const);
   }
 
   template <typename T>
-  Sequence(std::stack<T>* stack, bool is_const)  //
-      : BASE(Stack(stack, is_const)) {
+  Sequence(std::stack<T>* stack, bool is_const) {
+    new (_mem) StdStack<T>(stack, is_const);
   }
 
   template <typename T>
-  Sequence(std::queue<T>* queue, bool is_const)  //
-      : BASE(Queue(queue, is_const)) {
+  Sequence(std::queue<T>* queue, bool is_const) {
+    new (_mem) StdQueue<T>(queue, is_const);
   }
 
   template <typename T>
-  Sequence(std::set<T>* set, bool is_const)  //
-      : BASE(Set(set, is_const)) {
+  Sequence(std::set<T>* set, bool is_const) {
+    new (_mem) StdSet<T>(set, is_const);
   }
 
   template <typename T>
-  Sequence(std::unordered_set<T>* set, bool is_const)  //
-      : BASE(Set(set, is_const)) {
+  Sequence(std::unordered_set<T>* set, bool is_const) {
+    new (_mem) StdUnorderedSet<T>(set, is_const);
   }
 
-  Expected<None> assign(Var var) override {
-    return match([=](auto&& s) { return s.assign(var); });
+  ~Sequence() {
+    reinterpret_cast<ISequence*>(&_mem[0])->~ISequence();
   }
 
-  void unsafe_assign(void* ptr) override {
-    match([=](auto&& s) { return s.unsafe_assign(ptr); });
+  Expected<None> assign(Var var) {
+    return reinterpret_cast<ISequence*>(&_mem[0])->assign(var);
   }
 
-  Var own_var() const override {
-    return match([](auto&& s) -> Var { return s.own_var(); });
+  void unsafe_assign(void* ptr) {
+    return reinterpret_cast<ISequence*>(&_mem[0])->unsafe_assign(ptr);
   }
 
-  TypeId nested_type() const override {
-    return match([](auto&& s) -> TypeId { return s.nested_type(); });
+  Var own_var() const {
+    return reinterpret_cast<const ISequence*>(&_mem[0])->own_var();
   }
 
-  void for_each(std::function<void(Var)> callback) const override {
-    match([&](auto&& s) { s.for_each(callback); });
+  TypeId nested_type() const {
+    return reinterpret_cast<const ISequence*>(&_mem[0])->nested_type();
   }
 
-  void unsafe_for_each(std::function<void(void*)> callback) const override {
-    match([&](auto&& s) { s.unsafe_for_each(callback); });
+  void for_each(std::function<void(Var)> callback) const {
+    reinterpret_cast<const ISequence*>(&_mem[0])->for_each(callback);
   }
 
-  void clear() override {
-    match([](auto&& s) { s.clear(); });
+  void unsafe_for_each(std::function<void(void*)> callback) const {
+    reinterpret_cast<const ISequence*>(&_mem[0])->unsafe_for_each(callback);
   }
 
-  size_t size() const override {
-    return match([](auto&& s) -> size_t { return s.size(); });
+  void clear() {
+    reinterpret_cast<ISequence*>(&_mem[0])->clear();
   }
 
-  Expected<None> push(Var value) override {
-    return match([&](auto&& s) -> Expected<None> { return s.push(value); });
+  size_t size() const {
+    return reinterpret_cast<const ISequence*>(&_mem[0])->size();
   }
+
+  Expected<None> push(Var value) {
+    return reinterpret_cast<ISequence*>(&_mem[0])->push(value);
+  }
+
+ private:
+  // a little hack to reduce dynamic memory allocation
+  // this approach is little faster then use shared_ptr but still faster
+  //
+  // it's just a memory bunch for a pointer and is_const flag
+  // all kinds of sequence has the same sizeof()
+  char _mem[sizeof(StdVector<int>)];
 };
-
-#undef BASE
 
 }  // namespace er

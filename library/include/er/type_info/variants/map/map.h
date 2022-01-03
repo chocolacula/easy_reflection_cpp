@@ -1,76 +1,79 @@
 #pragma once
 
-#include <memory>
-
 #include "imap.h"
 #include "std_map.h"
 #include "std_unordered_map.h"
 
 namespace er {
 
-struct Map final : public IMap {
+struct Map final {
   Map() = delete;
 
   template <typename KeyT, typename ValueT>
-  Map(std::map<KeyT, ValueT>* map, bool is_const)  //
-      : _map(std::make_shared<StdMap<KeyT, ValueT>>(map, is_const)) {
+  Map(std::map<KeyT, ValueT>* map, bool is_const) {
+    new (_mem) StdMap<KeyT, ValueT>(map, is_const);
   }
 
   template <typename KeyT, typename ValueT>
-  Map(std::unordered_map<KeyT, ValueT>* map, bool is_const)  //
-      : _map(std::make_shared<StdUnorderedMap<KeyT, ValueT>>(map, is_const)) {
+  Map(std::unordered_map<KeyT, ValueT>* map, bool is_const) {
+    new (_mem) StdUnorderedMap<KeyT, ValueT>(map, is_const);
   }
 
-  Expected<None> assign(Var var) override {
-    return _map->assign(var);
+  Expected<None> assign(Var var) {
+    return reinterpret_cast<IMap*>(&_mem[0])->assign(var);
   }
 
-  void unsafe_assign(void* ptr) override {
-    _map->unsafe_assign(ptr);
+  void unsafe_assign(void* ptr) {
+    reinterpret_cast<IMap*>(&_mem[0])->unsafe_assign(ptr);
   }
 
-  Var own_var() const override {
-    return _map->own_var();
+  Var own_var() const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->own_var();
   }
 
-  TypeId key_type() const override {
-    return _map->key_type();
+  TypeId key_type() const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->key_type();
   }
 
-  TypeId val_type() const override {
-    return _map->val_type();
+  TypeId val_type() const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->val_type();
   }
 
-  void for_each(std::function<void(Var, Var)> callback) const override {
-    return _map->for_each(callback);
+  void for_each(std::function<void(Var, Var)> callback) const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->for_each(callback);
   }
 
-  void for_each(std::function<void(Var, Var)> callback) override {
-    return _map->for_each(callback);
+  void for_each(std::function<void(Var, Var)> callback) {
+    return reinterpret_cast<IMap*>(&_mem[0])->for_each(callback);
   }
 
-  void unsafe_for_each(std::function<void(void*, void*)> callback) const override {
-    return _map->unsafe_for_each(callback);
+  void unsafe_for_each(std::function<void(void*, void*)> callback) const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->unsafe_for_each(callback);
   }
 
-  void clear() override {
-    _map->clear();
+  void clear() {
+    reinterpret_cast<IMap*>(&_mem[0])->clear();
   }
 
-  size_t size() const override {
-    return _map->size();
+  size_t size() const {
+    return reinterpret_cast<const IMap*>(&_mem[0])->size();
   }
 
-  Expected<None> insert(Var key, Var value) override {
-    return _map->insert(key, value);
+  Expected<None> insert(Var key, Var value) {
+    return reinterpret_cast<IMap*>(&_mem[0])->insert(key, value);
   }
 
-  Expected<None> remove(Var key) override {
-    return _map->remove(key);
+  Expected<None> remove(Var key) {
+    return reinterpret_cast<IMap*>(&_mem[0])->remove(key);
   }
 
  private:
-  std::shared_ptr<IMap> _map;
+  // a little hack to reduce dynamic memory allocation
+  // this approach is little faster then use shared_ptr but still faster
+  //
+  // it's just a memory bunch for a pointer and is_const flag
+  // all kinds of map has the same sizeof()
+  char _mem[sizeof(StdMap<int, int>)];
 };
 
 }  // namespace er

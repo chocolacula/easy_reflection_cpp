@@ -82,6 +82,10 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
     return er::Position{.column = columno(), .line_number = lineno()};
   }
 
+  size_t get_border() {
+    return border();
+  }
+
   inline std::string_view get_word() {
     return _word;
   }
@@ -281,79 +285,79 @@ int rf_yaml::LexerYaml::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/yaml.l:156: {direct} :
+          case 1: // rule library/lexers/yaml.l:160: {direct} :
 { /* ignore directive */ }
             break;
-          case 2: // rule library/lexers/yaml.l:157: {comment} :
+          case 2: // rule library/lexers/yaml.l:161: {comment} :
 { /* ignore comment */ }
             break;
-          case 3: // rule library/lexers/yaml.l:158: \h* {lf} :
+          case 3: // rule library/lexers/yaml.l:162: \h* {lf} :
 { /* ignore new line */ }
             break;
-          case 4: // rule library/lexers/yaml.l:159: \h* {bl} :
+          case 4: // rule library/lexers/yaml.l:163: \h* {bl} :
 { /* ignore new line */ }
             break;
-          case 5: // rule library/lexers/yaml.l:160: \h+ :
+          case 5: // rule library/lexers/yaml.l:164: \h+ :
 { /* ignore spaces and tabs */ }
             break;
-          case 6: // rule library/lexers/yaml.l:161: "---" {br} :
+          case 6: // rule library/lexers/yaml.l:165: "---" {br} :
 { return 'S'; }
             break;
-          case 7: // rule library/lexers/yaml.l:162: "..." {br} :
+          case 7: // rule library/lexers/yaml.l:166: "..." {br} :
 { return 'E'; }
             break;
-          case 8: // rule library/lexers/yaml.l:163: "-" :
+          case 8: // rule library/lexers/yaml.l:167: "-" :
 { return '-'; }
             break;
-          case 9: // rule library/lexers/yaml.l:164: "?" :
+          case 9: // rule library/lexers/yaml.l:168: "?" :
 { return '?'; }
             break;
-          case 10: // rule library/lexers/yaml.l:165: ":" :
+          case 10: // rule library/lexers/yaml.l:169: ":" :
 { return ':'; }
             break;
-          case 11: // rule library/lexers/yaml.l:166: "," :
+          case 11: // rule library/lexers/yaml.l:170: "," :
 { return ','; }
             break;
-          case 12: // rule library/lexers/yaml.l:167: "[" :
+          case 12: // rule library/lexers/yaml.l:171: "[" :
 { return '['; }
             break;
-          case 13: // rule library/lexers/yaml.l:168: "]" :
+          case 13: // rule library/lexers/yaml.l:172: "]" :
 { return ']'; }
             break;
-          case 14: // rule library/lexers/yaml.l:169: "{" :
+          case 14: // rule library/lexers/yaml.l:173: "{" :
 { return '{'; }
             break;
-          case 15: // rule library/lexers/yaml.l:170: "}" :
+          case 15: // rule library/lexers/yaml.l:174: "}" :
 { return '}'; }
             break;
-          case 16: // rule library/lexers/yaml.l:171: "'" :
+          case 16: // rule library/lexers/yaml.l:175: "'" :
 { clear(); start(APOS); }
             break;
-          case 17: // rule library/lexers/yaml.l:172: \" :
+          case 17: // rule library/lexers/yaml.l:176: \" :
 { clear(); start(QUOT); }
             break;
-          case 18: // rule library/lexers/yaml.l:173: "|"  \d* {nl} :
+          case 18: // rule library/lexers/yaml.l:177: "|"  \d* {nl} :
 { clear(); parse_indent(1); mode = CLIP;  }
             break;
-          case 19: // rule library/lexers/yaml.l:174: "|-" \d* {nl} :
+          case 19: // rule library/lexers/yaml.l:178: "|-" \d* {nl} :
 { clear(); parse_indent(2); mode = STRIP; }
             break;
-          case 20: // rule library/lexers/yaml.l:175: "|+" \d* {nl} :
+          case 20: // rule library/lexers/yaml.l:179: "|+" \d* {nl} :
 { clear(); parse_indent(2); mode = KEEP;  }
             break;
-          case 21: // rule library/lexers/yaml.l:176: ">"  \d* {nl} :
+          case 21: // rule library/lexers/yaml.l:180: ">"  \d* {nl} :
 { clear(); parse_indent(1); mode = CLIP;  }
             break;
-          case 22: // rule library/lexers/yaml.l:177: ">-" \d* {nl} :
+          case 22: // rule library/lexers/yaml.l:181: ">-" \d* {nl} :
 { clear(); parse_indent(2); mode = STRIP; }
             break;
-          case 23: // rule library/lexers/yaml.l:178: ">+" \d* {nl} :
+          case 23: // rule library/lexers/yaml.l:182: ">+" \d* {nl} :
 { clear(); parse_indent(2); mode = KEEP;  }
             break;
-          case 24: // rule library/lexers/yaml.l:179: {tag} :
+          case 24: // rule library/lexers/yaml.l:183: {tag} :
 { _word = str(); return chr(); }
             break;
-          case 25: // rule library/lexers/yaml.l:180: {scalar} :
+          case 25: // rule library/lexers/yaml.l:184: {scalar} :
 { _word = str(); return '$'; }
 
             break;
@@ -373,19 +377,19 @@ int rf_yaml::LexerYaml::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/yaml.l:183: ' :
+          case 1: // rule library/lexers/yaml.l:187: ' :
 { start(INITIAL); return '$'; }
             break;
-          case 2: // rule library/lexers/yaml.l:184: '' :
+          case 2: // rule library/lexers/yaml.l:188: '' :
 { add('\''); }
             break;
-          case 3: // rule library/lexers/yaml.l:210: \h* {lf} :
+          case 3: // rule library/lexers/yaml.l:214: \h* {lf} :
 { add(' '); }
             break;
-          case 4: // rule library/lexers/yaml.l:211: {bl} :
+          case 4: // rule library/lexers/yaml.l:215: {bl} :
 { add('\n', newlines() - 1); }
             break;
-          case 5: // rule library/lexers/yaml.l:212: . :
+          case 5: // rule library/lexers/yaml.l:216: . :
 { add(chr()); }
             break;
         }
@@ -404,70 +408,70 @@ int rf_yaml::LexerYaml::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/yaml.l:188: \\ {lf} :
+          case 1: // rule library/lexers/yaml.l:192: \\ {lf} :
 { /* ignore \LF */ }
             break;
-          case 2: // rule library/lexers/yaml.l:189: \" :
+          case 2: // rule library/lexers/yaml.l:193: \" :
 { start(INITIAL); return '$'; }
             break;
-          case 3: // rule library/lexers/yaml.l:190: \\ 0 :
+          case 3: // rule library/lexers/yaml.l:194: \\ 0 :
 { add('\0'); }
             break;
-          case 4: // rule library/lexers/yaml.l:191: \\ a :
+          case 4: // rule library/lexers/yaml.l:195: \\ a :
 { add('\a'); }
             break;
-          case 5: // rule library/lexers/yaml.l:192: \\ b :
+          case 5: // rule library/lexers/yaml.l:196: \\ b :
 { add('\b'); }
             break;
-          case 6: // rule library/lexers/yaml.l:193: \\ t :
+          case 6: // rule library/lexers/yaml.l:197: \\ t :
 { add('\t'); }
             break;
-          case 7: // rule library/lexers/yaml.l:194: \\ n :
+          case 7: // rule library/lexers/yaml.l:198: \\ n :
 { add('\n'); }
             break;
-          case 8: // rule library/lexers/yaml.l:195: \\ v :
+          case 8: // rule library/lexers/yaml.l:199: \\ v :
 { add('\v'); }
             break;
-          case 9: // rule library/lexers/yaml.l:196: \\ f :
+          case 9: // rule library/lexers/yaml.l:200: \\ f :
 { add('\f'); }
             break;
-          case 10: // rule library/lexers/yaml.l:197: \\ r :
+          case 10: // rule library/lexers/yaml.l:201: \\ r :
 { add('\r'); }
             break;
-          case 11: // rule library/lexers/yaml.l:198: \\ e :
+          case 11: // rule library/lexers/yaml.l:202: \\ e :
 { add(0x1b); }
             break;
-          case 12: // rule library/lexers/yaml.l:199: \\ N :
+          case 12: // rule library/lexers/yaml.l:203: \\ N :
 { add(0x85); }
             break;
-          case 13: // rule library/lexers/yaml.l:200: \\ _ :
+          case 13: // rule library/lexers/yaml.l:204: \\ _ :
 { add(0xa0); }
             break;
-          case 14: // rule library/lexers/yaml.l:201: \\ L :
+          case 14: // rule library/lexers/yaml.l:205: \\ L :
 { add_unicode(0x2028); }
             break;
-          case 15: // rule library/lexers/yaml.l:202: \\ P :
+          case 15: // rule library/lexers/yaml.l:206: \\ P :
 { add_unicode(0x2029); }
             break;
-          case 16: // rule library/lexers/yaml.l:203: \\ x {h2} :
+          case 16: // rule library/lexers/yaml.l:207: \\ x {h2} :
 { add(strtoul(text() + 2, NULL, 16)); }
             break;
-          case 17: // rule library/lexers/yaml.l:204: \\ u {h4} :
+          case 17: // rule library/lexers/yaml.l:208: \\ u {h4} :
 { add(strtoul(text() + 2, NULL, 16)); }
             break;
-          case 18: // rule library/lexers/yaml.l:205: \\ U {h8} :
+          case 18: // rule library/lexers/yaml.l:209: \\ U {h8} :
 { add(strtoul(text() + 2, NULL, 16)); }
             break;
-          case 19: // rule library/lexers/yaml.l:206: \\ . :
+          case 19: // rule library/lexers/yaml.l:210: \\ . :
 { add(str()[1]); }
             break;
-          case 20: // rule library/lexers/yaml.l:210: \h* {lf} :
+          case 20: // rule library/lexers/yaml.l:214: \h* {lf} :
 { add(' '); }
             break;
-          case 21: // rule library/lexers/yaml.l:211: {bl} :
+          case 21: // rule library/lexers/yaml.l:215: {bl} :
 { add('\n', newlines() - 1); }
             break;
-          case 22: // rule library/lexers/yaml.l:212: . :
+          case 22: // rule library/lexers/yaml.l:216: . :
 { add(chr()); }
             break;
         }
@@ -486,13 +490,13 @@ int rf_yaml::LexerYaml::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/yaml.l:216: {lf} :
+          case 1: // rule library/lexers/yaml.l:220: {lf} :
 { add('\n'); }
             break;
-          case 2: // rule library/lexers/yaml.l:217: {bl} :
+          case 2: // rule library/lexers/yaml.l:221: {bl} :
 { add('\n', newlines()); }
             break;
-          case 3: // rule library/lexers/yaml.l:218: . :
+          case 3: // rule library/lexers/yaml.l:222: . :
 { add(chr()); }
             break;
         }
@@ -511,16 +515,16 @@ int rf_yaml::LexerYaml::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/yaml.l:222: \h+ {lf} :
+          case 1: // rule library/lexers/yaml.l:226: \h+ {lf} :
 { sp = size() - 1 - (*(matcher().end() - 2) == '\r'); }
             break;
-          case 2: // rule library/lexers/yaml.l:223: {lf} :
+          case 2: // rule library/lexers/yaml.l:227: {lf} :
 { sp = 1; }
             break;
-          case 3: // rule library/lexers/yaml.l:224: {bl} :
+          case 3: // rule library/lexers/yaml.l:228: {bl} :
 { add('\n', newlines() - 1); }
             break;
-          case 4: // rule library/lexers/yaml.l:225: . :
+          case 4: // rule library/lexers/yaml.l:229: . :
 { add_space(); add(chr()); }
             break;
         }

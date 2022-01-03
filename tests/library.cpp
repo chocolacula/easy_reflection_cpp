@@ -3,7 +3,7 @@
 #include "data/various.h"
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
-#include "er/type_info/variants/floating/floating.h"
+#include "er/type_info/variants/map/std_unordered_map.h"
 #include "er/variable/box.h"
 #include "generated/reflection.h"
 #include "gtest/gtest.h"
@@ -34,6 +34,33 @@ TEST(TightString, Ownership) {
     str = std::string("std::string which own the data in dynamic memory");
     ASSERT_TRUE(str.is_owned());
   }
+}
+
+TEST(Array, Sizeof) {
+  auto arr = sizeof(Array);
+
+  ASSERT_EQ(arr, sizeof(StdArray<int, 8>));
+  ASSERT_EQ(arr, sizeof(CArray<int, 8>));
+}
+
+TEST(Sequence, Sizeof) {
+  auto seq = sizeof(Sequence);
+
+  ASSERT_EQ(seq, sizeof(StdVector<int>));
+  ASSERT_EQ(seq, sizeof(StdList<int>));
+  ASSERT_EQ(seq, sizeof(StdDeque<int>));
+  ASSERT_EQ(seq, sizeof(StdStack<int>));
+  ASSERT_EQ(seq, sizeof(StdQueue<int>));
+  ASSERT_EQ(seq, sizeof(StdStack<int>));
+  ASSERT_EQ(seq, sizeof(StdSet<int>));
+  ASSERT_EQ(seq, sizeof(StdUnorderedSet<int>));
+}
+
+TEST(Map, Sizeof) {
+  auto map = sizeof(Map);
+
+  ASSERT_EQ(map, sizeof(StdMap<int, int>));
+  ASSERT_EQ(map, sizeof(StdUnorderedMap<int, int>));
 }
 
 TEST(Box, Allocation) {

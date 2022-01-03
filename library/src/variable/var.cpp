@@ -12,6 +12,10 @@ Var::Var() : _value(nullptr), _type(), _is_const(true) {
 Var::Var(void* value, TypeId type, bool is_const) : _value(value), _type(type), _is_const(is_const) {
 }
 
+void Var::unsafe_assign(void* ptr) {
+  _value = ptr;
+}
+
 bool Var::operator==(const Var& other) const {
   return _type == other._type && _value == other._value;
 }

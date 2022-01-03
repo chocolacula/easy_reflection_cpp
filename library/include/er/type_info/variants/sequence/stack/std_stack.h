@@ -45,18 +45,19 @@ struct StdStack : public IStack, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
+    const auto end = StackIterator<T>::end(_stack);
 
-    for (auto it = StackIterator<T>::begin(_stack); it != StackIterator<T>::end(_stack); ++it) {
+    for (auto it = StackIterator<T>::begin(_stack); it != end; ++it) {
       callback(Var(&(*it), nested_type, true));
     }
   }
 
   void for_each(std::function<void(Var)> callback) override {
+    const auto nested_type = TypeId::get<T>();
+    const auto end = StackIterator<T>::end(_stack);
 
-    auto nested_type = TypeId::get<T>();
-
-    for (auto it = StackIterator<T>::begin(_stack); it != StackIterator<T>::end(_stack); ++it) {
+    for (auto it = StackIterator<T>::begin(_stack); it != end; ++it) {
       callback(Var(&(*it), nested_type, _is_const));
     }
   }

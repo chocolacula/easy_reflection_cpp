@@ -7,6 +7,7 @@
 namespace er {
 
 struct ISequence {
+  virtual ~ISequence() = default;
   virtual Expected<None> assign(Var var) = 0;
   virtual void unsafe_assign(void* ptr) = 0;
   virtual Var own_var() const = 0;

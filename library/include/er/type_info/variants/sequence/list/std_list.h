@@ -44,7 +44,7 @@ struct StdList : public IList, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto&& entry : *_list) {
       callback(Var(&entry, nested_type, true));
@@ -52,7 +52,7 @@ struct StdList : public IList, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto&& entry : *_list) {
       callback(Var(&entry, nested_type, _is_const));

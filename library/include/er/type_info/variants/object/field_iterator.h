@@ -20,7 +20,6 @@ class FieldIterator {
   FieldIterator& operator++() noexcept {
     // if _access == Access::Static (only)
     // all static fields are valid no matter public or private
-#pragma unroll
     do {
       ++_it;
     } while (_it != _end && !_it->second.is_const() && (_it->second.access() & _access) == Access::kNone);
@@ -31,6 +30,10 @@ class FieldIterator {
     auto t = *this;
     ++(*this);
     return t;
+  };
+
+  bool operator==(const FieldIterator& other) const noexcept {
+    return _it != other._it;
   };
 
   bool operator!=(const FieldIterator& other) const noexcept {

@@ -40,7 +40,7 @@ struct CArray final : public IArray {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto i = 0; i < size_v; ++i) {
       callback(Var(&(_array[i]), nested_type, true));
@@ -48,7 +48,7 @@ struct CArray final : public IArray {
   }
 
   void for_each(std::function<void(Var)> callback) override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto i = 0; i < size_v; ++i) {
       callback(Var(&(_array[i]), nested_type, _is_const));
@@ -88,7 +88,7 @@ struct CArray final : public IArray {
   Expected<None> fill(Var filler) override {
     auto f = filler.rt_cast<T>();
 
-    return f.template match(
+    return f.template match_move(
         [this](T* ptr) -> Expected<None> {  //
           for (auto i = 0; i < size_v; i++) {
             _array[i] = *ptr;

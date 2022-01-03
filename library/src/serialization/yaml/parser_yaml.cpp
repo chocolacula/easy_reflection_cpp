@@ -206,11 +206,11 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
   Box box(nested_type);
   auto info = reflection::reflect(box.var());
 
-  auto ind_first = get_position().column;
+  auto ind_first = get_border();
 
   while (!is_end(_token)) {
 
-    auto ind_next = get_position().column;
+    auto ind_next = get_border();
     if (ind_next < ind_first) {
       break;
     }
@@ -325,10 +325,10 @@ Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
     return parse_flow_map(std::move(add));
   }
 
-  auto ind_first = get_position().column;
+  auto ind_first = get_border();
 
   while (_token != 'S' && !is_end(_token)) {
-    auto ind_next = get_position().column;
+    auto ind_next = get_border();
     if (ind_next < ind_first) {
       break;
     }

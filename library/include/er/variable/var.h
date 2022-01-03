@@ -20,6 +20,8 @@ struct Var {
   explicit Var(T* value, bool is_const = false) : _value(value), _type(TypeId::get(value)), _is_const(is_const) {
   }
 
+  void unsafe_assign(void* ptr);
+
   bool operator==(const Var& other) const;
   bool operator!=(const Var& other) const;
 

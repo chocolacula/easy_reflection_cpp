@@ -59,7 +59,7 @@ struct Object {
   Var _var;
 
   inline void reassign_fields(const void* ptr) {
-#pragma unroll 5
+#pragma unroll 8
     for (auto&& kv : _fields) {
       auto& field = kv.second;
 

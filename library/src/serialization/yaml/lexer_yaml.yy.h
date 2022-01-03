@@ -85,6 +85,10 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
     return er::Position{.column = columno(), .line_number = lineno()};
   }
 
+  size_t get_border() {
+    return border();
+  }
+
   inline std::string_view get_word() {
     return _word;
   }

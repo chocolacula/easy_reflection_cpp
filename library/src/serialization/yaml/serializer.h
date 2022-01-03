@@ -53,7 +53,7 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info, int indent) {
       const auto& o = info.unsafe_get<Object>();
 
       bool is_first = true;
-#pragma unroll 5
+#pragma unroll 8
       for (auto&& record : o.get_fields()) {
 
         if (!is_first) {
@@ -169,6 +169,7 @@ inline void serialize_sequence(const SeqT& seq, IWriter* writer, int indent) {
   }
 
   auto info = reflection::reflect(Var(nullptr, seq.nested_type(), false));
+
   bool is_first = true;
   seq.unsafe_for_each([writer, indent, &info, &is_first](void* ptr) {
     if (!is_first) {

@@ -46,23 +46,27 @@ struct StdQueue : public IQueue, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
+    const auto end = QueueIterator<T>::end(_queue);
 
-    for (auto it = QueueIterator<T>::begin(_queue); it != QueueIterator<T>::end(_queue); ++it) {
+    for (auto it = QueueIterator<T>::begin(_queue); it != end; ++it) {
       callback(Var(&(*it), nested_type, true));
     }
   }
 
   void for_each(std::function<void(Var)> callback) override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
+    const auto end = QueueIterator<T>::end(_queue);
 
-    for (auto it = QueueIterator<T>::begin(_queue); it != QueueIterator<T>::end(_queue); ++it) {
+    for (auto it = QueueIterator<T>::begin(_queue); it != end; ++it) {
       callback(Var(&(*it), nested_type, _is_const));
     }
   }
 
   void unsafe_for_each(std::function<void(void*)> callback) const override {
-    for (auto it = QueueIterator<T>::begin(_queue); it != QueueIterator<T>::end(_queue); ++it) {
+    const auto end = QueueIterator<T>::end(_queue);
+
+    for (auto it = QueueIterator<T>::begin(_queue); it != end; ++it) {
       callback(&(*it));
     }
   }

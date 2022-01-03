@@ -45,7 +45,7 @@ struct StdMap final : public IMap {
   }
 
   void for_each(std::function<void(Var, Var)> callback) const override {
-    auto value_type = TypeId::get<ValueT>();
+    const auto value_type = TypeId::get<ValueT>();
 
     for (auto&& pair : *_map) {
       callback(Var(&pair.first), Var(&pair.second, value_type, true));
@@ -53,7 +53,7 @@ struct StdMap final : public IMap {
   }
 
   void for_each(std::function<void(Var, Var)> callback) override {
-    auto value_type = TypeId::get<ValueT>();
+    const auto value_type = TypeId::get<ValueT>();
 
     for (auto&& pair : *_map) {
       callback(Var(&pair.first), Var(&pair.second, value_type, _is_const));
@@ -98,7 +98,7 @@ struct StdMap final : public IMap {
 
     auto k = key.rt_cast<KeyT>();
 
-    return k.match(
+    return k.match_move(
         [this](KeyT* ptr) -> Expected<None> {  //
           auto n = _map->erase(*ptr);
 
