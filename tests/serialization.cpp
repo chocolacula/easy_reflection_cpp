@@ -12,7 +12,7 @@
 
 using namespace er;
 
-void compare_tresolds(const Tresholds& lhs, const Tresholds& rhs) {
+void compare_tresholds(const Tresholds& lhs, const Tresholds& rhs) {
   ASSERT_TRUE(lhs.u8_max == rhs.u8_max &&    //
               lhs.u16_max == rhs.u16_max &&  //
               lhs.u32_max == rhs.u32_max &&  //
@@ -79,7 +79,7 @@ TEST(SerializationJson, Thresholds) {
   auto str = er::serialization::json::to_string(&struct1).unwrap();
   auto struct2 = er::serialization::json::from_string<Tresholds>(str).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
 
 TEST(SerializationYaml, Thresholds) {
@@ -88,7 +88,7 @@ TEST(SerializationYaml, Thresholds) {
   auto str = er::serialization::yaml::to_string(&struct1).unwrap();
   auto struct2 = er::serialization::yaml::from_string<Tresholds>(str).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
 
 TEST(SerializationBinary, Thresholds) {
@@ -97,7 +97,7 @@ TEST(SerializationBinary, Thresholds) {
   auto binary_data = er::serialization::binary::to_vector(&struct1).unwrap();
   auto struct2 = er::serialization::binary::from_vector<Tresholds>(binary_data).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
 
 TEST(SerializationJson, BackAndForth) {

@@ -44,10 +44,9 @@ Expected<None> ParserJson::parse(TypeInfo* info, char token) {
           [this](Integer& i) -> Expected<None> {
             auto w = get_word();
 
-            if (w.front() == '-') {
+            if (w.front() == '-' || i.is_signed()) {
               return i.set_signed(std::strtoll(&w[0], nullptr, 10));
             }
-
             return i.set_unsigned(std::strtoull(&w[0], nullptr, 10));
           },
           [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
