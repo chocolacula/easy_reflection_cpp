@@ -9,5 +9,6 @@ input:
   - ../tests/data/tresholds.h
   - ../tests/data/various.h
   - ../tests/data/big.h
+  - ../tests/data/complex_map.h
 
 output_dir: ../tests/generated

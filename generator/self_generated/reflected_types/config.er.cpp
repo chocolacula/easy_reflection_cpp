@@ -1,4 +1,4 @@
-#include "Config.er.h"
+#include "config.er.h"
 
 // clang-format off
 #include "er/reflection/the_great_table.h"
@@ -13,7 +13,7 @@ struct TypeActions<Config> {
     auto* p = static_cast<Config*>(value);
 
     std::map<std::string_view, FieldInfo> map {
-      
+
     };
 
     if (p != nullptr) {
@@ -22,7 +22,7 @@ struct TypeActions<Config> {
         {"templates", FieldInfo(&p->templates, Access::kPublic)},
         {"input", FieldInfo(&p->input, Access::kPublic)},
         {"output_dir", FieldInfo(&p->output_dir, Access::kPublic)},
-        
+
       });
     }
 

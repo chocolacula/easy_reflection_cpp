@@ -13,6 +13,7 @@
 #include "file_manager.h"
 #include "parser_cpp.h"
 #include "self_generated/reflection.h"
+#include "to_snake_case.h"
 
 // tclap
 #include "tclap/CmdLine.h"
@@ -114,18 +115,11 @@ int main(int argc, const char** argv) {
 
   // generate templates
   for (auto&& item : parsed) {
-    std::string file_name = item.first;
-    auto pos = file_name.find_last_of(':');
-
-    if (pos != std::string::npos) {
-      pos += 1;
-      file_name = file_name.substr(pos, file_name.length() - pos);
-    }
+    auto file_name = to_snake_case(item.first);
 
     auto& json = item.second;
-    json["name_short"] = file_name;
+    json["file_name"] = file_name;
 
-    auto j = json["name_short"];
     file_name += ".er";
 
     std::ofstream output_h;

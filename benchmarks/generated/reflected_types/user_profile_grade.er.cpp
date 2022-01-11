@@ -1,4 +1,4 @@
-#include "Grade.er.h"
+#include "user_profile_grade.er.h"
 
 // clang-format off
 #include "er/reflection/the_great_table.h"

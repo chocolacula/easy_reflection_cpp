@@ -6,11 +6,11 @@ It combines parsed data into one json entity and forwards it to inja tempate eng
 
 format of an object entity is
 
-```js
+```json
 {
   "id" : 0, // 0 is object id
   "name" : string,  // full name including all namespaces
-  "name_short" : string, // only object name
+  "file_name" : string, // full name converted to snake_case with extension
   "origin" : string, // file path to origin file for analysis
   "bases" : [
     {
@@ -37,11 +37,11 @@ format of an object entity is
 
 format of an enum entity is
 
-```js
+```json
 {
   "id" : 1, // 1 is enum id
   "name" : string,  // full name including all namespaces
-  "name_short" : string, // only enum name
+  "file_name" : string, // full name converted to snake_case with extension
   "origin" : string, // file path to origin file for analysis
   "constants" : [
     {

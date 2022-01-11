@@ -3,6 +3,8 @@ Checks: >
   -altera-struct-pack-align,
   -llvmlibc-*,
   -cert-dcl21-cpp,
+  -hicpp-avoid-c-arrays,
+  -cppcoreguidelines-avoid-c-arrays,
   -cppcoreguidelines-pro-type-union-access,
   -cppcoreguidelines-pro-type-reinterpret-cast,
   -cppcoreguidelines-pro-type-const-cast,

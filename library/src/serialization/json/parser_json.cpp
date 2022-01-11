@@ -30,7 +30,7 @@ Expected<None> ParserJson::deserialize(TypeInfo* info) {
   return parse_next(info);
 }
 
-Expected<None> ParserJson::parse(TypeInfo* info, wchar_t token) {
+Expected<None> ParserJson::parse(TypeInfo* info, char token) {
   switch (token) {
     case '0':
       // do nothing
@@ -42,21 +42,13 @@ Expected<None> ParserJson::parse(TypeInfo* info, wchar_t token) {
     case 'n':
       return info->match(
           [this](Integer& i) -> Expected<None> {
-            auto* p = i.var().raw_mut();
-            if (p == nullptr) {
-              return Error("Trying to set const value");
-            }
-
             auto w = get_word();
+
             if (w.front() == '-') {
-              auto v = std::strtoll(&w[0], nullptr, 10);
-              std::memcpy(p, &v, i.size());
-            } else {
-              auto v = std::strtoull(&w[0], nullptr, 10);
-              std::memcpy(p, &v, i.size());
+              return i.set_signed(std::strtoll(&w[0], nullptr, 10));
             }
 
-            return None();
+            return i.set_unsigned(std::strtoull(&w[0], nullptr, 10));
           },
           [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
           [this](auto&&) -> Expected<None> { return error_match(); });
@@ -282,15 +274,15 @@ Expected<None> ParserJson::parse_map(Map& map) {
   return error("Max depth level exceeded");
 }
 
-wchar_t ParserJson::next() {
-  return static_cast<wchar_t>(lex());
+char ParserJson::next() {
+  return static_cast<char>(lex());
 }
 
 Error ParserJson::error(const char* str) {
   return Error(format("{}; {}", str, get_position().to_string()));
 }
 
-Error ParserJson::error_token(wchar_t token) {
+Error ParserJson::error_token(char token) {
   return Error(format("Unexpected token '{}'; {}", token, get_position().to_string()));
 }
 

@@ -1,8 +1,8 @@
 #include "reflection.h"
 
 // clang-format off
-#include "reflected_types/UserProfile.er.cpp" //NOLINT
-#include "reflected_types/Activity.er.cpp" //NOLINT
-#include "reflected_types/Grade.er.cpp" //NOLINT
-#include "reflected_types/UserName.er.cpp" //NOLINT
+#include "reflected_types/user_profile.er.cpp" //NOLINT
+#include "reflected_types/user_profile_activity.er.cpp" //NOLINT
+#include "reflected_types/user_profile_grade.er.cpp" //NOLINT
+#include "reflected_types/user_profile_user_name.er.cpp" //NOLINT
 // clang-format on

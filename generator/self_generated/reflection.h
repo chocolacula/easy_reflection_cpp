@@ -4,5 +4,5 @@
 #include "er/types/all_types.h"
 
 // generated:
-#include "reflected_types/Config.er.h"
-#include "reflected_types/Templates.er.h"
+#include "reflected_types/config.er.h"
+#include "reflected_types/config_templates.er.h"

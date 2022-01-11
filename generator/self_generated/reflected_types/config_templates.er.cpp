@@ -1,4 +1,4 @@
-#include "Templates.er.h"
+#include "config_templates.er.h"
 
 // clang-format off
 #include "er/reflection/the_great_table.h"
@@ -13,7 +13,7 @@ struct TypeActions<Config::Templates> {
     auto* p = static_cast<Config::Templates*>(value);
 
     std::map<std::string_view, FieldInfo> map {
-      
+
     };
 
     if (p != nullptr) {
@@ -21,7 +21,7 @@ struct TypeActions<Config::Templates> {
         {"header", FieldInfo(&p->header, Access::kPublic)},
         {"enum", FieldInfo(&p->for_enum, Access::kPublic)},
         {"object", FieldInfo(&p->object, Access::kPublic)},
-        
+
       });
     }
 

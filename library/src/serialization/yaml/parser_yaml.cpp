@@ -15,12 +15,12 @@ using namespace er;
 
 ParserYaml::ParserYaml(const char* input, size_t input_size)  //
     : LexerYaml(input, input_size),                           //
-      _token(static_cast<wchar_t>(lex())) {
+      _token(static_cast<char>(lex())) {
 }
 
 ParserYaml::ParserYaml(std::istream& stream)  //
     : LexerYaml(stream),                      //
-      _token(static_cast<wchar_t>(lex())) {
+      _token(static_cast<char>(lex())) {
 }
 
 Expected<None> ParserYaml::deserialize(TypeInfo* info) {
@@ -38,10 +38,6 @@ Expected<None> ParserYaml::deserialize(TypeInfo* info) {
 }
 
 Expected<None> ParserYaml::parse(TypeInfo* info) {
-  if (is_new_line(_token)) {
-    next();
-  }
-
   // just ignore tags
   if (_token == '!') {
     next();
@@ -54,18 +50,13 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
     __retry(reflection::copy(info->var(), box.var()));
 
     next();
-    if (is_new_line(_token)) {
-      next();
-    }
+
     return None();
   }
 
   if (_token == '&') {
     anchor = get_word();
     next();
-    if (is_new_line(_token)) {
-      next();
-    }
   }
 
   Expected<None> ex = None();
@@ -168,21 +159,6 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
   return ex;
 }
 
-// parse indented value (string, nested sequence, or nested map)
-Expected<None> ParserYaml::parse_ind(TypeInfo* info) {
-  next();  // skip indention token itself
-
-  auto ex = parse(info);
-
-  if (is_new_line(_token)) {
-    next();
-  }
-  if (_token == '<') {
-    next();
-  }
-  return ex;
-}
-
 // parse "- val ..."
 Expected<None> ParserYaml::parse_seq(TypeInfo* info) {
   return info->match(
@@ -231,73 +207,25 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
 Expected<None> ParserYaml::parse_flow_seq(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add) {
   next();  // skip '[' itself
 
-  size_t level = 0;
   size_t i = 0;
 
   Box box(nested_type);
   auto info = reflection::reflect(box.var());
 
   while (!is_end(_token) && _token != 'S' && _token != ']') {
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
-
     __retry(parse(&info));
     i++;
     __retry(add(i, box.var()));
 
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
     if (_token == ',') {
       next();
     }
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
   }
+
   if (_token == ']') {
     next();
   }
-  if (is_new_line(_token)) {
-    next();
-  }
-  while (_token == '<' && level-- > 0) {
-    next();
-  }
+
   return None();
 }
 
@@ -343,23 +271,10 @@ Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
 Expected<None> ParserYaml::parse_flow_map(std::function<Expected<None>()> add) {
   next();  // skip '{' itself
 
-  size_t level = 0;
   while (_token != 'S' && !is_end(_token) && _token != '}') {
 
-    if (is_new_line(_token) || _token == '$') {
+    if (_token == '$') {
       next();
-    }
-
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
     }
 
     if (_token == ':') {
@@ -368,44 +283,12 @@ Expected<None> ParserYaml::parse_flow_map(std::function<Expected<None>()> add) {
       return error_token(_token);
     }
 
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
     if (_token == ',') {
-      next();
-    }
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else if (_token == '<') {
-      if (level > 0) {
-        --level;
-      }
       next();
     }
   }
 
   if (_token == '}') {
-    next();
-  }
-  if (is_new_line(_token)) {
-    next();
-  }
-  while (_token == '<' && level-- > 0) {
     next();
   }
 
@@ -473,10 +356,6 @@ char ParserYaml::next() {
 
 bool ParserYaml::is_end(int token) {
   return token == 0 || token == 'E';
-}
-
-bool ParserYaml::is_new_line(int token) {
-  return token == '=' || token == ';';
 }
 
 Error ParserYaml::error(const char* str) {

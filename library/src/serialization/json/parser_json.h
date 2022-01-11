@@ -20,7 +20,7 @@ class ParserJson : rf_json::LexerJson {
   Expected<None> deserialize(TypeInfo* info);
 
  private:
-  Expected<None> parse(TypeInfo* info, wchar_t token);
+  Expected<None> parse(TypeInfo* info, char token);
   Expected<None> parse_next(TypeInfo* info);
 
   Expected<None> parse_array(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add);
@@ -31,10 +31,10 @@ class ParserJson : rf_json::LexerJson {
 
   Expected<None> parse_map(Map& map);
 
-  inline wchar_t next();
+  inline char next();
 
   inline Error error(const char* str);
-  inline Error error_token(wchar_t token);
+  inline Error error_token(char token);
   inline Error error_match();
 
   inline Expected<None> parse_field(Var new_var);

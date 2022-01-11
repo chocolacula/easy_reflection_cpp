@@ -1,4 +1,4 @@
-#include "UserName.er.h"
+#include "user_profile_user_name.er.h"
 
 // clang-format off
 #include "er/reflection/the_great_table.h"

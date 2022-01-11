@@ -7,62 +7,62 @@
 
 namespace er {
 
-/// union object to tightly pack std::string and std::string_view together
+/// immutable union object to tightly pack std::string and std::string_view together
 /// the main idea to determine which one is in the memory is
 /// compare sizes, because std::string(32 bytes) is bigger then std::string_view(16 bytes)
-/// size of both of them is a multiple of unsigned long(32 or 64 bits)
 /// if last two words are zeroes TightString contains std::string_view
-union TightString {
-  TightString(const TightString& data) {
-    if (data.is_owned()) {
-      new (&owned) std::string(data.owned);
+/// reduces dynamic allocations
+struct TightString {
+  TightString(const TightString& other) {
+    if (other.is_owned()) {
+      new (&_raw[0]) std::string(other.str());
     } else {
       zero_tail();
-      shared = data.shared;
+      view() = other.view();
     }
   }
 
-  TightString& operator=(const TightString& data) {
-    if (data.is_owned()) {
-      new (&owned) std::string(data.owned);
+  TightString& operator=(const TightString& other) {
+    if (other.is_owned()) {
+      new (&_raw[0]) std::string(other.str());
     } else {
       zero_tail();
-      shared = data.shared;
-    }
-    return *this;
-  }
-
-  TightString(TightString&& data) noexcept {
-    if (data.is_owned()) {
-      new (&owned) std::string(std::move(data.owned));
-    } else {
-      zero_tail();
-      shared = data.shared;
-    }
-  }
-
-  TightString& operator=(TightString&& data) {
-    if (data.is_owned()) {
-      new (&owned) std::string(std::move(data.owned));
-    } else {
-      zero_tail();
-      shared = data.shared;
+      view() = other.view();
     }
     return *this;
   }
 
-  TightString(const char* shared) {
-    zero_tail();
-    this->shared = shared;
+  TightString(TightString&& other) noexcept {
+    if (other.is_owned()) {
+      new (&_raw[0]) std::string(std::move(other.str()));
+    } else {
+      zero_tail();
+      view() = other.view();
+    }
   }
 
-  TightString(std::string_view shared) {
-    zero_tail();
-    this->shared = shared;
+  TightString& operator=(TightString&& other) {
+    if (other.is_owned()) {
+      new (&_raw[0]) std::string(std::move(other.str()));
+    } else {
+      zero_tail();
+      view() = other.view();
+    }
+    return *this;
   }
 
-  TightString(std::string&& owned) {
-    new (&this->owned) std::string(std::move(owned));
+  TightString(const char* shared) {  // implicit
+    zero_tail();
+    view() = shared;
+  }
+
+  TightString(std::string_view shared) {  // implicit
+    zero_tail();
+    view() = shared;
+  }
+
+  TightString(std::string&& owned) {  // implicit
+    new (&_raw[0]) std::string(std::move(owned));
   }
 
   TightString() {
@@ -70,8 +70,10 @@ union TightString {
   };
 
   ~TightString() {
+#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
+    // has the correct behaviour in runtime
     if (is_owned()) {
-      owned.~basic_string();
+      str().std::string::~string();
     }
   };
 
@@ -79,11 +81,31 @@ union TightString {
     return std::memcmp(&_raw[sizeof(std::string_view)], &kZeroes[0], kTailSize) != 0;
   }
 
-  std::string_view shared;
-  std::string owned;
+  std::string_view get() const {
+    if (is_owned()) {
+      return str();
+    }
+    return view();
+  }
 
  private:
   char _raw[sizeof(std::string)];
+
+  inline std::string& str() noexcept {
+    return *reinterpret_cast<std::string*>(&_raw[0]);
+  }
+
+  inline const std::string& str() const noexcept {
+    return *reinterpret_cast<const std::string*>(&_raw[0]);
+  }
+
+  inline std::string_view& view() noexcept {
+    return *reinterpret_cast<std::string_view*>(&_raw[0]);
+  }
+
+  inline const std::string_view& view() const noexcept {
+    return *reinterpret_cast<const std::string_view*>(&_raw[0]);
+  }
 
   static constexpr uint8_t kTailSize = sizeof(std::string) - sizeof(std::string_view);
   static constexpr char kZeroes[kTailSize]{};
