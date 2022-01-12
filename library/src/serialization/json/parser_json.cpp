@@ -19,11 +19,11 @@
 using namespace er;
 
 ParserJson::ParserJson(const char* input, size_t input_size)  //
-    : LexerJson(input, input_size), _level(0) {
+    : LexerJson(input, input_size) {
 }
 
 ParserJson::ParserJson(std::istream& stream)  //
-    : LexerJson(stream), _level(0) {
+    : LexerJson(stream) {
 }
 
 Expected<None> ParserJson::deserialize(TypeInfo* info) {
@@ -59,11 +59,19 @@ Expected<None> ParserJson::parse(TypeInfo* info, char token) {
       // clang-format off
         return info->match(
             [this](Array& a) -> Expected<None> {
-              return parse_array(a.nested_type(), [&](size_t i, Var var) { return add_to_array(a, i, var); });
+              return parse_array(a.nested_type(), [&](size_t i, Var var) -> Expected<None> {
+                if (i < a.size()) {
+                  auto item = a.at(i).unwrap();
+                  return reflection::copy(item, var);
+                }
+                return None();
+              });
             },
             [this](Sequence& s) -> Expected<None> {
               s.clear();
-              return parse_array(s.nested_type(), [&](size_t, Var var) { return s.push(var); });
+              return parse_array(s.nested_type(), [&](size_t, Var var) {
+                return s.push(var);
+              });
             },
             [this](Map& m) -> Expected<None> {
               return parse_map(m);
@@ -80,102 +88,86 @@ Expected<None> ParserJson::parse(TypeInfo* info, char token) {
 }
 
 Expected<None> ParserJson::parse_next(TypeInfo* info) {
-  return parse(info, next());
+  next();
+  return parse(info, _token);
 }
 
 Expected<None> ParserJson::parse_array(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add) {
-  if (++_level > kMaxLevel) {
-    return error("Max depth level exceeded");
-  }
-
-  auto token = next();
-  if (token == ']') {
+  next();  // skip '['
+  if (_token == ']') {
     // an empty array
-    _level -= 1;
     return None();
   }
 
   Box box(nested_type);
   auto boxed_info = reflection::reflect(box.var());
 
-  for (size_t len = 0; len < kMaxArr; ++len) {
-    auto ex = parse(&boxed_info, token)
-                  .match_move([&, len](None&&) -> Expected<None> { return add(len, box.var()); },
+  for (size_t i = 0; /**/; ++i) {
+    auto ex = parse(&boxed_info, _token)
+                  .match_move([&, i](None&&) -> Expected<None> { return add(i, box.var()); },
                               [](Error&& err) -> Expected<None> { return err; });
     __retry(ex);
 
-    auto token = next();
-    if (token == ']') {
-      --_level;
+    next();
+    if (_token == ']') {
       return None();
     }
-    if (token != ',') {
-      return error_token(token);
+    if (_token != ',') {
+      return error_token(_token);
     }
 
     // get another one
-    token = next();
+    next();
   }
 
-  return None();
-}
-
-Expected<None> ParserJson::add_to_array(Array& a, size_t i, Var var) {
-  if (i < a.size()) {
-    auto item = a.at(i).unwrap();
-    reflection::copy(item, var);
-  }
   return None();
 }
 
 Expected<None> ParserJson::parse_object(TypeInfo* info) {
-  if (++_level > kMaxLevel) {
-    return error("Max depth level exceeded");
+  next();  // skip '{'
+  if (_token == '}') {
+    // an empty object
+    return None();
   }
 
-  for (size_t len = 0; len < kMaxArr; ++len) {
-    auto token = next();
+  auto o = info->get<Object>();
 
-    if (len == 0 && token == '}') {
-      --_level;
-      return None();
-    }
-    if (token != '$') {
+  while (true) {
+    if (_token != '$') {
       return error("Cannot reach a field name");
     }
-    if (next() != ':') {
+    next();
+    if (_token != ':') {
       return error("Cannot reach a field value");
     }
 
-    auto field = info->get<Object>().get_field(get_word()).unwrap();
-    __retry(parse_field(field));
+    auto field = o.get_field(get_word()).unwrap();
+    auto field_info = reflection::reflect(field);
+    __retry(parse_next(&field_info));
 
-    token = next();
-    if (token == '}') {
-      --_level;
+    next();
+    if (_token == '}') {
       return None();
     }
-    if (token != ',') {
-      return error_token(token);
+    if (_token != ',') {
+      return error_token(_token);
     }
+
+    next();
   }
 
   return error("Max depth level exceeded");
 }
 
 Expected<None> ParserJson::parse_map(Map& map) {
-  if (++_level > kMaxLevel) {
-    return error("Max depth level exceeded");
-  }
-
   map.clear();
 
-  auto token = next();
+  next();
 
   std::string key = "key";
   std::string val = "val";
 
-  if (token == '$') {
+  if (_token == '$') {
     // if particular tag found parse it
     auto pos = get_word().find("!!map");
     if (pos != std::string::npos) {
@@ -188,93 +180,94 @@ Expected<None> ParserJson::parse_map(Map& map) {
       val = std::move(pair.second);
 
       // make step to get a new token
-      if (next() != ',') {
-        return error_token(token);
+      next();
+      if (_token != ',') {
+        return error_token(_token);
       }
-      token = next();
+      next();
     } else {
       return error("Cannot reach the map tag or '{'");
     }
-  } else if (token != '{') {
-    return error_token(token);
+  } else if (_token != '{') {
+    return error_token(_token);
   }
 
-  for (size_t len = 0; len < kMaxArr; ++len) {
-    // token '{' has already been read
-    ++_level;
+  Box key_box(map.key_type());
+  auto key_info = reflection::reflect(key_box.var());
 
+  Box val_box(map.val_type());
+  auto val_info = reflection::reflect(val_box.var());
+
+  // token '{' has already been read
+  while (true) {
     // parse first field key or val
-    token = next();
-    if (token != '$') {
+    next();
+    if (_token != '$') {
       return error("Cannot reach a field name");
     }
 
-    if (next() != ':') {
+    next();
+    if (_token != ':') {
       return error("Cannot reach a field value");
     }
 
-    Box key_box(map.key_type());
-    Box val_box(map.val_type());
-
     if (get_word() == key) {
-      __retry(parse_field(key_box.var()));
+      __retry(parse_next(&key_info));
     } else if (get_word() == val) {
-      __retry(parse_field(val_box.var()));
+      __retry(parse_next(&val_info));
     } else {
-      return Error(format("Got an unexpected field '{}' while parse map; {}", get_word(), get_position().to_string()));
+      return Error(format("Got an unexpected field '{}' while parse map; {}",  //
+                          get_word(), get_position().to_string()));
     }
 
-    token = next();
-    if (token == '}') {
-      --_level;
+    next();
+    if (_token == '}') {
       return error("Unexpected end of JSON object");
     }
-    if (token != ',') {
-      return error_token(token);
+    if (_token != ',') {
+      return error_token(_token);
     }
 
     // parse second field key or val
-    token = next();
-    if (token != '$') {
+    next();
+    if (_token != '$') {
       return error("Cannot reach a field name");
     }
 
-    if (next() != ':') {
+    next();
+    if (_token != ':') {
       return error("Cannot reach a field value");
     }
 
     if (get_word() == key) {
-      __retry(parse_field(key_box.var()));
+      __retry(parse_next(&key_info));
     } else if (get_word() == val) {
-      __retry(parse_field(val_box.var()));
+      __retry(parse_next(&val_info));
     } else {
-      return Error(format("Got an unexpected field '{}' while parse map; {}", get_word(), get_position().to_string()));
+      return Error(format("Got an unexpected field '{}' while parse map; {}",  //
+                          get_word(), get_position().to_string()));
     }
 
     __retry(map.insert(key_box.var(), val_box.var()));
 
-    token = next();
-    if (token == '}') {
-      --_level;
-      token = next();
+    next();
+    if (_token == '}') {
+      next();
     }
-    if (token == ']') {
-      --_level;
+    if (_token == ']') {
       return None();
     }
-    if (token != ',') {
-      return error_token(token);
+    if (_token != ',') {
+      return error_token(_token);
     }
 
     // take next '{'
-    token = next();
+    next();
   }
-
-  return error("Max depth level exceeded");
 }
 
-char ParserJson::next() {
-  return static_cast<char>(lex());
+void ParserJson::next() {
+  _token = static_cast<char>(lex());
 }
 
 Error ParserJson::error(const char* str) {
@@ -287,11 +280,6 @@ Error ParserJson::error_token(char token) {
 
 Error ParserJson::error_match() {
   return Error(format("Cannot match correct type; {}", get_position().to_string()));
-}
-
-Expected<None> ParserJson::parse_field(Var new_var) {
-  auto info = reflection::reflect(new_var);
-  return parse_next(&info);
 }
 
 Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(std::string_view str) {

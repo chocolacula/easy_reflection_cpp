@@ -7,9 +7,6 @@
 // * %o unicode mode: . mathes any Unicode character
 // * \p{Non_ASCII_Unicode} matches any non-ASCII Unicode character
 // * JSON value types are indicated with tokens '0', 't', 'f', 'n', '$'
-// * JSONParser is a recursive descent parser for JSON
-// * JSONParser recurses 100 levels deep max (MAXLEVEL)
-// * JSONParser accepts 1000 items per array/object max (MAXSIZE)
 
 %option lexer=LexerJson
 %option namespace=rf_json

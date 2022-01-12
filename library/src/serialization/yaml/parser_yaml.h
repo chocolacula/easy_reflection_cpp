@@ -39,8 +39,6 @@ class ParserYaml : rf_yaml::LexerYaml {
   inline Expected<None> add_to_obj(Object& obj);
   inline Expected<None> add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value);
 
-  char next();
-
   static inline bool is_end(int token);
   static inline bool is_new_line(int token);
 
@@ -52,7 +50,9 @@ class ParserYaml : rf_yaml::LexerYaml {
   static inline int64_t parse_int(std::string_view str);
   static inline double parse_double(std::string_view str);
 
+  inline void next();
   char _token;
+
   std::unordered_map<std::string, Box> _anchors;
 };
 

@@ -347,11 +347,10 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
   return map.insert(var_key, var_value);
 }
 
-char ParserYaml::next() {
+void ParserYaml::next() {
   if (_token != 0) {
     _token = static_cast<char>(lex());
   }
-  return _token;
 }
 
 bool ParserYaml::is_end(int token) {
