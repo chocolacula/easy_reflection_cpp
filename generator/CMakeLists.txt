@@ -20,6 +20,10 @@ find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 include_directories(${TCLAP_INCLUDE_DIRS})
 
 find_package(LLVM REQUIRED)
+
+message("found LLVM include directory " ${LLVM_INCLUDE_DIR})
+message("found LLVM library directory " ${LLVM_LIBRARY_DIR})
+
 include_directories(${LLVM_INCLUDE_DIR})
 link_directories(${LLVM_LIBRARY_DIR})
 
