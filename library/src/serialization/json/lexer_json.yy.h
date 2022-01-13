@@ -11,7 +11,6 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#undef REFLEX_OPTION_dotall
 #undef REFLEX_OPTION_fast
 #undef REFLEX_OPTION_freespace
 #undef REFLEX_OPTION_header_file
@@ -23,7 +22,6 @@
 #undef REFLEX_OPTION_outfile
 #undef REFLEX_OPTION_unicode
 
-#define REFLEX_OPTION_dotall              true
 #define REFLEX_OPTION_fast                true
 #define REFLEX_OPTION_freespace           true
 #define REFLEX_OPTION_header_file         "library/lexers/../src/serialization/json/lexer_json.yy.h"
@@ -84,12 +82,12 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
     return er::Position{.column = columno(), .line_number = lineno()};
   }
 
-  inline std::string_view get_word() {
+  inline std::string& get_word() {
     return _word;
   }
 
  private:
-  std::string _word; // token value for token '$' (string)
+  std::string _word; // token value
 
  public:
   typedef reflex::AbstractLexer<reflex::Matcher> AbstractBaseLexer;

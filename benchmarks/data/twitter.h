@@ -62,7 +62,7 @@ struct Twitter {
       std::string created_at;
       uint32_t favourites_count;
       uint64_t utc_offset;
-      uint32_t time_zone;
+      std::string time_zone;
       bool geo_enabled;
       bool verified;
       uint32_t statuses_count;

@@ -1,4 +1,4 @@
-// A fast YAML 1.2 parser and writer
+// A fast YAML 1.2 parser
 // Written by Robert van Engelen
 // Edited by Maxim Voloshin
 //
@@ -30,7 +30,7 @@
 %option lexer=LexerYaml
 %option namespace=rf_yaml
 
-%o fast freespace dotall unicode noline noindent
+%o fast freespace unicode noline noindent
 
 %top{
   #include <cstdlib> // strtoul()
@@ -54,7 +54,7 @@
     return border();
   }
 
-  inline std::string_view get_word() {
+  inline std::string& get_word() {
     return _word;
   }
 

@@ -32,54 +32,66 @@ Expected<None> ParserJson::deserialize(TypeInfo* info) {
 
 Expected<None> ParserJson::parse(TypeInfo* info, char token) {
   switch (token) {
-    case '0':
-      // do nothing
-      return None();
-    case 't':
-      return info->get<Bool>().set(true);
-    case 'f':
-      return info->get<Bool>().set(false);
-    case 'n':
+    // clang-format off
+    case 's': {
+      if (get_word() == "null") {
+        // do nothing
+        return None();
+      }
       return info->match(
+          [this](Bool& b) -> Expected<None> {  //
+            return b.set(parse_bool(get_word()));
+          },
           [this](Integer& i) -> Expected<None> {
             auto w = get_word();
 
             if (w.front() == '-' || i.is_signed()) {
-              return i.set_signed(std::strtoll(&w[0], nullptr, 10));
+              return i.set_signed(std::strtoll(w.data(), nullptr, 10));
             }
-            return i.set_unsigned(std::strtoull(&w[0], nullptr, 10));
+            return i.set_unsigned(std::strtoull(w.data(), nullptr, 10));
           },
-          [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
-          [this](auto&&) -> Expected<None> { return error_match(); });
+          [this](Floating& f) -> Expected<None> {  //
+            return f.set(parse_double(get_word()));
+          },
+          [this](auto&&) -> Expected<None> {  //
+            return error_match();
+          });
+    }
     case '$':
-      return info->match([this](String& s) -> Expected<None> { return s.set(get_word()); },
-                         [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
-                         [this](auto&&) -> Expected<None> { return error_match(); });
+      return info->match(
+          [this](String& s) -> Expected<None> {
+            return s.set(get_word());
+          },
+          [this](Enum& e) -> Expected<None> {
+            return e.parse(get_word());
+          },
+          [this](auto&&) -> Expected<None> {
+            return error_match();
+          });
     case '[':
-      // clang-format off
-        return info->match(
-            [this](Array& a) -> Expected<None> {
-              return parse_array(a.nested_type(), [&](size_t i, Var var) -> Expected<None> {
-                if (i < a.size()) {
-                  auto item = a.at(i).unwrap();
-                  return reflection::copy(item, var);
-                }
-                return None();
-              });
-            },
-            [this](Sequence& s) -> Expected<None> {
-              s.clear();
-              return parse_array(s.nested_type(), [&](size_t, Var var) {
-                return s.push(var);
-              });
-            },
-            [this](Map& m) -> Expected<None> {
-              return parse_map(m);
-            },
-            [this](auto&&) -> Expected<None> {
-              return error_match();
+      return info->match(
+          [this](Array& a) -> Expected<None> {
+            return parse_array(a.nested_type(), [&](size_t i, Var var) -> Expected<None> {
+              if (i < a.size()) {
+                auto item = a.at(i).unwrap();
+                return reflection::copy(item, var);
+              }
+              return None();
             });
-      // clang-format on
+          },
+          [this](Sequence& s) -> Expected<None> {
+            s.clear();
+            return parse_array(s.nested_type(), [&](size_t, Var var) {
+              return s.push(var);
+            });
+          },
+          [this](Map& m) -> Expected<None> {
+            return parse_map(m);
+          },
+          [this](auto&&) -> Expected<None> {
+            return error_match();
+          });
+    // clang-format on
     case '{':
       return parse_object(info);
     default:
@@ -296,6 +308,10 @@ Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(std::string_
   auto val = std::string(str.substr(pos2 + 1, str.size() - (pos2 + 1)));
 
   return std::make_pair(std::move(key), std::move(val));
+}
+
+bool ParserJson::parse_bool(std::string_view str) {
+  return str != "false";
 }
 
 double ParserJson::parse_double(std::string_view str) {

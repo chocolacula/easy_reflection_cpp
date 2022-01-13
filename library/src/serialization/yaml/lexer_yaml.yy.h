@@ -11,7 +11,6 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#undef REFLEX_OPTION_dotall
 #undef REFLEX_OPTION_fast
 #undef REFLEX_OPTION_freespace
 #undef REFLEX_OPTION_header_file
@@ -23,7 +22,6 @@
 #undef REFLEX_OPTION_outfile
 #undef REFLEX_OPTION_unicode
 
-#define REFLEX_OPTION_dotall              true
 #define REFLEX_OPTION_fast                true
 #define REFLEX_OPTION_freespace           true
 #define REFLEX_OPTION_header_file         "library/lexers/../src/serialization/yaml/lexer_yaml.yy.h"
@@ -89,7 +87,7 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
     return border();
   }
 
-  inline std::string_view get_word() {
+  inline std::string& get_word() {
     return _word;
   }
 

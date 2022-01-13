@@ -162,3 +162,16 @@ auto employee = serialization::json::from_string<Employee>(str_from_mongo).unwra
 ```
 
 Please see ```example/main.cpp``` for more details.
+
+## Performance
+
+I am still working on optimization of serialization and deserialization. But even now it is quite fast. The repository includes ```benchmarks``` folder, feel free to check it on your own hardware.
+
+JSON on average <b>Core i7</b> laptop is faster then [nlohmann json](https://github.com/nlohmann/json) in both serialization and deserialization.
+Twice faster then [rapid json](https://github.com/Tencent/rapidjson) in serialization but three times slower in deserialization.
+
+YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
+
+> <b>Note:</b> Deserialization comparisson is not absolutely fair. Other libraries does not convert string represented values to ```int```, ```float``` or ```bool``` and does'n create instances of ```std::string``` until you call something like ```.get<int>()```. Easy Reflection, on the other hand, provides ready-made object with all values in fields. And of course it takes some time.
+
+![](https://github.com/chocolacula/reflection_cpp/blob/main/benchmarks/chart.png?raw=true)

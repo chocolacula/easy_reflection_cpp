@@ -369,15 +369,9 @@ Error ParserYaml::error_match() {
   return Error(format("Cannot match correct type; {}", get_position().to_string()));
 }
 
-bool ParserYaml::parse_bool(std::string_view str) {
-  if (str.size() > 5) {  // 5 is length of the longest variant 'false'
-    return true;
-  }
-
-  auto t = std::string(str);
-  std::transform(t.begin(), t.end(), t.begin(), [](char c) { return std::tolower(c); });
-
-  return !(t == "false" || t == "off" || t == "no" || t == "n");
+bool ParserYaml::parse_bool(std::string& str) {
+  std::transform(str.data(), str.data() + str.length(), str.data(), [](char c) { return std::tolower(c); });
+  return !(str == "false" || str == "off" || str == "no" || str == "n");
 }
 
 double ParserYaml::parse_double(std::string_view str) {
