@@ -23,7 +23,7 @@ jobs:
       - name: Install Clang dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y llvm-11-dev libclang-11-dev libclang-cpp11-dev
+          sudo apt-get install -y llvm-12-dev libclang-12-dev libclang-cpp12-dev
 
       - name: Checkout repository
         uses: actions/checkout@v2
