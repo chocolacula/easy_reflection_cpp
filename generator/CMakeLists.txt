@@ -36,7 +36,7 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
-target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
+target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
 
 # configure_file(config.yaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.yaml COPYONLY)

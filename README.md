@@ -20,13 +20,16 @@ It makes possible determine a variable type and do right job - print, serialize/
 
 At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/docs/LibASTMatchersTutorial.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Ubuntu</b> or <b>Arch Linux</b> repos or built from source with options:
 ```
+-DLLVM_ENABLE_PROJECTS=clang
 -DLLVM_LINK_LLVM_DYLIB=ON
 -DCLANG_LINK_CLANG_DYLIB=ON
 -DLLVM_ENABLE_RTTI=ON
 ```
 change the file if needed.
 
-> <b>Note:</b> Compile Clang from sources takes <b>A LOT</b> of time, literally hours with freezes and fails on average laptop, think about using precompiled libs from your distro.
+> <b>Note:</b> ```-DLLVM_LINK_LLVM_DYLIB=ON``` is not available on Windows, only static libraries
+
+> <b>Note:</b> Compile Clang from sources takes <b>A LOT</b> of time, think about using precompiled libs from your distro.
 
 > <b>Note:</b> If you faced errors like ```stddef.h``` or ```stdarg.h``` not found, check include folders, perhaps you need few symlinks. It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
 
@@ -36,13 +39,7 @@ The next step is update all submodules<br>
 git submodule update --init --recursive
 ```
 
-One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies and it should be prepared first:
-
-```shell
-vcpkg/bootstrap-vcpkg.sh
-```
-
-All other dependencies will be installed by CMake automatically.
+One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies all of them will be installed by CMake automatically.
 
 > <b>Note:</b> The project version is obtaining by ```python3``` from ```vcpkg.json``` manifest file. It will be installed at least as <b>gcc</b> dependency, otherwise please install it manually.
 
@@ -168,7 +165,8 @@ Please see ```example/main.cpp``` for more details.
 I am still working on optimization of serialization and deserialization. But even now it is quite fast. The repository includes ```benchmarks``` folder, feel free to check it on your own hardware.
 
 JSON on average <b>Core i7</b> laptop is faster then [nlohmann json](https://github.com/nlohmann/json) in both serialization and deserialization.
-Twice faster then [rapid json](https://github.com/Tencent/rapidjson) in serialization but three times slower in deserialization.
+
+Slower than [rapid json](https://github.com/Tencent/rapidjson) but still fast.
 
 YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
 
