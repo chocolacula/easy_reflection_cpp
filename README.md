@@ -18,18 +18,20 @@ It makes possible determine a variable type and do right job - print, serialize/
 
 ## Installation
 
-At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/docs/LibASTMatchersTutorial.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Ubuntu</b> or <b>Arch Linux</b> repos or built from source with options:
+At first you have to download and compile <b>Clang</b>. The generator as a part of this project uses Clang to analyse C++ source code. You can build Clang [from source](https://clang.llvm.org/get_started.html), install from [vcpkg](https://github.com/microsoft/vcpkg) or from repositories of your distro. Please pay attention to ```generator/CMakeLists.txt```, it's fit for LLVM and Clang libraries from <b>Ubuntu</b> or <b>Arch Linux</b> repos or built from source with options:
 ```
 -DLLVM_ENABLE_PROJECTS=clang
+-DLLVM_ENABLE_RTTI=ON
 -DLLVM_LINK_LLVM_DYLIB=ON
 -DCLANG_LINK_CLANG_DYLIB=ON
--DLLVM_ENABLE_RTTI=ON
 ```
-change the file if needed.
-
-> <b>Note:</b> ```-DLLVM_LINK_LLVM_DYLIB=ON``` is not available on Windows, only static libraries
+or without last two options for static linking. Set ```-DLINK_CLANG_STATIC=ON``` while building the generator in this case.
 
 > <b>Note:</b> Compile Clang from sources takes <b>A LOT</b> of time, think about using precompiled libs from your distro.
+
+> <b>Note:</b> ```-DLLVM_LINK_LLVM_DYLIB=ON``` is not available on Windows if you compile Clang by MSVC, only static libraries.
+
+On Windows, moreover, you should provide correct path to directory with LLVM's CMake config files in ```CMAKE_PREFIX_PATH```.
 
 > <b>Note:</b> If you faced errors like ```stddef.h``` or ```stdarg.h``` not found, check include folders, perhaps you need few symlinks. It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
 
@@ -39,7 +41,7 @@ The next step is update all submodules<br>
 git submodule update --init --recursive
 ```
 
-One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies all of them will be installed by CMake automatically.
+One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
 
 > <b>Note:</b> The project version is obtaining by ```python3``` from ```vcpkg.json``` manifest file. It will be installed at least as <b>gcc</b> dependency, otherwise please install it manually.
 
@@ -170,6 +172,6 @@ Slower than [rapid json](https://github.com/Tencent/rapidjson) but still fast.
 
 YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
 
-> <b>Note:</b> Deserialization comparisson is not absolutely fair. Other libraries does not convert string represented values to ```int```, ```float``` or ```bool``` and does'n create instances of ```std::string``` until you call something like ```.get<int>()```. Easy Reflection, on the other hand, provides ready-made object with all values in fields. And of course it takes some time.
+> <b>Note:</b> Deserialization comparisson is not absolutely fair. Other libraries does not convert string represented values to ```int```, ```float``` or ```bool``` and does'n create instances of ```std::string``` until you call something like ```.get<int>()```. Easy Reflection, on the other hand, provides ready-made object with all values within. And of course it takes some time.
 
 ![](https://github.com/chocolacula/reflection_cpp/blob/main/benchmarks/chart.png?raw=true)
