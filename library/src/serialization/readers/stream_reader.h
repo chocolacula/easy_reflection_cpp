@@ -14,7 +14,7 @@ struct StreamReader final : IReader {
   }
 
   void read(void* buff, size_t size) const override {
-    _stream.read(static_cast<char*>(buff), static_cast<ssize_t>(size));
+    _stream.read(static_cast<char*>(buff), static_cast<std::streamsize>(size));
   }
 
  private:

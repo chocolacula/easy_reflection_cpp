@@ -76,7 +76,7 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
   er::Position get_position() {
-    return er::Position{.column = columno(), .line_number = lineno()};
+    return er::Position{columno(), lineno()};
   }
 
   inline std::string& get_word() {

@@ -1,4 +1,5 @@
 .idea
+.vs
 .cache
 .DS_Store
 output

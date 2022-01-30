@@ -46,7 +46,7 @@ struct EnumImpl final : public IEnum {
     }
     auto ex = _all_constants.get_value(name);
 
-    return ex.template match(
+    return ex.match(
         [this](T& v) -> Expected<None> {
           *_value = v;
           return None();

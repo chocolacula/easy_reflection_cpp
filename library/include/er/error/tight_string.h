@@ -70,7 +70,9 @@ struct TightString {
   };
 
   ~TightString() {
+#if __GNUG__
 #pragma GCC diagnostic ignored "-Wfree-nonheap-object"
+#endif
     // has the correct behaviour in runtime
     if (is_owned()) {
       str().std::string::~string();

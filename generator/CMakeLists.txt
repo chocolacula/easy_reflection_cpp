@@ -22,8 +22,8 @@ include_directories(${TCLAP_INCLUDE_DIRS})
 ### LLVM and clang
 find_package(LLVM REQUIRED)
 
-message("found LLVM include directory " ${LLVM_INCLUDE_DIR})
-message("found LLVM library directory " ${LLVM_LIBRARY_DIR})
+message("found LLVM include directory at: \"" ${LLVM_INCLUDE_DIR} "\"")
+message("found LLVM library directory at: \"" ${LLVM_LIBRARY_DIR} "\"")
 
 include_directories(${LLVM_INCLUDE_DIR})
 link_directories(${LLVM_LIBRARY_DIR})
@@ -33,6 +33,7 @@ find_package(inja CONFIG REQUIRED)
 
 set(SOURCES
     main.cpp
+    executable_name.cpp
     self_generated/reflection.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})

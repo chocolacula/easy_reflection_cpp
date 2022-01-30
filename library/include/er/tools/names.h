@@ -13,26 +13,17 @@
 
 namespace er {
 
-#ifdef __GNUG__
-
 template <typename T>
 struct Names {
   static std::string_view get() {
+#ifdef __GNUG__
     int status = -4;
     return abi::__cxa_demangle(typeid(T).name(), NULL, NULL, &status);
-  }
-};
-
 #else
-
-template <typename T>
-struct Names {
-  std::string_view constexpr type_name_simple() {
     return typeid(T).name();
+#endif
   }
 };
-
-#endif
 
 template <typename T, size_t size_v>
 struct Names<T[size_v]> {

@@ -94,7 +94,13 @@ struct GroupWriter {
     // set sign bit
     _group[0] |= (static_cast<uint8_t>(neg) << 3U);
 
-    auto zeroes = __builtin_clzll(value);
+    int zeroes;
+#if __GNUG__
+    zeroes = __builtin_clzll(value);
+#else
+    zeroes = __lzcnt64(value);
+#endif
+
     auto chunks = (64U - zeroes);
     chunks = chunks / 8 - static_cast<uint8_t>((chunks % 8) == 0);
 

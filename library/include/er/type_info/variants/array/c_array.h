@@ -88,7 +88,7 @@ struct CArray final : public IArray {
   Expected<None> fill(Var filler) override {
     auto f = filler.rt_cast<T>();
 
-    return f.template match_move(
+    return f.match_move(
         [this](T* ptr) -> Expected<None> {  //
           for (auto i = 0; i < size_v; i++) {
             _array[i] = *ptr;
