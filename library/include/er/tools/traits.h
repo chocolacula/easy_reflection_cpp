@@ -38,6 +38,12 @@ struct is_string<std::string> : std::true_type {};
 template <>
 struct is_string<std::string_view> : std::true_type {};
 
+template <>
+struct is_string<const char*> : std::true_type {};
+
+template <>
+struct is_string<const wchar_t*> : std::true_type {};
+
 template <typename T>
 struct is_sequence : std::false_type {};
 

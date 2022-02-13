@@ -56,7 +56,7 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info) {
         return;
       }
       append(writer, '{');
-#pragma unroll 8
+
       for (auto&& record : fields) {
         append(writer, '"');
         append(writer, record.first);

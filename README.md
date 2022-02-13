@@ -2,17 +2,16 @@
 
 [![CMake build and test](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml)
 
-It parses C++ sourcecode for special attributes. In the simplest situation you only need mark an object by ```ER_REFLECT()``` macro.  
-All other work will be done by code generation tool and reflection library.
+It parses C++ sourcecode for special attributes. In the simplest situation you only need mark an object by ```ER_REFLECT()``` macro. All other work will be done by code generation tool and reflection library.
 
 The main idea is use kinda dynamic typing and **Run Time Type Checking** for some type agnostic operations, like copying or taking name of a type.  
 It makes possible determine a variable type and do right job - print, serialize/deserialize or whatever.
 
 ## Features
 
-- supports Linux, MacOS and Windows(beta)
+- Linux, MacOS and Windows(beta) support
 - translate enums to string and vise versa
-- support stl containers like ```std::vector```, ```std::list```, ```std::map```, etc.
+- support of stl containers like ```std::vector```, ```std::list```, ```std::map```, etc.
 - native serialization directly to an object and without third parties for:
   - **JSON**
   - **YAML 1.2** even with anchors, but keep in mind that variables behind anchors have to have the same type.
@@ -194,3 +193,13 @@ Other libraries do not convert string represented values to ```int```, ```float`
 Easy Reflection, on the other hand, provides ready-made object with all values within. And of course it takes some time.
 
 ![Core i7 benchmarks](https://github.com/chocolacula/reflection_cpp/blob/main/benchmarks/chart.png?raw=true)
+
+## TO DO
+
+- Better Windows support
+- Add smart pointers to supported types
+- Add more strings to supported types, test UTF-8 and wide strings
+- Test YAML parser extensively
+- Move from ```std::map``` with pointers to custom constexpr map with byte offsets in ```Object```
+- Add parent class fields to serialized fields
+- Add support of user's template classes with different number of template arguments

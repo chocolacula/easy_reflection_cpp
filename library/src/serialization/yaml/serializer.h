@@ -53,7 +53,7 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info, int indent) {
       const auto& o = info.unsafe_get<Object>();
 
       bool is_first = true;
-#pragma unroll 8
+
       for (auto&& record : o.get_fields()) {
 
         if (!is_first) {
