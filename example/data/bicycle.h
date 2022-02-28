@@ -23,4 +23,6 @@ struct Bicycle {
   float wheel_size_inch;
 
   std::vector<Colors> colors;
+
+  constexpr static inline bool kIsCool = true;
 };

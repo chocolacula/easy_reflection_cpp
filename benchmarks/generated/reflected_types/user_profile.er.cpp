@@ -16,16 +16,18 @@ struct TypeActions<UserProfile> {
       
     };
 
-    map.insert({
-      {"user_id", FieldInfo(&p->user_id, Access::kPublic)},
-      {"name", FieldInfo(&p->name, Access::kPublic)},
-      {"homeworld", FieldInfo(&p->homeworld, Access::kPublic)},
-      {"affiliation", FieldInfo(&p->affiliation, Access::kPublic)},
-      {"profile_photo_url", FieldInfo(&p->profile_photo_url, Access::kPublic)},
-      {"friends", FieldInfo(&p->friends, Access::kPublic)},
-      {"last24hours_activity", FieldInfo(&p->last24hours_activity, Access::kPublic)},
-      
-    });
+    if (p != nullptr) {
+      map.insert({
+        {"user_id", FieldInfo(&p->user_id, Access::kPublic)},
+        {"name", FieldInfo(&p->name, Access::kPublic)},
+        {"homeworld", FieldInfo(&p->homeworld, Access::kPublic)},
+        {"affiliation", FieldInfo(&p->affiliation, Access::kPublic)},
+        {"profile_photo_url", FieldInfo(&p->profile_photo_url, Access::kPublic)},
+        {"friends", FieldInfo(&p->friends, Access::kPublic)},
+        {"last24hours_activity", FieldInfo(&p->last24hours_activity, Access::kPublic)},
+        
+      });
+    }
 
     return Object(Var(p, is_const), std::move(map));
   }

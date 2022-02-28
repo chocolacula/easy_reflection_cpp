@@ -16,12 +16,14 @@ struct TypeActions<UserProfile::UserName> {
       
     };
 
-    map.insert({
-      {"first_name", FieldInfo(&p->first_name, Access::kPublic)},
-      {"second_name", FieldInfo(&p->second_name, Access::kPublic)},
-      {"last_name", FieldInfo(&p->last_name, Access::kPublic)},
-      
-    });
+    if (p != nullptr) {
+      map.insert({
+        {"first_name", FieldInfo(&p->first_name, Access::kPublic)},
+        {"second_name", FieldInfo(&p->second_name, Access::kPublic)},
+        {"last_name", FieldInfo(&p->last_name, Access::kPublic)},
+        
+      });
+    }
 
     return Object(Var(p, is_const), std::move(map));
   }

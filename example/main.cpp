@@ -79,6 +79,19 @@ int main() {
     println("New value has been set");
   }
 
+  println();
+
+  // you can even use static fields without an instance
+  Bicycle* bicycle_ptr = nullptr;
+  auto static_info = reflection::reflect(bicycle_ptr);
+  const auto* is_cool = static_info.get<Object>().get_field("kIsCool").unwrap().rt_cast<const bool>().unwrap();
+
+  if (*is_cool) {
+    println("Bikes are definatelly cool");
+  } else {
+    println("Bikes are boring");
+  }
+
   // for debug purposes there is a possibility to print out struct content
   // via print() and sprint() functions in Reflection namespace
   println("\n{}", reflection::sprint(bicycle_info));

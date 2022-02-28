@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "er/expected.h"
 #include "er/type_id.h"
 
@@ -41,7 +43,7 @@ struct Var {
       return Error("The type under Var has const qualifier, cannot cast to mutable");
     }
 
-    auto desired_type = TypeId::get<T>();
+    auto desired_type = TypeId::get<std::remove_const_t<T>>();
 
     if (desired_type != _type) {
       return error(_type, desired_type);

@@ -246,7 +246,8 @@ class ParserCpp {
 
   class MacroCallback : public PPCallbacks {
    public:
-    explicit MacroCallback(SourceManager& sm, LangOptions& opts, Context* ctx) : _sm(sm), _opts(opts), _ctx(ctx) {
+    explicit MacroCallback(SourceManager& sm, LangOptions& opts, Context* ctx)  //
+        : _sm(sm), _opts(opts), _ctx(ctx) {
     }
 
     void MacroExpands(const Token& token, const MacroDefinition& /*def*/, SourceRange /*range*/,

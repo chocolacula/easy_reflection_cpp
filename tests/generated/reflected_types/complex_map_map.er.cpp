@@ -16,10 +16,12 @@ struct TypeActions<ComplexMapMap> {
       
     };
 
-    map.insert({
-      {"content", FieldInfo(&p->content, Access::kPublic)},
-      
-    });
+    if (p != nullptr) {
+      map.insert({
+        {"content", FieldInfo(&p->content, Access::kPublic)},
+        
+      });
+    }
 
     return Object(Var(p, is_const), std::move(map));
   }
