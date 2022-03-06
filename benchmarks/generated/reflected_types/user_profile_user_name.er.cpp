@@ -12,20 +12,15 @@ struct TypeActions<UserProfile::UserName> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<UserProfile::UserName*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"first_name", FieldDesc::create_member(value, Var(&p->first_name), Access::kPublic)},
+      {"second_name", FieldDesc::create_member(value, Var(&p->second_name), Access::kPublic)},
+      {"last_name", FieldDesc::create_member(value, Var(&p->last_name), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"first_name", FieldInfo(&p->first_name, Access::kPublic)},
-        {"second_name", FieldInfo(&p->second_name, Access::kPublic)},
-        {"last_name", FieldInfo(&p->last_name, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

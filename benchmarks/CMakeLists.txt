@@ -24,6 +24,8 @@ add_custom_command(
     COMMENT "Generating reflection headers"
 )
 
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 find_package(benchmark CONFIG REQUIRED)

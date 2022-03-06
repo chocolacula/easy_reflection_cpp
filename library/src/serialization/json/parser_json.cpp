@@ -153,7 +153,7 @@ Expected<None> ParserJson::parse_object(TypeInfo* info) {
       return error("Cannot reach a field value");
     }
 
-    auto field = o.get_field(get_word()).unwrap();
+    auto field = o.get_field(get_word()).unwrap().var();
     auto field_info = reflection::reflect(field);
     __retry(parse_next(&field_info));
 

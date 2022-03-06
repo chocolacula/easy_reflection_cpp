@@ -12,18 +12,13 @@ struct TypeActions<ComplexMapMap> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<ComplexMapMap*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"content", FieldDesc::create_member(value, Var(&p->content), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"content", FieldInfo(&p->content, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

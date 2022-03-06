@@ -12,19 +12,14 @@ struct TypeActions<UserProfile::Activity> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<UserProfile::Activity*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"photo_url", FieldDesc::create_member(value, Var(&p->photo_url), Access::kPublic)},
+      {"grade", FieldDesc::create_member(value, Var(&p->grade), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"photo_url", FieldInfo(&p->photo_url, Access::kPublic)},
-        {"grade", FieldInfo(&p->grade, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

@@ -16,7 +16,7 @@ namespace er {
 /// container of all field names matched to Var structs
 /// just a registry of types and value pointers
 struct Object {
-  Object(Var var, std::map<std::string_view, FieldInfo>&& fields) : _fields(fields), _var(var) {
+  Object(Var var, const std::map<std::string_view, FieldDesc>* fields) : _fields(fields), _var(var) {
   }
 
   Expected<None> assign(Var var) {
@@ -25,29 +25,26 @@ struct Object {
                           reflection::type_name(var.type()),  //
                           reflection::type_name(_var.type())));
     }
-
-    const auto* ptr = _var.raw();
-    reassign_fields(ptr);
     _var = var;
 
     return None();
   }
 
   void unsafe_assign(void* ptr) {
-    reassign_fields(ptr);
-    _var = Var(ptr, _var.type(), false);
+    _var.unsafe_assign(ptr);
   }
 
-  Expected<Var> get_field(std::string_view name) {
-    auto it = _fields.find(name);
-    if (it != _fields.end()) {
-      return it->second.var();
+  Expected<FieldInfo> get_field(std::string_view name) {
+    auto it = _fields->find(name);
+
+    if (it != _fields->end()) {
+      return FieldInfo(_var.raw(), &it->second);
     }
     return Error(format("There is no field with name: {}", name));
   }
 
   Fields get_fields(Access access = Access::kPublic) const {
-    return Fields(&_fields, access);
+    return Fields(_var.raw(), _fields, access);
   }
 
   Var var() {
@@ -55,25 +52,8 @@ struct Object {
   }
 
  private:
-  std::map<std::string_view, FieldInfo> _fields;
+  const std::map<std::string_view, FieldDesc>* _fields;
   Var _var;
-
-  inline void reassign_fields(const void* ptr) {
-#pragma unroll 8
-    for (auto&& kv : _fields) {
-      auto& field = kv.second;
-
-      auto origin = reinterpret_cast<uintptr_t>(_var.raw());
-      auto delta = reinterpret_cast<uintptr_t>(field.var().raw()) - origin;
-
-      auto new_origin = reinterpret_cast<uintptr_t>(ptr);
-
-      kv.second = {Var(reinterpret_cast<void*>(new_origin + delta),
-                       field.var().type(),  //
-                       field.is_const()),   //
-                   field.access()};
-    }
-  }
 };
 
 }  // namespace er

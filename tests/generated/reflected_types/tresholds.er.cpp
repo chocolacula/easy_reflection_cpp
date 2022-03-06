@@ -12,33 +12,28 @@ struct TypeActions<Tresholds> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Tresholds*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"u8_max", FieldDesc::create_member(value, Var(&p->u8_max), Access::kPublic)},
+      {"u16_max", FieldDesc::create_member(value, Var(&p->u16_max), Access::kPublic)},
+      {"u32_max", FieldDesc::create_member(value, Var(&p->u32_max), Access::kPublic)},
+      {"u64_max", FieldDesc::create_member(value, Var(&p->u64_max), Access::kPublic)},
+      {"i8_min", FieldDesc::create_member(value, Var(&p->i8_min), Access::kPublic)},
+      {"i8_max", FieldDesc::create_member(value, Var(&p->i8_max), Access::kPublic)},
+      {"i16_min", FieldDesc::create_member(value, Var(&p->i16_min), Access::kPublic)},
+      {"i16_max", FieldDesc::create_member(value, Var(&p->i16_max), Access::kPublic)},
+      {"i32_min", FieldDesc::create_member(value, Var(&p->i32_min), Access::kPublic)},
+      {"i32_max", FieldDesc::create_member(value, Var(&p->i32_max), Access::kPublic)},
+      {"i64_min", FieldDesc::create_member(value, Var(&p->i64_min), Access::kPublic)},
+      {"i64_max", FieldDesc::create_member(value, Var(&p->i64_max), Access::kPublic)},
+      {"f32_min", FieldDesc::create_member(value, Var(&p->f32_min), Access::kPublic)},
+      {"f32_max", FieldDesc::create_member(value, Var(&p->f32_max), Access::kPublic)},
+      {"f64_min", FieldDesc::create_member(value, Var(&p->f64_min), Access::kPublic)},
+      {"f64_max", FieldDesc::create_member(value, Var(&p->f64_max), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"u8_max", FieldInfo(&p->u8_max, Access::kPublic)},
-        {"u16_max", FieldInfo(&p->u16_max, Access::kPublic)},
-        {"u32_max", FieldInfo(&p->u32_max, Access::kPublic)},
-        {"u64_max", FieldInfo(&p->u64_max, Access::kPublic)},
-        {"i8_min", FieldInfo(&p->i8_min, Access::kPublic)},
-        {"i8_max", FieldInfo(&p->i8_max, Access::kPublic)},
-        {"i16_min", FieldInfo(&p->i16_min, Access::kPublic)},
-        {"i16_max", FieldInfo(&p->i16_max, Access::kPublic)},
-        {"i32_min", FieldInfo(&p->i32_min, Access::kPublic)},
-        {"i32_max", FieldInfo(&p->i32_max, Access::kPublic)},
-        {"i64_min", FieldInfo(&p->i64_min, Access::kPublic)},
-        {"i64_max", FieldInfo(&p->i64_max, Access::kPublic)},
-        {"f32_min", FieldInfo(&p->f32_min, Access::kPublic)},
-        {"f32_max", FieldInfo(&p->f32_max, Access::kPublic)},
-        {"f64_min", FieldInfo(&p->f64_min, Access::kPublic)},
-        {"f64_max", FieldInfo(&p->f64_max, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

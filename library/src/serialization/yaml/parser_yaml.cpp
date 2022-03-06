@@ -319,7 +319,7 @@ inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
   }
   next();
 
-  auto info = reflection::reflect(ex.unwrap());
+  auto info = reflection::reflect(ex.unwrap().var());
   __retry(parse(&info));
 
   return None();

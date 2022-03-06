@@ -12,25 +12,20 @@ struct TypeActions<Big> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Big*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"int1", FieldDesc::create_member(value, Var(&p->int1), Access::kPublic)},
+      {"int2", FieldDesc::create_member(value, Var(&p->int2), Access::kPublic)},
+      {"int3", FieldDesc::create_member(value, Var(&p->int3), Access::kPublic)},
+      {"int4", FieldDesc::create_member(value, Var(&p->int4), Access::kPublic)},
+      {"str1", FieldDesc::create_member(value, Var(&p->str1), Access::kPublic)},
+      {"str2", FieldDesc::create_member(value, Var(&p->str2), Access::kPublic)},
+      {"str3", FieldDesc::create_member(value, Var(&p->str3), Access::kPublic)},
+      {"str4", FieldDesc::create_member(value, Var(&p->str4), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"int1", FieldInfo(&p->int1, Access::kPublic)},
-        {"int2", FieldInfo(&p->int2, Access::kPublic)},
-        {"int3", FieldInfo(&p->int3, Access::kPublic)},
-        {"int4", FieldInfo(&p->int4, Access::kPublic)},
-        {"str1", FieldInfo(&p->str1, Access::kPublic)},
-        {"str2", FieldInfo(&p->str2, Access::kPublic)},
-        {"str3", FieldInfo(&p->str3, Access::kPublic)},
-        {"str4", FieldInfo(&p->str4, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

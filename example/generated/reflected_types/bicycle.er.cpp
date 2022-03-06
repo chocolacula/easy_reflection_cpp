@@ -12,25 +12,20 @@ struct TypeActions<Bicycle> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Bicycle*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
-      {"kIsCool", FieldInfo(&Bicycle::kIsCool, Access::kPublic | Access::kStatic)},
+    static std::map<std::string_view, FieldDesc> map {
+      {"kIsCool", FieldDesc::create_static(Var(&Bicycle::kIsCool), Access::kPublic)},
+      
+      {"id", FieldDesc::create_member(value, Var(&p->id), Access::kPublic)},
+      {"is_hardtail", FieldDesc::create_member(value, Var(&p->is_hardtail), Access::kPublic)},
+      {"manufacturer", FieldDesc::create_member(value, Var(&p->manufacturer), Access::kPublic)},
+      {"model", FieldDesc::create_member(value, Var(&p->model), Access::kPublic)},
+      {"weight", FieldDesc::create_member(value, Var(&p->frame_weight), Access::kPublic)},
+      {"wheel_size", FieldDesc::create_member(value, Var(&p->wheel_size_inch), Access::kPublic)},
+      {"colors", FieldDesc::create_member(value, Var(&p->colors), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"id", FieldInfo(&p->id, Access::kPublic)},
-        {"is_hardtail", FieldInfo(&p->is_hardtail, Access::kPublic)},
-        {"manufacturer", FieldInfo(&p->manufacturer, Access::kPublic)},
-        {"model", FieldInfo(&p->model, Access::kPublic)},
-        {"weight", FieldInfo(&p->frame_weight, Access::kPublic)},
-        {"wheel_size", FieldInfo(&p->wheel_size_inch, Access::kPublic)},
-        {"colors", FieldInfo(&p->colors, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

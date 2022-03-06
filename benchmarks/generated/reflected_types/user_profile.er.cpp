@@ -12,24 +12,19 @@ struct TypeActions<UserProfile> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<UserProfile*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"user_id", FieldDesc::create_member(value, Var(&p->user_id), Access::kPublic)},
+      {"name", FieldDesc::create_member(value, Var(&p->name), Access::kPublic)},
+      {"homeworld", FieldDesc::create_member(value, Var(&p->homeworld), Access::kPublic)},
+      {"affiliation", FieldDesc::create_member(value, Var(&p->affiliation), Access::kPublic)},
+      {"profile_photo_url", FieldDesc::create_member(value, Var(&p->profile_photo_url), Access::kPublic)},
+      {"friends", FieldDesc::create_member(value, Var(&p->friends), Access::kPublic)},
+      {"last24hours_activity", FieldDesc::create_member(value, Var(&p->last24hours_activity), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"user_id", FieldInfo(&p->user_id, Access::kPublic)},
-        {"name", FieldInfo(&p->name, Access::kPublic)},
-        {"homeworld", FieldInfo(&p->homeworld, Access::kPublic)},
-        {"affiliation", FieldInfo(&p->affiliation, Access::kPublic)},
-        {"profile_photo_url", FieldInfo(&p->profile_photo_url, Access::kPublic)},
-        {"friends", FieldInfo(&p->friends, Access::kPublic)},
-        {"last24hours_activity", FieldInfo(&p->last24hours_activity, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

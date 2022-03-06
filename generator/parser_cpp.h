@@ -151,7 +151,7 @@ class ParserCpp {
             continue;
           }
 
-          item["access"] = to_access_string(acc) + " | Access::kStatic";
+          item["access"] = to_access_string(acc);
           item["name"] = v->getNameAsString();
 
           auto it = _ctx->alias_map.find(offset);

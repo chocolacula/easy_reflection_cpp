@@ -200,6 +200,5 @@ Easy Reflection, on the other hand, provides ready-made object with all values w
 - Add smart pointers to supported types
 - Add more strings to supported types, test UTF-8 and wide strings
 - Test YAML parser extensively
-- Move from ```std::map``` with pointers to custom constexpr map with byte offsets in ```Object```
 - Add parent class fields to serialized fields
 - Add support of user's template classes with different number of template arguments

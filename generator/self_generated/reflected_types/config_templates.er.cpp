@@ -12,20 +12,14 @@ struct TypeActions<Config::Templates> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Config::Templates*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      {"header", FieldDesc::create_member(value, Var(&p->header), Access::kPublic)},
+      {"enum", FieldDesc::create_member(value, Var(&p->for_enum), Access::kPublic)},
+      {"object", FieldDesc::create_member(value, Var(&p->object), Access::kPublic)},
 
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"header", FieldInfo(&p->header, Access::kPublic)},
-        {"enum", FieldInfo(&p->for_enum, Access::kPublic)},
-        {"object", FieldInfo(&p->object, Access::kPublic)},
-
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 

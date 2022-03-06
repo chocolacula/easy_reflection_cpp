@@ -12,44 +12,39 @@ struct TypeActions<Various> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Various*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
+      
+      {"ch", FieldDesc::create_member(value, Var(&p->ch), Access::kPublic)},
+      {"uch", FieldDesc::create_member(value, Var(&p->uch), Access::kPublic)},
+      {"sch", FieldDesc::create_member(value, Var(&p->sch), Access::kPublic)},
+      {"u8", FieldDesc::create_member(value, Var(&p->u8), Access::kPublic)},
+      {"u16", FieldDesc::create_member(value, Var(&p->u16), Access::kPublic)},
+      {"u32", FieldDesc::create_member(value, Var(&p->u32), Access::kPublic)},
+      {"u64", FieldDesc::create_member(value, Var(&p->u64), Access::kPublic)},
+      {"i8", FieldDesc::create_member(value, Var(&p->i8), Access::kPublic)},
+      {"i16", FieldDesc::create_member(value, Var(&p->i16), Access::kPublic)},
+      {"i32", FieldDesc::create_member(value, Var(&p->i32), Access::kPublic)},
+      {"i64", FieldDesc::create_member(value, Var(&p->i64), Access::kPublic)},
+      {"f32", FieldDesc::create_member(value, Var(&p->f32), Access::kPublic)},
+      {"f64", FieldDesc::create_member(value, Var(&p->f64), Access::kPublic)},
+      {"arr", FieldDesc::create_member(value, Var(&p->arr), Access::kPublic)},
+      {"str", FieldDesc::create_member(value, Var(&p->str), Access::kPublic)},
+      {"std_arr", FieldDesc::create_member(value, Var(&p->std_arr), Access::kPublic)},
+      {"vec", FieldDesc::create_member(value, Var(&p->vec), Access::kPublic)},
+      {"list", FieldDesc::create_member(value, Var(&p->list), Access::kPublic)},
+      {"deq", FieldDesc::create_member(value, Var(&p->deq), Access::kPublic)},
+      {"que", FieldDesc::create_member(value, Var(&p->que), Access::kPublic)},
+      {"stack", FieldDesc::create_member(value, Var(&p->stack), Access::kPublic)},
+      {"set", FieldDesc::create_member(value, Var(&p->set), Access::kPublic)},
+      {"un_set", FieldDesc::create_member(value, Var(&p->un_set), Access::kPublic)},
+      {"map", FieldDesc::create_member(value, Var(&p->map), Access::kPublic)},
+      {"un_map", FieldDesc::create_member(value, Var(&p->un_map), Access::kPublic)},
+      {"obj", FieldDesc::create_member(value, Var(&p->obj), Access::kPublic)},
+      {"monstro", FieldDesc::create_member(value, Var(&p->monstro), Access::kPublic)},
       
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {"ch", FieldInfo(&p->ch, Access::kPublic)},
-        {"uch", FieldInfo(&p->uch, Access::kPublic)},
-        {"sch", FieldInfo(&p->sch, Access::kPublic)},
-        {"u8", FieldInfo(&p->u8, Access::kPublic)},
-        {"u16", FieldInfo(&p->u16, Access::kPublic)},
-        {"u32", FieldInfo(&p->u32, Access::kPublic)},
-        {"u64", FieldInfo(&p->u64, Access::kPublic)},
-        {"i8", FieldInfo(&p->i8, Access::kPublic)},
-        {"i16", FieldInfo(&p->i16, Access::kPublic)},
-        {"i32", FieldInfo(&p->i32, Access::kPublic)},
-        {"i64", FieldInfo(&p->i64, Access::kPublic)},
-        {"f32", FieldInfo(&p->f32, Access::kPublic)},
-        {"f64", FieldInfo(&p->f64, Access::kPublic)},
-        {"arr", FieldInfo(&p->arr, Access::kPublic)},
-        {"str", FieldInfo(&p->str, Access::kPublic)},
-        {"std_arr", FieldInfo(&p->std_arr, Access::kPublic)},
-        {"vec", FieldInfo(&p->vec, Access::kPublic)},
-        {"list", FieldInfo(&p->list, Access::kPublic)},
-        {"deq", FieldInfo(&p->deq, Access::kPublic)},
-        {"que", FieldInfo(&p->que, Access::kPublic)},
-        {"stack", FieldInfo(&p->stack, Access::kPublic)},
-        {"set", FieldInfo(&p->set, Access::kPublic)},
-        {"un_set", FieldInfo(&p->un_set, Access::kPublic)},
-        {"map", FieldInfo(&p->map, Access::kPublic)},
-        {"un_map", FieldInfo(&p->un_map, Access::kPublic)},
-        {"obj", FieldInfo(&p->obj, Access::kPublic)},
-        {"monstro", FieldInfo(&p->monstro, Access::kPublic)},
-        
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 
