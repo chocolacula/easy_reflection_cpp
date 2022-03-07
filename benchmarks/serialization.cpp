@@ -8,6 +8,7 @@
 
 #include "er/serialization/binary.h"
 #include "er/serialization/json.h"
+#include "er/serialization/simd_json.h"
 #include "er/serialization/yaml.h"
 #include "generated/reflection.h"
 
@@ -88,6 +89,17 @@ static void json_er_deserialization(benchmark::State& state) {
   }
 }
 BENCHMARK(json_er_deserialization);
+
+#ifdef USE_SIMD_JSON
+static void simd_json_er_deserialization(benchmark::State& state) {
+  for (auto _ : state) {
+    auto profile = er::serialization::simd_json::from_string<UserProfile>(SetUp::json()).unwrap();
+
+    benchmark::DoNotOptimize(profile);
+  }
+}
+BENCHMARK(simd_json_er_deserialization);
+#endif
 
 static void yaml_er_serialization(benchmark::State& state) {
   auto profile = er::serialization::yaml::from_string<UserProfile>(SetUp::yaml()).unwrap();

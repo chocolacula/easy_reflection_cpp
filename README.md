@@ -51,6 +51,14 @@ One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manag
 > **Note:** The project version is obtaining by ```python3``` from ```vcpkg.json``` manifest file.  
 It will be installed at least as **gcc** dependency on Linux systems, otherwise please install it manually.
 
+After you have installed all dependencies you should made a decision do you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
+Native for the solution parser will be available anyway but it's slower though a bit more flexible in map parsing.  
+If for some reason you wanna reduce number of dependencies you can exclude ```simdjson``` via CMake option:
+
+```
+-DUSE_SIMD_JSON
+```
+
 ### Docker
 
 The repository also provides a ```Dockerfile``` which initializes ```Ubuntu 20.04``` environment, copy project files, builds it and runs tests on startup.
@@ -179,18 +187,16 @@ Please see ```example/main.cpp``` for more details.
 
 ## Performance
 
-I am still working on optimization of serialization and deserialization. But even now it is quite fast.  
 The repository includes ```benchmarks``` folder, feel free to check it on your own hardware.
 
-JSON on average **Core i7** laptop is faster then [nlohmann json](https://github.com/nlohmann/json) in both serialization and deserialization.
-
-Slower than [rapid json](https://github.com/Tencent/rapidjson) yet but still fast.
+JSON on average **Core i5** laptop is faster then [nlohmann json](https://github.com/nlohmann/json).
+Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidjson), deserialization is little faster with ```simdjson``` parser and more then twice slower without.
 
 YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
 
 > **Note:** Deserialization comparisson is not absolutely fair.  
-Other libraries do not convert string represented values to ```int```, ```float``` or ```bool``` and don't create instances of ```std::string``` until you call something like ```.get<int>()```.  
-Easy Reflection, on the other hand, provides ready-made object with all values within. And of course it takes some time.
+Other libraries not always convert string represented values to ```int```, ```float``` or ```bool``` and don't create instances of ```std::string``` until you call something like ```.get<int>()```.  
+Easy Reflection, on the other hand, provides ready-made object with all values within. And it's still fast despite it takes some time.
 
 ![Core i7 benchmarks](https://github.com/chocolacula/reflection_cpp/blob/main/benchmarks/chart.png?raw=true)
 
@@ -199,6 +205,7 @@ Easy Reflection, on the other hand, provides ready-made object with all values w
 - Better Windows support
 - Add smart pointers to supported types
 - Add more strings to supported types, test UTF-8 and wide strings
+- Optimize size of Expected<> in parsers
 - Test YAML parser extensively
 - Add parent class fields to serialized fields
 - Add support of user's template classes with different number of template arguments

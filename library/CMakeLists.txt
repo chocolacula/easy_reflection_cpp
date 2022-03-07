@@ -14,6 +14,7 @@ set(SOURCES
         src/variable/var.cpp
         src/variable/box.cpp
         src/serialization/json/json.cpp
+        src/serialization/json/simd_json.cpp
         src/serialization/json/lexer_json.yy.cpp
         src/serialization/json/parser_json.cpp
         src/serialization/yaml/yaml.cpp
@@ -43,3 +44,8 @@ if(NOT EXISTS ${RE_FLEX_LIB})
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${RE_FLEX_LIB})
+
+if (USE_SIMD_JSON)
+    find_package(simdjson CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC simdjson::simdjson)
+endif()

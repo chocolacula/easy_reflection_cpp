@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include "er/expected.h"
+#include "er/tools/names.h"
 #include "er/variant/variant.h"
 
 // all variants
@@ -87,6 +88,10 @@ class TypeInfo : public BASE {
 
   [[nodiscard]] Kind get_kind() const {
     return static_cast<Kind>(variant_idx());
+  }
+
+  [[nodiscard]] std::string_view get_kind_str() const {
+    return match([](auto&& v) { return Names<typeof v>::get(); });
   }
 };
 

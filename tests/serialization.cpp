@@ -5,6 +5,7 @@
 
 #include "er/serialization/binary.h"
 #include "er/serialization/json.h"
+#include "er/serialization/simd_json.h"
 #include "er/serialization/yaml.h"
 #include "er/tools/format.h"
 #include "generated/reflection.h"
@@ -82,6 +83,17 @@ TEST(SerializationJson, Thresholds) {
   compare_tresholds(struct1, struct2);
 }
 
+#ifdef USE_SIMD_JSON
+TEST(SerializationSimdJson, Thresholds) {
+  Tresholds struct1;
+
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::simd_json::from_string<Tresholds>(str).unwrap();
+
+  compare_tresholds(struct1, struct2);
+}
+#endif
+
 TEST(SerializationYaml, Thresholds) {
   Tresholds struct1;
 
@@ -127,6 +139,15 @@ TEST(SerializationJson, BackAndForth) {
   auto struct3 = er::serialization::json::from_stream<Various>(stream).unwrap();
 
   compare_various(struct1, struct3);
+}
+
+TEST(SerializationSimdJson, BackAndForth) {
+  auto struct1 = Various::make_default();
+
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::simd_json::from_string<Various>(str).unwrap();
+
+  compare_various(struct1, struct2);
 }
 
 TEST(SerializationYaml, BackAndForth) {
