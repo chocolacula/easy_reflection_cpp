@@ -56,7 +56,7 @@ Native for the solution parser will be available anyway but it's slower though a
 If for some reason you wanna reduce number of dependencies you can exclude ```simdjson``` via CMake option:
 
 ```
--DUSE_SIMD_JSON
+-DUSE_SIMD_JSON=OFF
 ```
 
 ### Docker
