@@ -17,6 +17,7 @@ It makes possible determine a variable type and do right job - print, serialize/
   - **YAML 1.2** even with anchors, but keep in mind that variables behind anchors have to have the same type.
   - binary with **Variable Length Quantity** to reduce number of bytes
 - debug printing
+- understandable errors
 
 ## Installation
 
