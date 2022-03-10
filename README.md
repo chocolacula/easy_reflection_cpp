@@ -205,7 +205,7 @@ Easy Reflection, on the other hand, provides ready-made object with all values w
 
 - Better Windows support
 - Add smart pointers to supported types
-- Add more strings to supported types, test UTF-8 and wide strings
+- Test UTF-8 and wide strings
 - Optimize size of Expected<> in parsers
 - Test YAML parser extensively
 - Add parent class fields to serialized fields

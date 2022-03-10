@@ -1,67 +1,63 @@
 #pragma once
 
-#include <string>
+#include <cstddef>
 
-#include "er/expected.h"
-#include "er/reflection/type_name.h"
-#include "er/tools/format.h"
-#include "er/variable/var.h"
-#include "er/variant/variant.h"
+#include "c_string.h"
+#include "istring.h"
+#include "std_basic_string.h"
+#include "std_basic_string_view.h"
 
 namespace er {
 
-struct String {
+struct String final {
+  String() = delete;
 
-  String(std::string_view* str, bool is_const) : _var(str, is_const) {
+  template <typename T>
+  String(std::basic_string_view<T>* str, bool is_const) {
+    new (_mem) StdBasicStringView<T>(str, is_const);
   }
 
-  String(std::string* str, bool is_const) : _var(str, is_const) {
+  template <typename T>
+  String(std::basic_string<T>* str, bool is_const) {
+    new (_mem) StdBasicString<T>(str, is_const);
+  }
+
+  template <typename T>
+  String(const T** str, bool is_const) {
+    new (_mem) CString<T>(str, is_const);
   }
 
   Expected<None> assign(Var var) {
-    if (var.type() != _var.type()) {
-      return Error(format("Cannot assign type: {} to {}",     //
-                          reflection::type_name(var.type()),  //
-                          reflection::type_name(_var.type())));
-    }
-
-    _var = var;
-    return None();
+    return reinterpret_cast<IString*>(&_mem[0])->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    _var = Var(ptr, _var.type(), _var.is_const());
+    reinterpret_cast<IString*>(&_mem[0])->unsafe_assign(ptr);
   }
 
   std::string_view get() const {
-    if (_var.type() == _shared_type) {
-      return *static_cast<const std::string_view*>(_var.raw());
-    }
-
-    return std::string_view(*static_cast<const std::string*>(_var.raw()));
+    return reinterpret_cast<const IString*>(&_mem[0])->get();
   }
 
-  // TODO setting std::string_view is BAD idea especially via serialization
   Expected<None> set(std::string_view value) {
-    if (_var.is_const()) {
-      return Error("Trying to set const value");
-    }
-
-    if (_var.type() == _shared_type) {
-      *static_cast<std::string_view*>(_var.raw_mut()) = value;
-    } else {
-      *static_cast<std::string*>(_var.raw_mut()) = std::string(value);
-    }
-    return None();
+    return reinterpret_cast<IString*>(&_mem[0])->set(value);
   }
 
   Var var() const {
-    return _var;
+    return reinterpret_cast<const IString*>(&_mem[0])->var();
+  }
+
+  bool owns_data() const {
+    return reinterpret_cast<const IString*>(&_mem[0])->owns_data();
   }
 
  private:
-  Var _var;
-  static const inline TypeId _shared_type = TypeId::get<std::string_view>();
+  // a little hack to reduce dynamic memory allocation
+  // this approach is little faster then use shared_ptr but still faster
+  //
+  // it's just a memory bunch for a pointer and is_const flag
+  // all kinds of string has the same sizeof()
+  char _mem[sizeof(CString<char>)];
 };
 
 }  // namespace er

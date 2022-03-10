@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include "c_array.h"
 #include "std_array.h"
@@ -61,15 +62,15 @@ struct Array final {
   }
 
   void for_each(std::function<void(Var)> callback) const {
-    reinterpret_cast<const IArray*>(&_mem[0])->for_each(callback);
+    reinterpret_cast<const IArray*>(&_mem[0])->for_each(std::move(callback));
   }
 
   void for_each(std::function<void(Var)> callback) {
-    reinterpret_cast<IArray*>(&_mem[0])->for_each(callback);
+    reinterpret_cast<IArray*>(&_mem[0])->for_each(std::move(callback));
   }
 
   void unsafe_for_each(std::function<void(void*)> callback) const {
-    reinterpret_cast<const IArray*>(&_mem[0])->unsafe_for_each(callback);
+    reinterpret_cast<const IArray*>(&_mem[0])->unsafe_for_each(std::move(callback));
   }
 
   size_t size() const {
@@ -82,7 +83,7 @@ struct Array final {
   //
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of array has the same sizeof()
-  char _mem[sizeof(StdArray<int, 8>)];
+  char _mem[sizeof(StdArray<int, 0>)];
 };
 
 }  // namespace er

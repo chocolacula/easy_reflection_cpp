@@ -73,6 +73,7 @@ struct TypeId {
   static typename std::enable_if_t<is_map_v<T>, TypeId>  //
   get(T* ptr);
 
+  // other methods
   bool operator==(const TypeId& other) const {
     return _id == other._id;
   }
@@ -89,7 +90,7 @@ struct TypeId {
   uint32_t _id;
 
 #ifndef NDEBUG
-  std::string_view type_name = "unknown";
+  std::string type_name = "unknown";
 #endif
 
   explicit TypeId(uint32_t id) : _id(id) {

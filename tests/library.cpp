@@ -63,6 +63,14 @@ TEST(TypeInfo, MapSizeof) {
   ASSERT_EQ(map, sizeof(StdUnorderedMap<int, int>));
 }
 
+TEST(TypeInfo, StringSizeof) {
+  auto str = sizeof(String);
+
+  ASSERT_EQ(str, sizeof(CString<char>));
+  ASSERT_EQ(str, sizeof(StdBasicString<char>));
+  ASSERT_EQ(str, sizeof(StdBasicStringView<char>));
+}
+
 TEST(TypeInfo, VariantIndex) {
   bool b;
   auto info = er::reflection::reflect(&b);

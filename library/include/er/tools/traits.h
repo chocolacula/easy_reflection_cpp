@@ -32,11 +32,11 @@ struct is_string : std::false_type {};
 template <typename T>
 inline constexpr bool is_string_v = is_string<T>::value;  // NOLINT std like name
 
-template <>
-struct is_string<std::string> : std::true_type {};
+template <typename T>
+struct is_string<std::basic_string<T>> : std::true_type {};
 
-template <>
-struct is_string<std::string_view> : std::true_type {};
+template <typename T>
+struct is_string<std::basic_string_view<T>> : std::true_type {};
 
 template <>
 struct is_string<const char*> : std::true_type {};

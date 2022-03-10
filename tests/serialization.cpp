@@ -141,6 +141,7 @@ TEST(SerializationJson, BackAndForth) {
   compare_various(struct1, struct3);
 }
 
+#ifdef USE_SIMD_JSON
 TEST(SerializationSimdJson, BackAndForth) {
   auto struct1 = Various::make_default();
 
@@ -149,6 +150,7 @@ TEST(SerializationSimdJson, BackAndForth) {
 
   compare_various(struct1, struct2);
 }
+#endif
 
 TEST(SerializationYaml, BackAndForth) {
   auto struct1 = Various::make_default();
