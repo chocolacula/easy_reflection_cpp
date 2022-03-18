@@ -3,7 +3,7 @@
 #include "common_actions.h"
 #include "er/reflection/the_great_table.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StringActions {
@@ -15,7 +15,6 @@ struct StringActions {
 template <typename T>
 typename std::enable_if_t<is_string_v<T>, TypeId>  //
 TypeId::get(T* ptr) {
-
   static TypeId id(TheGreatTable::record(Actions(&StringActions<T>::reflect,      //
                                                  &CommonActions<T>::type_name,    //
                                                  &CommonActions<T>::type_size,    //
@@ -25,4 +24,4 @@ TypeId::get(T* ptr) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er

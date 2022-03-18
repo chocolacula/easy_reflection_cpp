@@ -2,10 +2,10 @@
 
 #include <cstddef>
 
-namespace rr {
+namespace er {
 
 struct IReader {
-  virtual const void* read(size_t bytes) const = 0;
+  virtual void read(void* buff, size_t size) const = 0;
 };
 
-}  // namespace rr
+}  // namespace er

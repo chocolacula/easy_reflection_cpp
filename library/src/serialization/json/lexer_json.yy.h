@@ -11,27 +11,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#undef REFLEX_OPTION_dotall
 #undef REFLEX_OPTION_fast
 #undef REFLEX_OPTION_freespace
 #undef REFLEX_OPTION_header_file
 #undef REFLEX_OPTION_lex
 #undef REFLEX_OPTION_lexer
 #undef REFLEX_OPTION_namespace
+#undef REFLEX_OPTION_noindent
 #undef REFLEX_OPTION_noline
 #undef REFLEX_OPTION_outfile
 #undef REFLEX_OPTION_unicode
 
-#define REFLEX_OPTION_dotall              true
-#define REFLEX_OPTION_fast                true
-#define REFLEX_OPTION_freespace           true
-#define REFLEX_OPTION_header_file         "library/lexers/../src/serialization/json/lexer_json.yy.h"
-#define REFLEX_OPTION_lex                 lex
-#define REFLEX_OPTION_lexer               LexerJson
-#define REFLEX_OPTION_namespace           rf_json
-#define REFLEX_OPTION_noline              true
-#define REFLEX_OPTION_outfile             "library/lexers/../src/serialization/json/lexer_json.yy.cpp"
-#define REFLEX_OPTION_unicode             true
+#define REFLEX_OPTION_fast true
+#define REFLEX_OPTION_freespace true
+#define REFLEX_OPTION_header_file "library/lexers/../src/serialization/json/lexer_json.yy.h"
+#define REFLEX_OPTION_lex lex
+#define REFLEX_OPTION_lexer LexerJson
+#define REFLEX_OPTION_namespace rf_json
+#define REFLEX_OPTION_noindent true
+#define REFLEX_OPTION_noline true
+#define REFLEX_OPTION_outfile "library/lexers/../src/serialization/json/lexer_json.yy.cpp"
+#define REFLEX_OPTION_unicode true
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -39,13 +39,11 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cstdlib>   // strtoul(), strtod()
+#include <iomanip>   // std::setw
+#include <iostream>  // std::cout etc.
 
-  #include <cstdlib>  // strtoul(), strtod()
-  #include <iostream> // std::cout etc.
-  #include <iomanip>  // std::setw
-
-  #include "../position.h"
-
+#include "../position.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -53,6 +51,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#define WITH_NO_INDENT
 #include <reflex/matcher.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,11 +73,11 @@ namespace rf_json {
 class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
 
  public:
-  LexerJson(const char* input, size_t input_size) : LexerJson(reflex::Input(input, input_size)){
+  LexerJson(const char* input, size_t input_size) : LexerJson(reflex::Input(input, input_size)) {
   }
 
-  rr::Position get_position() {
-    return rr::Position{.column = columno(), .line_number = lineno()};
+  er::Position get_position() {
+    return er::Position{columno(), lineno()};
   }
 
   inline std::string& get_word() {
@@ -86,27 +85,20 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
  private:
-  std::string _word; // token value for token '$' (string)
+  std::string _word;  // token value
 
  public:
   typedef reflex::AbstractLexer<reflex::Matcher> AbstractBaseLexer;
-  LexerJson(
-      const reflex::Input& input = reflex::Input(),
-      std::ostream&        os    = std::cout)
-    :
-      AbstractBaseLexer(input, os)
-  {
+  LexerJson(const reflex::Input& input = reflex::Input(), std::ostream& os = std::cout) : AbstractBaseLexer(input, os) {
   }
   static const int INITIAL = 0;
   static const int STRING = 1;
   virtual int lex(void);
-  int lex(const reflex::Input& input)
-  {
+  int lex(const reflex::Input& input) {
     in(input);
     return lex();
   }
-  int lex(const reflex::Input& input, std::ostream *os)
-  {
+  int lex(const reflex::Input& input, std::ostream* os) {
     in(input);
     if (os)
       out(*os);
@@ -114,6 +106,6 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
   }
 };
 
-} // namespace rf_json
+}  // namespace rf_json
 
 #endif

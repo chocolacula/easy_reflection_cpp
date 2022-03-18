@@ -1,11 +1,12 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <vector>
 
 #include "iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct VectorWriter final : IWriter {
   VectorWriter() = delete;
@@ -32,4 +33,4 @@ struct VectorWriter final : IWriter {
   size_t _i;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -9,20 +9,20 @@
 #include "parser_yaml.h"
 #include "serializer.h"
 
-using namespace rr::serialization;
+using namespace er::serialization;
 
 void yaml::serialize(std::string* str, Var var) {
   StringWriter string_w(str);
   auto info = reflection::reflect(var);
 
-  serialize_recursive<void>(&string_w, info, 0);
+  serialize_recursive(&string_w, info, 0);
 }
 
 void yaml::serialize(std::ostream& stream, Var var) {
   StreamWriter stream_w(stream);
   auto info = reflection::reflect(var);
 
-  serialize_recursive<void>(&stream_w, info, 0);
+  serialize_recursive(&stream_w, info, 0);
 }
 
 Expected<None> yaml::deserialize(Var var, std::string_view str) {

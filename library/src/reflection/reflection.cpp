@@ -7,7 +7,7 @@
 #include "er/types/all_types.h"
 #include "sprint.h"
 
-using namespace rr;
+using namespace er;
 
 TypeInfo reflection::reflect(Var variable) {
   return TheGreatTable::data()[variable.type().number()].reflect(const_cast<void*>(variable.raw()),
@@ -36,6 +36,12 @@ std::string_view reflection::type_name(TypeId id) {
   return TheGreatTable::data()[id.number()].type_name();
 }
 
+#ifndef NDEBUG
+std::string_view reflection::type_name(uint32_t id) {
+  return TheGreatTable::data()[id].type_name();
+}
+#endif
+
 size_t reflection::type_size(TypeId id) {
   return TheGreatTable::data()[id.number()].type_size();
 }
@@ -46,6 +52,7 @@ void* reflection::call_new(TypeId id, void* place, size_t place_size) {
 
 void reflection::call_delete(Var variable, bool in_place) {
   TheGreatTable::data()[variable.type().number()].call_delete(variable.raw_mut(), in_place);
+  variable.dispose();
 }
 
 Expected<None> reflection::copy(Var to, Var from) {

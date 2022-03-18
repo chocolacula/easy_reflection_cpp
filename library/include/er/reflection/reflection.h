@@ -1,8 +1,9 @@
 #pragma once
 
 #include "er/type_info/type_info.h"
+#include "type_name.h"
 
-namespace rr::reflection {
+namespace er::reflection {
 
 TypeInfo reflect(Var variable);
 
@@ -32,7 +33,6 @@ void print(const T* pointer) {
   print(reflect(pointer));
 }
 
-std::string_view type_name(TypeId id);
 size_t type_size(TypeId id);
 
 void* call_new(TypeId id, void* place, size_t place_size);
@@ -40,4 +40,4 @@ void call_delete(Var variable, bool in_place);
 
 Expected<None> copy(Var to, Var from);
 
-}  // namespace rr::reflection
+}  // namespace er::reflection

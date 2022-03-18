@@ -5,7 +5,7 @@
 
 #include "iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct StreamWriter final : IWriter {
   StreamWriter() = delete;
@@ -14,7 +14,7 @@ struct StreamWriter final : IWriter {
   }
 
   void write(const void* ptr, size_t bytes) override {
-    _stream.write(static_cast<const char*>(ptr), static_cast<ssize_t>(bytes));
+    _stream.write(static_cast<const char*>(ptr), static_cast<std::streamsize>(bytes));
   }
 
   void write(char ch) override {
@@ -22,12 +22,12 @@ struct StreamWriter final : IWriter {
   }
 
   void step_back(size_t bytes) override {
-    ssize_t pos = _stream.tellp();
-    _stream.seekp(static_cast<ssize_t>(pos - bytes));
+    std::streamsize pos = _stream.tellp();
+    _stream.seekp(pos - static_cast<std::streamsize>(bytes));
   }
 
  private:
   std::ostream& _stream;
 };
 
-}  // namespace rr
+}  // namespace er

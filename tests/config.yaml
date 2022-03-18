@@ -1,11 +1,14 @@
 compdb_dir: ../build
 
 templates: #pathes to template files
+  header: ../generator/templates/header.inja
   enum: ../generator/templates/enum.inja
   object: ../generator/templates/object.inja
 
 input:
   - ../tests/data/tresholds.h
   - ../tests/data/various.h
+  - ../tests/data/big.h
+  - ../tests/data/complex_map.h
 
 output_dir: ../tests/generated

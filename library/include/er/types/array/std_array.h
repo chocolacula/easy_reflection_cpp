@@ -6,7 +6,7 @@
 #include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
 
-namespace rr {
+namespace er {
 
 template <typename T, size_t size_v>
 struct TypeActions<std::array<T, size_v>> {
@@ -27,4 +27,4 @@ TypeId TypeId::get(std::array<T, size_v>* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er

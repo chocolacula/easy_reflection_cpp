@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace rr {
+namespace er {
 
 struct IWriter {
   virtual void write(const void* ptr, size_t bytes) = 0;
@@ -10,4 +10,4 @@ struct IWriter {
   virtual void step_back(size_t bytes) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

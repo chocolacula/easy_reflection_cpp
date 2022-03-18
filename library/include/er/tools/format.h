@@ -9,18 +9,10 @@
 #include "append_buf.h"
 #include "traits.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 static typename std::enable_if_t<is_string_v<std::remove_reference_t<T>>, void>  //
-append(std::string* str, T&& arg) {
-  *str += arg;
-}
-
-template <typename T>
-static typename std::enable_if_t<std::is_same_v<std::remove_reference_t<T>, char*> ||
-                                     std::is_same_v<std::remove_reference_t<T>, const char*>,
-                                 void>  //
 append(std::string* str, T&& arg) {
   *str += arg;
 }
@@ -94,4 +86,4 @@ std::string format(std::string_view fmt, Ts&&... args) {
   return result;
 }
 
-}  // namespace rr
+}  // namespace er

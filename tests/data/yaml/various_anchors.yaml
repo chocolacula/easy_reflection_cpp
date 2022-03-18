@@ -1,0 +1,78 @@
+arr:
+  - 1
+  - 2
+  - &three 3
+ch: 102
+deq:
+  - 1
+  - 2
+  - *three
+f32: 3.140000
+f64: -9.999900
+i16: -1000
+i32: -1000000
+i64: -1000000000
+i8: -7
+list:
+  - 1
+  - 2
+  - *three
+map:
+  1: kOne
+  2: kTwo
+  3: kThree
+monstro:
+  - ? v1: 222
+      v2: some string
+    : - - -1
+        - 2
+        - &five 5
+      - - -1
+        - 2
+        - *five
+    ? v1: 333
+      v2: the second string
+    : - - 16
+        - 38
+        - 87
+      - - 38
+        - 41
+        - 44
+obj:
+  v1: 888
+  v2: nested object
+que:
+  - 1
+  - 2
+  - *three
+sch: 79
+set:
+  - 1
+  - 2
+  - *three
+stack:
+  - 1
+  - 2
+  - *three
+std_arr:
+  - 1
+  - 2
+  - *three
+str: common stl string
+u16: 1024
+u32: 1000000
+u64: 1000000000
+u8: 7
+uch: 79
+un_map:
+  3: three
+  2: two
+  1: one
+un_set:
+  - 1
+  - 2
+  - *three
+vec:
+  - 1
+  - 2
+  - *three

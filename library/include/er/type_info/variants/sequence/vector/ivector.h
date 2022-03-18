@@ -2,7 +2,7 @@
 
 #include "../isequence.h"
 
-namespace rr {
+namespace er {
 
 struct IVector : public ISequence {
   using ISequence::for_each;
@@ -14,4 +14,4 @@ struct IVector : public ISequence {
   virtual Expected<Var> operator[](size_t idx) = 0;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -1,0 +1,13 @@
+{
+  "name": "reflection-cpp",
+  "version": "2.3.0",
+  "dependencies": [
+    "simdjson",
+    "gtest",
+    "inja",
+    "tclap",
+    "benchmark",
+    "rapidjson",
+    "yaml-cpp"
+  ]
+}

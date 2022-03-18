@@ -2,7 +2,7 @@
 
 #include "../isequence.h"
 
-namespace rr {
+namespace er {
 
 struct IList : public ISequence {
   using ISequence::for_each;
@@ -14,4 +14,4 @@ struct IList : public ISequence {
   virtual Expected<Var> back() = 0;
 };
 
-}  // namespace rr
+}  // namespace er

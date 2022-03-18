@@ -48,7 +48,6 @@ struct Various {
     v.arr[2] = 3;
 
     v.str = "common stl string";
-    // std::string_view str_v = "c++ 17 string view";
 
     v.std_arr = {1, 2, 3};
     v.vec = {1, 2, 3};
@@ -98,8 +97,11 @@ struct Various {
 
   int arr[3];
 
-  std::string str = "common stl string";
-  // std::string_view str_v = "c++ 17 string view";
+  std::string str;
+
+  // string_view and C string are referencing to const data
+  // std::string_view str_v = "c++ 17 string_view";
+  // const char* c_str = "good old C string";
 
   std::array<int, 3> std_arr;
   std::vector<int> vec;

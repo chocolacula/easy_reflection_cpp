@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-cmake_policy(SET CMP0048 NEW)
-project(example VERSION 0.1.0)
+project(example VERSION ${CMAKE_PROJECT_VERSION})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,16 +10,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 include_directories(../library/include)
 
 set(SOURCES
-    main.cpp)
+    main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
 add_custom_command(
-    OUTPUT generated/reflection.h
-    COMMAND er_gen -p -c ${CMAKE_SOURCE_DIR}/example/config.yaml
-    DEPENDS data/bicycle.h data/color.h
-    COMMENT "Generating reflection headers"
-)
+    OUTPUT
+        ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
+    COMMAND er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+    DEPENDS
+        data/bicycle.h
+        data/colors.h
+    COMMENT "Generating reflection headers")
 
-add_executable(${PROJECT_NAME} ${SOURCES} generated/reflection.h)
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 

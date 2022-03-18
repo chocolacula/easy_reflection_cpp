@@ -3,9 +3,10 @@
 #include <list>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
 #include "ilist.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdList : public IList, public sequence::ErrHelper {
@@ -14,6 +15,24 @@ struct StdList : public IList, public sequence::ErrHelper {
   StdList(std::list<T>* list, bool is_const)
       : _list(list),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_list);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _list = static_cast<std::list<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _list = static_cast<std::list<T>*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -25,7 +44,7 @@ struct StdList : public IList, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) const override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto&& entry : *_list) {
       callback(Var(&entry, nested_type, true));
@@ -33,10 +52,16 @@ struct StdList : public IList, public sequence::ErrHelper {
   }
 
   void for_each(std::function<void(Var)> callback) override {
-    auto nested_type = TypeId::get<T>();
+    const auto nested_type = TypeId::get<T>();
 
     for (auto&& entry : *_list) {
       callback(Var(&entry, nested_type, _is_const));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto&& entry : *_list) {
+      callback(&entry);
     }
   }
 
@@ -90,4 +115,4 @@ struct StdList : public IList, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -15,7 +15,7 @@
 
 #include "er/expected.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct is_expected : std::false_type {};
@@ -32,11 +32,17 @@ struct is_string : std::false_type {};
 template <typename T>
 inline constexpr bool is_string_v = is_string<T>::value;  // NOLINT std like name
 
-template <>
-struct is_string<std::string> : std::true_type {};
+template <typename T>
+struct is_string<std::basic_string<T>> : std::true_type {};
+
+template <typename T>
+struct is_string<std::basic_string_view<T>> : std::true_type {};
 
 template <>
-struct is_string<std::string_view> : std::true_type {};
+struct is_string<const char*> : std::true_type {};
+
+template <>
+struct is_string<const wchar_t*> : std::true_type {};
 
 template <typename T>
 struct is_sequence : std::false_type {};
@@ -100,4 +106,4 @@ struct is_class {
 template <typename T>
 inline constexpr bool is_class_v = is_class<T>::value;  // NOLINT std like name
 
-}  // namespace rr
+}  // namespace er

@@ -6,10 +6,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 #include "../writers/iwriter.h"
 
-namespace rr {
+namespace er {
 
 struct GroupWriter {
   GroupWriter(const GroupWriter& other) = delete;
@@ -29,12 +30,21 @@ struct GroupWriter {
     write_one(static_cast<uint64_t>(value), false);
   }
 
-  void write(char value) {
+  void write(size_t value) {
     write_one(value, false);
   }
 
-  void write(size_t value) {
-    write_one(value, false);
+  void write(std::string_view str) {
+    // write string size to the group
+    write_one(str.size(), false);
+
+    // write the group to the stream if it wasn't while writing size
+    if (_word != 0) {
+      flush_header();
+    }
+
+    // write the string to the stream
+    _writer->write(str.data(), str.size());
   }
 
   void write(const void* ptr, size_t size, bool is_signed) {
@@ -84,7 +94,13 @@ struct GroupWriter {
     // set sign bit
     _group[0] |= (static_cast<uint8_t>(neg) << 3U);
 
-    auto zeroes = __builtin_clzll(value);
+    int zeroes;
+#if __GNUG__
+    zeroes = __builtin_clzll(value);
+#else
+    zeroes = __lzcnt64(value);
+#endif
+
     auto chunks = (64U - zeroes);
     chunks = chunks / 8 - static_cast<uint8_t>((chunks % 8) == 0);
 
@@ -100,11 +116,15 @@ struct GroupWriter {
     // get next word in the header, push one if needed
     _word++;
     if (_word > 1) {
-      _writer->write(&_group[0], _i);
-      _group[0] = 0;
-      _i = 1;
-      _word = 0;
+      flush_header();
     }
+  }
+
+  inline void flush_header() {
+    _writer->write(&_group[0], _i);
+    _group[0] = 0;
+    _i = 1;
+    _word = 0;
   }
 
   inline bool is_negative() {
@@ -116,4 +136,4 @@ struct GroupWriter {
   }
 };
 
-}  // namespace rr
+}  // namespace er

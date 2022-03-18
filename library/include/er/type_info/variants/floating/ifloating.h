@@ -6,9 +6,11 @@
 #include "er/expected.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct IFloating {
+  virtual Expected<None> assign(Var var) = 0;
+  virtual void unsafe_assign(void* ptr) = 0;
   virtual Var var() = 0;
   virtual size_t size() = 0;
   virtual double get() const = 0;
@@ -16,4 +18,4 @@ struct IFloating {
   virtual std::string to_string(int precision) const = 0;
 };
 
-}  // namespace rr
+}  // namespace er

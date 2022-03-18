@@ -1,5 +1,3 @@
-#include <unistd.h>
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -13,6 +11,7 @@
 #include "file_manager.h"
 #include "parser_cpp.h"
 #include "self_generated/reflection.h"
+#include "to_snake_case.h"
 
 // tclap
 #include "tclap/CmdLine.h"
@@ -49,7 +48,7 @@ int main(int argc, const char** argv) {
     return -1;
   }
 
-  auto conf = rr::serialization::yaml::from_stream<Config>(input).unwrap();
+  auto conf = er::serialization::yaml::from_stream<Config>(input).unwrap();
   input.close();
 
   auto time_1 = std::chrono::steady_clock::now();
@@ -79,15 +78,33 @@ int main(int argc, const char** argv) {
   auto time_2 = std::chrono::steady_clock::now();
 
   // load templates
-  inja::Environment env;
-  auto template_object = env.parse_template(conf.templates.object);
-  auto template_enum = env.parse_template(conf.templates.for_enum);
+  inja::Environment inja_env;
+  auto template_header = inja_env.parse_template(conf.templates.header);
+  auto template_object = inja_env.parse_template(conf.templates.object);
+  auto template_enum = inja_env.parse_template(conf.templates.for_enum);
 
-  // create reflection.h header
-  auto the_header = ::FileManager::create_reflection_header(conf.output_dir);
+  // create main files
+  std::ofstream ref_h;
+  ref_h.open(conf.output_dir + "/reflection.h");
+
+  ref_h << R"(#pragma once
+
+#include "er/reflection/reflection.h"
+#include "er/types/all_types.h"
+
+// generated:
+)";
+
+  std::ofstream ref_cpp;
+  ref_cpp.open(conf.output_dir + "/reflection.cpp");
+
+  ref_cpp << R"(#include "reflection.h"
+
+// clang-format off
+)";
 
   // clear and make 'reflected_types' directory
-  auto reflected_dir = conf.output_dir + "reflected_types/";
+  auto reflected_dir = conf.output_dir + "/reflected_types/";
 
   if (std::filesystem::exists(reflected_dir)) {
     std::filesystem::remove_all(reflected_dir);
@@ -96,31 +113,39 @@ int main(int argc, const char** argv) {
 
   // generate templates
   for (auto&& item : parsed) {
-    std::string file_name = item.first;
-    {
-      auto pos = file_name.find_last_of(':');
+    auto file_name = to_snake_case(item.first);
 
-      if (pos != std::string::npos) {
-        pos += 1;
-        file_name = file_name.substr(pos, file_name.length() - pos);
-      }
-    }
-    file_name += ".er.h";
+    auto& json = item.second;
+    json["file_name"] = file_name;
 
-    std::ofstream output_file;
-    output_file.open(reflected_dir + file_name);
+    file_name += ".er";
 
-    const auto& json = item.second;
+    std::ofstream output_h;
+    output_h.open(reflected_dir + file_name + ".h");
+
+    std::ofstream output_cpp;
+    output_cpp.open(reflected_dir + file_name + ".cpp");
+
+    inja_env.render_to(output_h, template_header, json);
+    output_h.close();
+
     if (json["id"].get<int>() == 0) {
-      env.render_to(output_file, template_object, json);
+      inja_env.render_to(output_cpp, template_object, json);
     } else {
-      env.render_to(output_file, template_enum, json);
+      inja_env.render_to(output_cpp, template_enum, json);
     }
-    the_header << "#include \"reflected_types/" << file_name << "\"\n";
-    output_file.close();
+    output_cpp.close();
+
+    const std::string_view include_str = "#include \"reflected_types/";
+
+    ref_h << include_str << file_name << ".h\"\n";
+    ref_cpp << include_str << file_name << ".cpp\" //NOLINT\n";
   }
 
-  the_header.close();
+  ref_cpp << "// clang-format on\n";
+  ref_cpp.close();
+
+  ref_h.close();
 
   auto time_3 = std::chrono::steady_clock::now();
 
@@ -129,10 +154,11 @@ int main(int argc, const char** argv) {
   }
 
   auto analysis = std::chrono::duration<double>(time_2 - time_1).count();
-  auto generation = std::chrono::duration<double>(time_3 - time_2).count();
+  auto generation = std::chrono::duration_cast<std::chrono::milliseconds>(time_3 - time_2).count();
+  auto all = std::chrono::duration<double>(time_3 - time_1).count();
 
-  std::cout << rr::format("Takes for analysis {} sec, generation {}  sec, all {}  sec\n",  //
-                          analysis, generation, analysis + generation);
+  std::cout << er::format("Takes for analysis {} sec, generation {} ms, all {} sec\n",  //
+                          analysis, generation, all);
 
   return 0;
 }

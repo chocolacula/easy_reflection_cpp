@@ -14,7 +14,13 @@
 
 #include "er/tools/traits.h"
 
-namespace rr {
+#ifndef NDEBUG
+namespace er::reflection {
+std::string_view type_name(uint32_t id);
+}  // namespace er::reflection
+#endif
+
+namespace er {
 
 /// copyable value type with single one int under the hood
 /// represent sequential type id
@@ -67,6 +73,7 @@ struct TypeId {
   static typename std::enable_if_t<is_map_v<T>, TypeId>  //
   get(T* ptr);
 
+  // other methods
   bool operator==(const TypeId& other) const {
     return _id == other._id;
   }
@@ -82,8 +89,15 @@ struct TypeId {
  private:
   uint32_t _id;
 
+#ifndef NDEBUG
+  std::string type_name = "unknown";
+#endif
+
   explicit TypeId(uint32_t id) : _id(id) {
+#ifndef NDEBUG
+    type_name = reflection::type_name(_id);
+#endif
   }
 };
 
-}  // namespace rr
+}  // namespace er

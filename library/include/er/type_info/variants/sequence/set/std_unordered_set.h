@@ -3,9 +3,10 @@
 #include <unordered_set>
 
 #include "../err_helper.h"
+#include "er/reflection/type_name.h"
 #include "iset.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
@@ -14,6 +15,24 @@ struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
   StdUnorderedSet(std::unordered_set<T>* set, bool is_const)
       : _set(set),  //
         _is_const(is_const) {
+  }
+
+  Expected<None> assign(Var var) override {
+    auto t = TypeId::get(_set);
+    if (var.type() != t) {
+      return Error(format("Cannot assign type: {} to {}",     //
+                          reflection::type_name(var.type()),  //
+                          reflection::type_name(t)));
+    }
+
+    _set = static_cast<std::unordered_set<T>*>(const_cast<void*>(var.raw()));
+    _is_const = var.is_const();
+    return None();
+  }
+
+  void unsafe_assign(void* ptr) override {
+    _set = static_cast<std::unordered_set<T>*>(ptr);
+    _is_const = false;
   }
 
   Var own_var() const override {
@@ -28,6 +47,13 @@ struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
     for (auto&& entry : *_set) {
       // const values
       callback(Var(&entry));
+    }
+  }
+
+  void unsafe_for_each(std::function<void(void*)> callback) const override {
+    for (auto&& entry : *_set) {
+      // const values
+      callback(const_cast<T*>(&entry));
     }
   }
 
@@ -71,4 +97,4 @@ struct StdUnorderedSet : public ISet, public sequence::ErrHelper {
   bool _is_const;
 };
 
-}  // namespace rr
+}  // namespace er

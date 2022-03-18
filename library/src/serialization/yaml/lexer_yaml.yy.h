@@ -11,27 +11,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#undef REFLEX_OPTION_dotall
 #undef REFLEX_OPTION_fast
 #undef REFLEX_OPTION_freespace
 #undef REFLEX_OPTION_header_file
 #undef REFLEX_OPTION_lex
 #undef REFLEX_OPTION_lexer
 #undef REFLEX_OPTION_namespace
+#undef REFLEX_OPTION_noindent
 #undef REFLEX_OPTION_noline
 #undef REFLEX_OPTION_outfile
 #undef REFLEX_OPTION_unicode
 
-#define REFLEX_OPTION_dotall              true
-#define REFLEX_OPTION_fast                true
-#define REFLEX_OPTION_freespace           true
-#define REFLEX_OPTION_header_file         "library/lexers/../src/serialization/yaml/lexer_yaml.yy.h"
-#define REFLEX_OPTION_lex                 lex
-#define REFLEX_OPTION_lexer               LexerYaml
-#define REFLEX_OPTION_namespace           rf_yaml
-#define REFLEX_OPTION_noline              true
-#define REFLEX_OPTION_outfile             "library/lexers/../src/serialization/yaml/lexer_yaml.yy.cpp"
-#define REFLEX_OPTION_unicode             true
+#define REFLEX_OPTION_fast true
+#define REFLEX_OPTION_freespace true
+#define REFLEX_OPTION_header_file "library/lexers/../src/serialization/yaml/lexer_yaml.yy.h"
+#define REFLEX_OPTION_lex lex
+#define REFLEX_OPTION_lexer LexerYaml
+#define REFLEX_OPTION_namespace rf_yaml
+#define REFLEX_OPTION_noindent true
+#define REFLEX_OPTION_noline true
+#define REFLEX_OPTION_outfile "library/lexers/../src/serialization/yaml/lexer_yaml.yy.cpp"
+#define REFLEX_OPTION_unicode true
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -39,14 +39,12 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cstdlib>   // strtoul()
+#include <iomanip>   // std::setw
+#include <iostream>  // std::cout etc.
+#include <vector>    // to store YAML containers
 
-  #include <cstdlib> // strtoul()
-  #include <iostream> // std::cout etc.
-  #include <iomanip>  // std::setw
-  #include <vector>   // to store YAML containers
-
-  #include "../position.h"
-
+#include "../position.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -54,6 +52,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#define WITH_NO_INDENT
 #include <reflex/matcher.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,11 +74,15 @@ namespace rf_yaml {
 class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
 
  public:
-  LexerYaml(const char* input, size_t input_size) : LexerYaml(reflex::Input(input, input_size)){
+  LexerYaml(const char* input, size_t input_size) : LexerYaml(reflex::Input(input, input_size)) {
   }
 
-  rr::Position get_position() {
-    return rr::Position{.column = columno(), .line_number = lineno()};
+  er::Position get_position() {
+    return er::Position{columno(), lineno()};
+  }
+
+  size_t get_border() {
+    return border();
   }
 
   inline std::string& get_word() {
@@ -87,39 +90,13 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
   // count number of newlines matched
-  size_t newlines()
-  {
-    return chr() == '\r' ? size()/2 : size();
+  size_t newlines() {
+    return chr() == '\r' ? size() / 2 : size();
   }
 
   // parse the indent value given after a '|' or '>', if present
-  void parse_indent(size_t offset)
-  {
+  void parse_indent(size_t offset) {
     indent = strtoul(text() + offset, NULL, 10);
-  }
-
-  // use the parsed indent value given after a '|' or '>' to adjust the indent
-  void adjust_indent()
-  {
-    if (indent > 0)
-    {
-      std::vector<size_t>& stops = matcher().stops();
-      size_t spaces = stops.back();
-      if (spaces > indent)
-      {
-        stops.pop_back();
-        if (stops.empty())
-        {
-          stops.push_back(indent);
-        }
-        else
-        {
-          spaces -= stops.back();
-          stops.push_back(stops.back() + indent);
-        }
-        _word.append(spaces - indent, ' ');
-      }
-    }
   }
 
   // clear the string scalar before accumulating a new scalar
@@ -128,29 +105,16 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
   // add one or n chars c to the string
-  void add(wchar_t c, size_t n = 1) {
+  void add(char c, size_t n = 1) {
     while (n-- > 0) {
       _word.push_back(c);
     }
   }
 
-  // add indent to the string, prefixed with a \n if nl is true
-  void add_indent() {
-    if (nl) {
-      _word.push_back('\n');
-    }
-    size_t stop = matcher().last_stop();
-    if (size() > stop) {
-      _word.append(size() - stop, ' ');
-    }
-  }
-
-  // if nl is true, add a \n to the string then reset nl
-  void add_newline() {
-    if (nl) {
-      _word.push_back('\n');
-      nl = false;
-    }
+  void add_unicode(wchar_t c) {
+    char* c_ptr = reinterpret_cast<char*>(&c);
+    _word.push_back(c_ptr[1]);
+    _word.push_back(c_ptr[0]);
   }
 
   // add sp spaces to the string
@@ -160,10 +124,8 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
   // chomp the string
-  void chomp()
-  {
-    switch (mode)
-    {
+  void chomp() {
+    switch (mode) {
       case CLIP:
         while (!_word.empty() && _word.back() == '\n') {
           _word.pop_back();
@@ -180,44 +142,34 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
     }
   }
 
-  unsigned long indent;            // block scalar indent value
-  size_t sp;                       // insert spaces in folded block scalar
-  bool nl;                         // insert newline in folded block scalar
-  enum { CLIP, STRIP, KEEP } mode; // chomp mode
+  unsigned long indent;             // block scalar indent value
+  size_t sp;                        // insert spaces in folded block scalar
+  bool nl;                          // insert newline in folded block scalar
+  enum { CLIP, STRIP, KEEP } mode;  // chomp mode
 
  private:
-  std::string _word; // string to accumulate YAML scalars
+  std::string _word;  // string to accumulate YAML scalars
 
  public:
   typedef reflex::AbstractLexer<reflex::Matcher> AbstractBaseLexer;
-  LexerYaml(
-      const reflex::Input& input = reflex::Input(),
-      std::ostream&        os    = std::cout)
-    :
-      AbstractBaseLexer(input, os)
-  {
+  LexerYaml(const reflex::Input& input = reflex::Input(), std::ostream& os = std::cout) : AbstractBaseLexer(input, os) {
 
-  indent = 0;
-  nl = false;
-  sp = 0;
-  mode = CLIP;
-
+    indent = 0;
+    nl = false;
+    sp = 0;
+    mode = CLIP;
   }
   static const int INITIAL = 0;
   static const int APOS = 1;
   static const int QUOT = 2;
-  static const int PRES = 3;
-  static const int FOLD = 4;
-  static const int PBLK = 5;
-  static const int FBLK = 6;
+  static const int PBLK = 3;
+  static const int FBLK = 4;
   virtual int lex(void);
-  int lex(const reflex::Input& input)
-  {
+  int lex(const reflex::Input& input) {
     in(input);
     return lex();
   }
-  int lex(const reflex::Input& input, std::ostream *os)
-  {
+  int lex(const reflex::Input& input, std::ostream* os) {
     in(input);
     if (os)
       out(*os);
@@ -225,6 +177,6 @@ class LexerYaml : public reflex::AbstractLexer<reflex::Matcher> {
   }
 };
 
-} // namespace rf_yaml
+}  // namespace rf_yaml
 
 #endif

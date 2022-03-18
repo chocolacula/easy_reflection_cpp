@@ -11,16 +11,16 @@
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
 
-using namespace rr;
+using namespace er;
 
 ParserYaml::ParserYaml(const char* input, size_t input_size)  //
     : LexerYaml(input, input_size),                           //
-      _token(static_cast<wchar_t>(lex())) {
+      _token(static_cast<char>(lex())) {
 }
 
 ParserYaml::ParserYaml(std::istream& stream)  //
     : LexerYaml(stream),                      //
-      _token(static_cast<wchar_t>(lex())) {
+      _token(static_cast<char>(lex())) {
 }
 
 Expected<None> ParserYaml::deserialize(TypeInfo* info) {
@@ -38,43 +38,31 @@ Expected<None> ParserYaml::deserialize(TypeInfo* info) {
 }
 
 Expected<None> ParserYaml::parse(TypeInfo* info) {
-  if (is_new_line(_token)) {
-    next();
-  }
-
   // just ignore tags
   if (_token == '!') {
     next();
   }
 
+  std::string anchor;
   if (_token == '*') {
-    auto anchor = get_word();
+    anchor = get_word();
     auto& box = _anchors[anchor.substr(1, anchor.size() - 1)];
     __retry(reflection::copy(info->var(), box.var()));
 
     next();
-    if (is_new_line(_token)) {
-      next();
-    }
+
     return None();
   }
 
-  std::string anchor;
   if (_token == '&') {
     anchor = get_word();
     next();
-    if (is_new_line(_token)) {
-      next();
-    }
   }
 
   Expected<None> ex = None();
   switch (_token) {
     case '-':
       ex = parse_seq(info);
-      break;
-    case '>':
-      ex = parse_ind(info);
       break;
     case '$':
       ex = parse_str(info);
@@ -120,52 +108,54 @@ Expected<None> ParserYaml::parse_str(TypeInfo* info) {
   // a string could be a key in a map
   // or name of a field in an object
   // or be just a string value of something
-  auto ex = info->match([this](Bool& b) -> Expected<None> { return b.set(parse_bool(get_word())); },
-                        [this](Integer& i) -> Expected<None> {
-                          auto* p = i.var().raw_mut();
-                          if (p == nullptr) {
-                            return Error("Trying to set const value");
-                          }
+  auto ex = info->match(
+      [this](Bool& b) -> Expected<None> {
+        auto ex = b.set(parse_bool(get_word()));
+        next();
+        return ex;
+      },
+      [this](Integer& i) -> Expected<None> {
+        auto* p = i.var().raw_mut();
+        if (p == nullptr) {
+          return Error("Trying to set const value");
+        }
 
-                          auto w = get_word();
-                          if (w.front() == '-') {
-                            auto v = std::strtoll(&w[0], nullptr, 10);
-                            std::memcpy(p, &v, i.size());
-                          } else {
-                            auto v = std::strtoull(&w[0], nullptr, 10);
-                            std::memcpy(p, &v, i.size());
-                          }
+        auto w = get_word();
+        if (w.front() == '-') {
+          auto v = std::strtoll(&w[0], nullptr, 10);
+          std::memcpy(p, &v, i.size());
+        } else {
+          auto v = std::strtoull(&w[0], nullptr, 10);
+          std::memcpy(p, &v, i.size());
+        }
 
-                          return None();
-                        },
-                        [this](Floating& f) -> Expected<None> { return f.set(parse_double(get_word())); },
-                        [this](String& s) -> Expected<None> { return s.set(get_word()); },
-                        [this](Enum& e) -> Expected<None> { return e.parse(get_word()); },
-                        [this](Map& m) -> Expected<None> { return parse_map(m); },
-                        [this](Object& o) -> Expected<None> { return parse_map([&]() { return add_to_obj(o); }); },
-                        [this](auto&&) -> Expected<None> { return error_match(); });
+        next();
+        return None();
+      },
+      [this](Floating& f) -> Expected<None> {
+        auto ex = f.set(parse_double(get_word()));
+        next();  // skip '$' token
+        return ex;
+      },
+      [this](String& s) -> Expected<None> {
+        auto ex = s.set(get_word());
+        next();  // skip '$' token
+        return ex;
+      },
+      [this](Enum& e) -> Expected<None> {
+        auto ex = e.parse(get_word());
+        next();  // skip '$' token
+        return ex;
+      },
+      [this](Map& m) -> Expected<None> { return parse_map(m); },
+      [this](Object& o) -> Expected<None> { return parse_map([&]() { return add_to_obj(o); }); },
+      [this](auto&&) -> Expected<None> { return error_match(); });
   __retry(ex);
-  next();
 
-  if (is_new_line(_token) || is_end(_token)) {
+  if (is_end(_token)) {
     next();
   }
 
-  return ex;
-}
-
-// parse indented value (string, nested sequence, or nested map)
-Expected<None> ParserYaml::parse_ind(TypeInfo* info) {
-  next();  // skip indention token itself
-
-  auto ex = parse(info);
-
-  if (is_new_line(_token)) {
-    next();
-  }
-  if (_token == '<') {
-    next();
-  }
   return ex;
 }
 
@@ -187,31 +177,23 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
     return parse_flow_seq(nested_type, std::move(add));
   }
 
-  size_t level = 0;
   size_t i = 0;
 
   Box box(nested_type);
   auto info = reflection::reflect(box.var());
 
+  auto ind_first = get_border();
+
   while (!is_end(_token)) {
-    if (_token == '>') {
-      next();
-      ++level;
+
+    auto ind_next = get_border();
+    if (ind_next < ind_first) {
+      break;
     }
-    while (_token == '<') {
-      if (level == 0) {
-        return None();
-      }
-      next();
-      if (level == 1) {
-        return None();
-      }
-      --level;
-    }
+
     if (_token != '-') {
       return error_token(_token);
     }
-
     next();  // skip '-' itself
 
     __retry(parse(&info));
@@ -225,73 +207,25 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
 Expected<None> ParserYaml::parse_flow_seq(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add) {
   next();  // skip '[' itself
 
-  size_t level = 0;
   size_t i = 0;
 
   Box box(nested_type);
   auto info = reflection::reflect(box.var());
 
   while (!is_end(_token) && _token != 'S' && _token != ']') {
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
-
     __retry(parse(&info));
     i++;
     __retry(add(i, box.var()));
 
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
     if (_token == ',') {
       next();
     }
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
   }
+
   if (_token == ']') {
     next();
   }
-  if (is_new_line(_token)) {
-    next();
-  }
-  while (_token == '<' && level-- > 0) {
-    next();
-  }
+
   return None();
 }
 
@@ -319,14 +253,17 @@ Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
     return parse_flow_map(std::move(add));
   }
 
-  while (_token != 'S' && !is_end(_token) && _token != '<') {
+  auto ind_first = get_border();
 
-    if (is_new_line(_token)) {
-      next();
+  while (_token != 'S' && !is_end(_token)) {
+    auto ind_next = get_border();
+    if (ind_next < ind_first) {
+      break;
     }
 
     __retry(add());
   }
+
   return None();
 }
 
@@ -334,23 +271,10 @@ Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
 Expected<None> ParserYaml::parse_flow_map(std::function<Expected<None>()> add) {
   next();  // skip '{' itself
 
-  size_t level = 0;
   while (_token != 'S' && !is_end(_token) && _token != '}') {
 
-    if (is_new_line(_token) || _token == '$') {
+    if (_token == '$') {
       next();
-    }
-
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
     }
 
     if (_token == ':') {
@@ -359,44 +283,12 @@ Expected<None> ParserYaml::parse_flow_map(std::function<Expected<None>()> add) {
       return error_token(_token);
     }
 
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else {
-      while (_token == '<') {
-        if (level > 0) {
-          --level;
-        }
-        next();
-      }
-    }
     if (_token == ',') {
-      next();
-    }
-    if (is_new_line(_token)) {
-      next();
-    }
-    if (_token == '>') {
-      ++level;
-      next();
-    } else if (_token == '<') {
-      if (level > 0) {
-        --level;
-      }
       next();
     }
   }
 
   if (_token == '}') {
-    next();
-  }
-  if (is_new_line(_token)) {
-    next();
-  }
-  while (_token == '<' && level-- > 0) {
     next();
   }
 
@@ -419,20 +311,17 @@ inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
     next();
   }
 
-  if (_token != ':') {
-    return error_token(_token);
-  }
-
   auto ex = obj.get_field(get_word());
   __retry(ex);
 
-  auto info = reflection::reflect(ex.unwrap());
-
-  next();
-  if (is_new_line(_token)) {
-    next();
+  if (_token != ':') {
+    return error_token(_token);
   }
+  next();
+
+  auto info = reflection::reflect(ex.unwrap().var());
   __retry(parse(&info));
+
   return None();
 }
 
@@ -441,7 +330,7 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
   if (_token == '$') {
     __retry(parse_str(info_key));
   } else if (_token == '?') {
-    next();
+    next();  // skip '?' token
     __retry(parse(info_key));
   } else {
     return error_token(_token);
@@ -450,7 +339,7 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
   if (_token != ':') {
     return error_token(_token);
   }
-  next();
+  next();  // skip ':' token
 
   // get a value
   __retry(parse(info_value));
@@ -458,26 +347,21 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
   return map.insert(var_key, var_value);
 }
 
-wchar_t ParserYaml::next() {
+void ParserYaml::next() {
   if (_token != 0) {
-    _token = static_cast<wchar_t>(lex());
+    _token = static_cast<char>(lex());
   }
-  return _token;
 }
 
 bool ParserYaml::is_end(int token) {
   return token == 0 || token == 'E';
 }
 
-bool ParserYaml::is_new_line(int token) {
-  return token == '=' || token == ';';
-}
-
 Error ParserYaml::error(const char* str) {
   return Error(format("{}; {}", str, get_position().to_string()));
 }
 
-Error ParserYaml::error_token(wchar_t token) {
+Error ParserYaml::error_token(char token) {
   return Error(format("Unexpected token '{}'; {}", token, get_position().to_string()));
 }
 
@@ -485,17 +369,11 @@ Error ParserYaml::error_match() {
   return Error(format("Cannot match correct type; {}", get_position().to_string()));
 }
 
-bool ParserYaml::parse_bool(const std::string& str) {
-  if (str.size() > 5) {  // 5 is length of the longest variant 'false'
-    return true;
-  }
-
-  std::string t = str;
-  std::transform(t.begin(), t.end(), t.begin(), [](char c) { return std::tolower(c); });
-
-  return !(t == "false" || t == "off" || t == "no" || t == "n");
+bool ParserYaml::parse_bool(std::string& str) {
+  std::transform(str.data(), str.data() + str.length(), str.data(), [](char c) { return std::tolower(c); });
+  return !(str == "false" || str == "off" || str == "no" || str == "n");
 }
 
-double ParserYaml::parse_double(const std::string& str) {
+double ParserYaml::parse_double(std::string_view str) {
   return std::strtod(&str[0], nullptr);
 }

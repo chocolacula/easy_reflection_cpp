@@ -1,9 +1,11 @@
 #pragma once
 
+#include <type_traits>
+
 #include "er/expected.h"
 #include "er/type_id.h"
 
-namespace rr {
+namespace er {
 
 /// The abstraction from type and const modifier
 /// all types represented like a pointer + type id + const flag
@@ -20,6 +22,8 @@ struct Var {
   explicit Var(T* value, bool is_const = false) : _value(value), _type(TypeId::get(value)), _is_const(is_const) {
   }
 
+  void unsafe_assign(void* ptr);
+
   bool operator==(const Var& other) const;
   bool operator!=(const Var& other) const;
 
@@ -30,15 +34,16 @@ struct Var {
 
   bool is_const() const;
 
+  void dispose();
+
   /// runtime type check and cast
   template <typename T>
   Expected<T*> rt_cast() const {
-
-    if (std::is_const_v<T> == false && _is_const) {
+    if (std::is_const_v<T> == false && is_const()) {
       return Error("The type under Var has const qualifier, cannot cast to mutable");
     }
 
-    auto desired_type = TypeId::get<T>();
+    auto desired_type = TypeId::get<std::remove_const_t<T>>();
 
     if (desired_type != _type) {
       return error(_type, desired_type);
@@ -52,7 +57,8 @@ struct Var {
   TypeId _type;
   bool _is_const;
 
+  // include reflection header into .cpp file to avoid cyclic dependencies
   static Error error(TypeId type, TypeId desired_type);
 };
 
-}  // namespace rr
+}  // namespace er

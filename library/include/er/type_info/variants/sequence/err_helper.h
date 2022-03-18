@@ -5,9 +5,9 @@
 #include "er/error/error.h"
 #include "er/type_id.h"
 
-using namespace rr;
+using namespace er;
 
-namespace rr::sequence {
+namespace er::sequence {
 
 /// move error formating functionality outside sequence template classes
 class ErrHelper {
@@ -15,4 +15,4 @@ class ErrHelper {
   static Error error(std::string_view message, TypeId type, TypeId nested_type);
 };
 
-}  // namespace rr::sequence
+}  // namespace er::sequence

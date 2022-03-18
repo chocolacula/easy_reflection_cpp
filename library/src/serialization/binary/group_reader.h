@@ -1,31 +1,37 @@
 #pragma once
 
-#include <sys/_types/_int64_t.h>
-
 #include <cfloat>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
+#include <ostream>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "../readers/ireader.h"
 
-namespace rr {
+namespace er {
 
 struct GroupReader {
   GroupReader(const GroupReader& other) = delete;
 
   explicit GroupReader(IReader* reader)  //
       : _reader(reader), _word(0) {
-    _header = *static_cast<const uint8_t*>(_reader->read(1));
+    _reader->read(&_header, 1);
   }
 
-  int64_t read_integer() const {
+  int64_t read_signeg() const {
     auto neg = is_negative();
     auto value = read_one();
 
     return static_cast<int64_t>(neg ? -value : value);
+  }
+
+  uint64_t read_unsigned() const {
+    return read_one();
   }
 
   double read_float() const {
@@ -43,6 +49,23 @@ struct GroupReader {
     return value;
   }
 
+  std::string read_string() const {
+
+    // get size from the reader
+    size_t size = 0;
+    read_data(&size);
+
+    std::string str;
+    str.resize(size);
+
+    _reader->read(str.data(), size);
+
+    _reader->read(&_header, 1);
+    _word = 0;
+
+    return str;
+  }
+
  private:
   IReader* _reader;
 
@@ -51,21 +74,25 @@ struct GroupReader {
 
   uint64_t read_one() const {
     uint64_t value = 0;
-    auto chunks = _header;
-    chunks >>= 4U * (1 - _word);
-    chunks &= 0b00000111U;
-
-    const auto* p = _reader->read(chunks + 1);
-    std::memcpy(&value, p, chunks + 1);
+    read_data(&value);
 
     // read next word in the header
     _word++;
     if (_word > 1) {
-      _header = *static_cast<const uint8_t*>(_reader->read(1));
+      _reader->read(&_header, 1);
       _word = 0;
     }
 
     return value;
+  }
+
+  // read data from reader, do not touch the header
+  inline void read_data(void* ptr) const {
+    auto chunks = _header;
+    chunks >>= 4U * (1 - _word);
+    chunks &= 0b00000111U;
+
+    _reader->read(ptr, chunks + 1);
   }
 
   inline bool is_negative() const {
@@ -77,4 +104,4 @@ struct GroupReader {
   }
 };
 
-}  // namespace rr
+}  // namespace er

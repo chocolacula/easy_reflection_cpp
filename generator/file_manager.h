@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unistd.h>
-
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -11,36 +9,12 @@
 #include <vector>
 
 #include "config.h"
-
-#if defined(__linux__)
-#include <linux/limits.h>
-#elif defined(__APPLE__)
-#include <mach-o/dyld.h>
-#endif
+#include "executable_name.h"
 
 class FileManager {
  public:
   FileManager() {
-#if defined(__linux__)
-    auto raw_path = std::make_unique<char[]>(PATH_MAX);
-    auto size = readlink("/proc/self/exe", raw_path.get(), PATH_MAX);
-    if (size == -1) {
-      size = 0;
-    }
-#elif defined(__APPLE__)
-    // get size first
-    uint32_t size = 0;
-    auto code = _NSGetExecutablePath(nullptr, &size);
-
-    // get the path
-    auto raw_path = std::make_unique<char[]>(size);
-    code = _NSGetExecutablePath(raw_path.get(), &size);
-    if (code == -1) {
-      size = 0;
-    }
-#endif
-
-    _root = std::string(raw_path.get(), size);
+    _root = executable_name();
     cut_filename(&_root);
   }
 
@@ -50,6 +24,7 @@ class FileManager {
 
   void correct_config(Config* config) {
     correct_path(&(config->compdb_dir));
+    correct_path(&(config->templates.header));
     correct_path(&(config->templates.for_enum));
     correct_path(&(config->templates.object));
     correct_path(&(config->output_dir));
@@ -57,26 +32,13 @@ class FileManager {
     complete_files(&(config->input));
   }
 
-  static std::ofstream create_reflection_header(const std::string& dir) {
-    std::ofstream header;
-    header.open(dir + "/reflection.h");
-
-    header << R"(#pragma once
-
-#include "er/reflection/reflection.h"
-#include "er/types/all_types.h"
-
-// generated
-)";
-
-    return header;
-  }
-
  private:
   std::string _root;
 
+  static constexpr char _delim = std::filesystem::path::preferred_separator;
+
   static void cut_filename(std::string* str) {
-    auto pos = str->find_last_of('/');
+    auto pos = str->find_last_of(_delim);
 
     if (pos != std::string::npos) {
       pos += 1;
@@ -85,12 +47,12 @@ class FileManager {
   }
 
   void correct_path(std::string* path) {
-    if (path->front() != '/') {
+    if (path->front() != _delim) {
       path->insert(0, _root);
     }
 
     if (std::filesystem::is_directory(*path)) {
-      *path += '/';
+      *path += _delim;
     }
   }
 

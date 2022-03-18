@@ -6,7 +6,7 @@
 #include "er/type_info/type_info.h"
 #include "er/type_info/variants/object/access.h"
 
-namespace rr {
+namespace er {
 
 void sprint(const TypeInfo& info, std::string* result, int indention) {
   info.match(
@@ -80,4 +80,4 @@ void sprint(const TypeInfo& info, std::string* result, int indention) {
       });
 }
 
-}  // namespace rr
+}  // namespace er

@@ -3,18 +3,17 @@
 #include <string>
 #include <string_view>
 
-#include "data/tresholds.h"
-#include "data/various.h"
-#include "er/reflection/reflection.h"
 #include "er/serialization/binary.h"
 #include "er/serialization/json.h"
+#include "er/serialization/simd_json.h"
 #include "er/serialization/yaml.h"
+#include "er/tools/format.h"
 #include "generated/reflection.h"
 #include "gtest/gtest.h"
 
-using namespace rr;
+using namespace er;
 
-void compare_tresolds(const Tresholds& lhs, const Tresholds& rhs) {
+void compare_tresholds(const Tresholds& lhs, const Tresholds& rhs) {
   ASSERT_TRUE(lhs.u8_max == rhs.u8_max &&    //
               lhs.u16_max == rhs.u16_max &&  //
               lhs.u32_max == rhs.u32_max &&  //
@@ -71,62 +70,113 @@ void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_EQ(lhs.map, rhs.map);
   ASSERT_EQ(lhs.un_map, rhs.un_map);
 
+  ASSERT_EQ(lhs.obj, rhs.obj);
   ASSERT_EQ(lhs.monstro, rhs.monstro);
 }
 
 TEST(SerializationJson, Thresholds) {
   Tresholds struct1;
 
-  auto str = rr::serialization::json::to_string(&struct1).unwrap();
-  auto struct2 = rr::serialization::json::from_string<Tresholds>(str).unwrap();
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::json::from_string<Tresholds>(str).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
+
+#ifdef USE_SIMD_JSON
+TEST(SerializationSimdJson, Thresholds) {
+  Tresholds struct1;
+
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::simd_json::from_string<Tresholds>(str).unwrap();
+
+  compare_tresholds(struct1, struct2);
+}
+#endif
 
 TEST(SerializationYaml, Thresholds) {
   Tresholds struct1;
 
-  auto str = rr::serialization::yaml::to_string(&struct1).unwrap();
-  auto struct2 = rr::serialization::yaml::from_string<Tresholds>(str).unwrap();
+  auto str = er::serialization::yaml::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::yaml::from_string<Tresholds>(str).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
 
 TEST(SerializationBinary, Thresholds) {
   Tresholds struct1;
 
-  auto binary_data = rr::serialization::binary::to_vector(&struct1).unwrap();
-  auto struct2 = rr::serialization::binary::from_vector<Tresholds>(binary_data).unwrap();
+  auto binary_data = er::serialization::binary::to_vector(&struct1).unwrap();
+  auto struct2 = er::serialization::binary::from_vector<Tresholds>(binary_data).unwrap();
 
-  compare_tresolds(struct1, struct2);
+  compare_tresholds(struct1, struct2);
 }
 
 TEST(SerializationJson, BackAndForth) {
   auto struct1 = Various::make_default();
 
-  auto str = rr::serialization::json::to_string(&struct1).unwrap();
-  auto struct2 = rr::serialization::json::from_string<Various>(str).unwrap();
+  auto time_1 = std::chrono::steady_clock::now();
+
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
+  auto struct2 = er::serialization::json::from_string<Various>(str).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "JSON serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, str.size());
 
   compare_various(struct1, struct2);
 
   std::stringstream stream;
-  rr::serialization::json::to_stream(stream, &struct1);
-  auto struct3 = rr::serialization::json::from_stream<Various>(stream).unwrap();
+  er::serialization::json::to_stream(stream, &struct1);
+  auto struct3 = er::serialization::json::from_stream<Various>(stream).unwrap();
 
   compare_various(struct1, struct3);
 }
 
+#ifdef USE_SIMD_JSON
+TEST(SerializationSimdJson, BackAndForth) {
+  auto struct1 = Various::make_default();
+
+  auto str = er::serialization::json::to_string(&struct1).unwrap();
+  auto struct2 = er::serialization::simd_json::from_string<Various>(str).unwrap();
+
+  compare_various(struct1, struct2);
+}
+#endif
+
 TEST(SerializationYaml, BackAndForth) {
   auto struct1 = Various::make_default();
 
-  auto str = rr::serialization::yaml::to_string(&struct1).unwrap();
-  auto struct2 = rr::serialization::yaml::from_string<Various>(str).unwrap();
+  auto time_1 = std::chrono::steady_clock::now();
+
+  auto str = er::serialization::yaml::to_string(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
+  auto struct2 = er::serialization::yaml::from_string<Various>(str).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "YAML serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, str.size());
 
   compare_various(struct1, struct2);
 
   std::stringstream stream;
-  rr::serialization::yaml::to_stream(stream, &struct1);
-  auto struct3 = rr::serialization::yaml::from_stream<Various>(stream).unwrap();
+  er::serialization::yaml::to_stream(stream, &struct1);
+  auto struct3 = er::serialization::yaml::from_stream<Various>(stream).unwrap();
 
   compare_various(struct1, struct3);
 }
@@ -135,10 +185,12 @@ TEST(SerializationYaml, Anchors) {
   auto struct1 = Various::make_default();
 
   std::ifstream input;
-  input.open(std::string(ROOT) + "/tests/data/various_anchors.yaml");
+  input.open(std::string(PROJECT_ROOT) + "/data/yaml/various_anchors.yaml");
 
   std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
-  auto struct2 = rr::serialization::yaml::from_string<Various>(str).unwrap();
+  input.close();
+
+  auto struct2 = er::serialization::yaml::from_string<Various>(str).unwrap();
 
   compare_various(struct1, struct2);
 }
@@ -146,14 +198,28 @@ TEST(SerializationYaml, Anchors) {
 TEST(SerializationBinary, BackAndForth) {
   auto struct1 = Various::make_default();
 
-  auto binary_data = rr::serialization::binary::to_vector(&struct1).unwrap();
-  auto struct2 = rr::serialization::binary::from_vector<Various>(binary_data).unwrap();
+  auto time_1 = std::chrono::steady_clock::now();
+
+  auto binary_data = er::serialization::binary::to_vector(&struct1).unwrap();
+
+  auto time_2 = std::chrono::steady_clock::now();
+
+  auto struct2 = er::serialization::binary::from_vector<Various>(binary_data).unwrap();
+
+  auto time_3 = std::chrono::steady_clock::now();
+
+  auto forth = std::chrono::duration_cast<std::chrono::microseconds>(time_2 - time_1).count();
+  auto back = std::chrono::duration_cast<std::chrono::microseconds>(time_3 - time_2).count();
+  std::cout << er::format(
+      "Binary serialization {} us, "
+      "deserialization {} us, generated {} bytes\n",
+      forth, back, binary_data.size());
 
   compare_various(struct1, struct2);
 
   std::stringstream stream;
-  rr::serialization::binary::to_stream(stream, &struct1);
-  auto struct3 = rr::serialization::binary::from_stream<Various>(stream).unwrap();
+  er::serialization::binary::to_stream(stream, &struct1);
+  auto struct3 = er::serialization::binary::from_stream<Various>(stream).unwrap();
 
   compare_various(struct1, struct3);
 }

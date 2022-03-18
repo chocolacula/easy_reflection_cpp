@@ -1,0 +1,11 @@
+.idea
+.cache
+.DS_Store
+.vscode
+.github
+vcpkg
+library/RE-flex
+output
+cmake-build*
+build
+Dockerfile

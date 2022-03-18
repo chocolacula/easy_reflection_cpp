@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "color.h"
+#include "colors.h"
 #include "er/attributes.h"
 
 ER_REFLECT()
@@ -23,4 +23,6 @@ struct Bicycle {
   float wheel_size_inch;
 
   std::vector<Colors> colors;
+
+  constexpr static inline bool kIsCool = true;
 };

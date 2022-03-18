@@ -8,24 +8,24 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#undef REFLEX_OPTION_dotall
 #undef REFLEX_OPTION_fast
 #undef REFLEX_OPTION_freespace
 #undef REFLEX_OPTION_header_file
 #undef REFLEX_OPTION_lex
 #undef REFLEX_OPTION_lexer
 #undef REFLEX_OPTION_namespace
+#undef REFLEX_OPTION_noindent
 #undef REFLEX_OPTION_noline
 #undef REFLEX_OPTION_outfile
 #undef REFLEX_OPTION_unicode
 
-#define REFLEX_OPTION_dotall              true
 #define REFLEX_OPTION_fast                true
 #define REFLEX_OPTION_freespace           true
 #define REFLEX_OPTION_header_file         "library/lexers/../src/serialization/json/lexer_json.yy.h"
 #define REFLEX_OPTION_lex                 lex
 #define REFLEX_OPTION_lexer               LexerJson
 #define REFLEX_OPTION_namespace           rf_json
+#define REFLEX_OPTION_noindent            true
 #define REFLEX_OPTION_noline              true
 #define REFLEX_OPTION_outfile             "library/lexers/../src/serialization/json/lexer_json.yy.cpp"
 #define REFLEX_OPTION_unicode             true
@@ -50,6 +50,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#define WITH_NO_INDENT
 #include <reflex/matcher.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,8 +75,8 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
   LexerJson(const char* input, size_t input_size) : LexerJson(reflex::Input(input, input_size)){
   }
 
-  rr::Position get_position() {
-    return rr::Position{.column = columno(), .line_number = lineno()};
+  er::Position get_position() {
+    return er::Position{columno(), lineno()};
   }
 
   inline std::string& get_word() {
@@ -83,7 +84,7 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
   }
 
  private:
-  std::string _word; // token value for token '$' (string)
+  std::string _word; // token value
 
  public:
   typedef reflex::AbstractLexer<reflex::Matcher> AbstractBaseLexer;
@@ -119,18 +120,12 @@ class LexerJson : public reflex::AbstractLexer<reflex::Matcher> {
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-// A fast JSON parser and JSON writer
+// A fast JSON parser
 // Written by Robert van Engelen
 // Edited by Maxim Voloshin
 //
-// * %o freespace to space regular expressions between concat and alternations
-// * %o dotall mode: . matches \n
 // * %o unicode mode: . mathes any Unicode character
 // * \p{Non_ASCII_Unicode} matches any non-ASCII Unicode character
-// * JSON value types are indicated with tokens '0', 't', 'f', 'n', '$'
-// * JSONParser is a recursive descent parser for JSON
-// * JSONParser recurses 100 levels deep max (MAXLEVEL)
-// * JSONParser accepts 1000 items per array/object max (MAXSIZE)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -172,30 +167,17 @@ int rf_json::LexerJson::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/json.l:56: [ \t\n\r]+ :
+          case 1: // rule library/lexers/json.l:44: [ \t\n\r]+ :
 { /* ignore white space */ }
             break;
-          case 2: // rule library/lexers/json.l:57: [\]\[}{,:] :
+          case 2: // rule library/lexers/json.l:45: [\]\[}{,:] :
 { return text()[0]; }
             break;
-          case 3: // rule library/lexers/json.l:58: null :
-{ return '0'; }
+          case 3: // rule library/lexers/json.l:46: {scalar} :
+{ _word = text(); return 's'; }
             break;
-          case 4: // rule library/lexers/json.l:59: true :
-{ return 't'; }
-            break;
-          case 5: // rule library/lexers/json.l:60: false :
-{ return 'f'; }
-            break;
-          case 6: // rule library/lexers/json.l:61: {number} :
-{ _word = text(); return 'n'; }
-            break;
-          case 7: // rule library/lexers/json.l:62: \" :
+          case 4: // rule library/lexers/json.l:47: \" :
 { _word.clear(); start(STRING); }
-
-            break;
-          case 8: // rule library/lexers/json.l:77: . :
-{ return '!'; /* error */ }
 
             break;
         }
@@ -214,39 +196,14 @@ int rf_json::LexerJson::lex(void)
               out().put(matcher().input());
             }
             break;
-          case 1: // rule library/lexers/json.l:65: \" :
+          case 1: // rule library/lexers/json.l:50: \" :
 { start(INITIAL); return '$'; }
             break;
-          case 2: // rule library/lexers/json.l:66: \\ ["\\/] :
+          case 2: // rule library/lexers/json.l:51: \\ ["\\/] :
 { _word.push_back(text()[1]); }
             break;
-          case 3: // rule library/lexers/json.l:67: \\ b :
-{ _word.push_back('\b'); }
-            break;
-          case 4: // rule library/lexers/json.l:68: \\ t :
-{ _word.push_back('\t'); }
-            break;
-          case 5: // rule library/lexers/json.l:69: \\ n :
-{ _word.push_back('\n'); }
-            break;
-          case 6: // rule library/lexers/json.l:70: \\ f :
-{ _word.push_back('\f'); }
-            break;
-          case 7: // rule library/lexers/json.l:71: \\ r :
-{ _word.push_back('\r'); }
-            break;
-          case 8: // rule library/lexers/json.l:72: \\ u [[:xdigit:]]{4} :
-{ _word.push_back(strtoul(text() + 2, NULL, 16)); }
-            break;
-          case 9: // rule library/lexers/json.l:73: [\]-\x7f\x20-\[] :
-{ _word.push_back(text()[0]); }
-            break;
-          case 10: // rule library/lexers/json.l:74: \p{Non_ASCII_Unicode} :
-{ _word.append(str()); }
-            break;
-          case 11: // rule library/lexers/json.l:77: . :
-{ return '!'; /* error */ }
-
+          case 3: // rule library/lexers/json.l:52: [^"\\]*(?:\\.[^"\\]*)* :
+{ _word = str(); }
             break;
         }
         break;
@@ -284,201 +241,62 @@ void reflex_code_INITIAL(reflex::Matcher& m)
 S0:
   m.FSM_FIND();
   c1 = m.FSM_CHAR();
-  if (c1 == '}') goto S17;
-  if (c1 == '{') goto S17;
-  if (c1 == 't') goto S24;
-  if (c1 == 'n') goto S20;
-  if (c1 == 'f') goto S28;
-  if (c1 == ']') goto S17;
-  if (c1 == '[') goto S17;
-  if (c1 == ':') goto S17;
-  if ('1' <= c1 && c1 <= '9') goto S38;
-  if (c1 == '0') goto S32;
-  if (c1 == '-') goto S57;
-  if (c1 == ',') goto S17;
-  if (c1 == '"') goto S45;
-  if (c1 == ' ') goto S51;
-  if (c1 == '\r') goto S51;
-  if ('\t' <= c1 && c1 <= '\n') goto S51;
-  if (0 <= c1) goto S48;
+  if (c1 == '}') goto S19;
+  if (c1 == '{') goto S19;
+  if ('r' <= c1 && c1 <= 'u') goto S28;
+  if (c1 == 'n') goto S28;
+  if (c1 == 'l') goto S28;
+  if ('e' <= c1 && c1 <= 'f') goto S28;
+  if (c1 == 'a') goto S28;
+  if (c1 == ']') goto S19;
+  if (c1 == '[') goto S19;
+  if (c1 == 'E') goto S28;
+  if (c1 == ':') goto S19;
+  if ('0' <= c1 && c1 <= '9') goto S28;
+  if (c1 == ',') goto S19;
+  if ('+' <= c1 && c1 <= '.') goto S28;
+  if (c1 == '"') goto S21;
+  if (c1 == ' ') goto S23;
+  if (c1 == '\r') goto S23;
+  if ('\t' <= c1 && c1 <= '\n') goto S23;
   return m.FSM_HALT(c1);
 
-S17:
+S19:
   m.FSM_TAKE(2);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  return m.FSM_HALT(c1);
-
-S20:
-  m.FSM_TAKE(8);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == 'u') goto S62;
-  return m.FSM_HALT(c1);
-
-S24:
-  m.FSM_TAKE(8);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == 'r') goto S64;
-  return m.FSM_HALT(c1);
-
-S28:
-  m.FSM_TAKE(8);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == 'a') goto S66;
-  return m.FSM_HALT(c1);
-
-S32:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == 'e') goto S70;
-  if (c1 == 'E') goto S70;
-  if (c1 == '.') goto S68;
-  return m.FSM_HALT(c1);
-
-S38:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == 'e') goto S70;
-  if (c1 == 'E') goto S70;
-  if ('0' <= c1 && c1 <= '9') goto S74;
-  if (c1 == '.') goto S68;
-  return m.FSM_HALT(c1);
-
-S45:
-  m.FSM_TAKE(7);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  return m.FSM_HALT(c1);
-
-S48:
-  m.FSM_TAKE(8);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  return m.FSM_HALT(c1);
-
-S51:
-  m.FSM_TAKE(1);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if (c1 == ' ') goto S80;
-  if (c1 == '\r') goto S80;
-  if ('\t' <= c1 && c1 <= '\n') goto S80;
-  return m.FSM_HALT(c1);
-
-S57:
-  m.FSM_TAKE(8);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S48;
-  if ('1' <= c1 && c1 <= '9') goto S74;
-  if (c1 == '0') goto S85;
-  return m.FSM_HALT(c1);
-
-S62:
-  c1 = m.FSM_CHAR();
-  if (c1 == 'l') goto S90;
-  return m.FSM_HALT(c1);
-
-S64:
-  c1 = m.FSM_CHAR();
-  if (c1 == 'u') goto S92;
-  return m.FSM_HALT(c1);
-
-S66:
-  c1 = m.FSM_CHAR();
-  if (c1 == 'l') goto S94;
-  return m.FSM_HALT(c1);
-
-S68:
-  c1 = m.FSM_CHAR();
-  if ('0' <= c1 && c1 <= '9') goto S96;
-  return m.FSM_HALT(c1);
-
-S70:
-  c1 = m.FSM_CHAR();
-  if ('0' <= c1 && c1 <= '9') goto S103;
-  if (c1 == '-') goto S101;
-  if (c1 == '+') goto S101;
-  return m.FSM_HALT(c1);
-
-S74:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if (c1 == 'e') goto S70;
-  if (c1 == 'E') goto S70;
-  if ('0' <= c1 && c1 <= '9') goto S74;
-  if (c1 == '.') goto S68;
-  return m.FSM_HALT(c1);
-
-S80:
-  m.FSM_TAKE(1);
-  c1 = m.FSM_CHAR();
-  if (c1 == ' ') goto S80;
-  if (c1 == '\r') goto S80;
-  if ('\t' <= c1 && c1 <= '\n') goto S80;
-  return m.FSM_HALT(c1);
-
-S85:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if (c1 == 'e') goto S70;
-  if (c1 == 'E') goto S70;
-  if (c1 == '.') goto S68;
-  return m.FSM_HALT(c1);
-
-S90:
-  c1 = m.FSM_CHAR();
-  if (c1 == 'l') goto S106;
-  return m.FSM_HALT(c1);
-
-S92:
-  c1 = m.FSM_CHAR();
-  if (c1 == 'e') goto S108;
-  return m.FSM_HALT(c1);
-
-S94:
-  c1 = m.FSM_CHAR();
-  if (c1 == 's') goto S110;
-  return m.FSM_HALT(c1);
-
-S96:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if (c1 == 'e') goto S70;
-  if (c1 == 'E') goto S70;
-  if ('0' <= c1 && c1 <= '9') goto S96;
-  return m.FSM_HALT(c1);
-
-S101:
-  c1 = m.FSM_CHAR();
-  if ('0' <= c1 && c1 <= '9') goto S103;
-  return m.FSM_HALT(c1);
-
-S103:
-  m.FSM_TAKE(6);
-  c1 = m.FSM_CHAR();
-  if ('0' <= c1 && c1 <= '9') goto S103;
-  return m.FSM_HALT(c1);
-
-S106:
-  m.FSM_TAKE(3);
   return m.FSM_HALT();
 
-S108:
+S21:
   m.FSM_TAKE(4);
   return m.FSM_HALT();
 
-S110:
+S23:
+  m.FSM_TAKE(1);
   c1 = m.FSM_CHAR();
-  if (c1 == 'e') goto S112;
+  if (c1 == ' ') goto S23;
+  if (c1 == '\r') goto S23;
+  if ('\t' <= c1 && c1 <= '\n') goto S23;
   return m.FSM_HALT(c1);
 
-S112:
-  m.FSM_TAKE(5);
+S28:
+  m.FSM_HEAD(0);
+  c1 = m.FSM_CHAR();
+  if (c1 == '}') goto S42;
+  if ('r' <= c1 && c1 <= 'u') goto S28;
+  if (c1 == 'n') goto S28;
+  if (c1 == 'l') goto S28;
+  if ('e' <= c1 && c1 <= 'f') goto S28;
+  if (c1 == 'a') goto S28;
+  if (c1 == ']') goto S42;
+  if (c1 == 'E') goto S28;
+  if ('0' <= c1 && c1 <= '9') goto S28;
+  if (c1 == ',') goto S42;
+  if ('+' <= c1 && c1 <= '.') goto S28;
+  if (c1 == '\n') goto S42;
+  return m.FSM_HALT(c1);
+
+S42:
+  m.FSM_TAKE(3);
+  m.FSM_TAIL(0);
   return m.FSM_HALT();
 }
 
@@ -505,227 +323,292 @@ void reflex_code_STRING(reflex::Matcher& m)
 
 S0:
   m.FSM_FIND();
+  m.FSM_TAKE(3);
   c1 = m.FSM_CHAR();
-  if (c1 == 244) goto S54;
-  if (241 <= c1 && c1 <= 243) goto S51;
-  if (c1 == 240) goto S47;
-  if (238 <= c1 && c1 <= 239) goto S44;
+  if (c1 == 244) goto S48;
+  if (241 <= c1 && c1 <= 243) goto S46;
+  if (c1 == 240) goto S44;
+  if (238 <= c1 && c1 <= 239) goto S42;
   if (c1 == 237) goto S40;
-  if (225 <= c1 && c1 <= 236) goto S37;
-  if (c1 == 224) goto S33;
-  if (194 <= c1 && c1 <= 223) goto S30;
+  if (225 <= c1 && c1 <= 236) goto S38;
+  if (c1 == 224) goto S36;
+  if (194 <= c1 && c1 <= 223) goto S34;
+  if (128 <= c1) return m.FSM_HALT(c1);
   if (c1 == '\\') goto S15;
-  if (c1 == '"') goto S12;
-  if (' ' <= c1 && c1 <= 127) goto S27;
-  if (0 <= c1) goto S58;
+  if (c1 == '"') goto S13;
+  if (0 <= c1 && c1 <= 127) goto S21;
   return m.FSM_HALT(c1);
 
-S12:
+S13:
   m.FSM_TAKE(1);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S58;
-  return m.FSM_HALT(c1);
+  return m.FSM_HALT();
 
 S15:
-  m.FSM_TAKE(11);
   c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S58;
-  if (c1 == 'u') goto S73;
-  if (c1 == 't') goto S65;
-  if (c1 == 'r') goto S71;
-  if (c1 == 'n') goto S67;
-  if (c1 == 'f') goto S69;
-  if (c1 == 'b') goto S63;
-  if (c1 == '\\') goto S61;
-  if (c1 == '/') goto S61;
-  if (c1 == '"') goto S61;
+  if (c1 == '\\') goto S50;
+  if (c1 == '/') goto S50;
+  if (c1 == '"') goto S50;
+  if ('\v' <= c1) goto S64;
+  if ('\n' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '\t') goto S64;
   return m.FSM_HALT(c1);
 
-S27:
-  m.FSM_TAKE(9);
+S21:
+  m.FSM_TAKE(3);
   c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S58;
+  if (c1 == 244) goto S48;
+  if (241 <= c1 && c1 <= 243) goto S46;
+  if (c1 == 240) goto S44;
+  if (238 <= c1 && c1 <= 239) goto S42;
+  if (c1 == 237) goto S40;
+  if (225 <= c1 && c1 <= 236) goto S38;
+  if (c1 == 224) goto S36;
+  if (194 <= c1 && c1 <= 223) goto S34;
+  if (c1 == '\\') goto S78;
+  if ('#' <= c1 && c1 <= 127) goto S21;
+  if ('"' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '!') goto S21;
   return m.FSM_HALT(c1);
 
-S30:
-  m.FSM_TAKE(11);
+S34:
   c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
+  if (128 <= c1 && c1 <= 191) goto S21;
   return m.FSM_HALT(c1);
 
-S33:
-  m.FSM_TAKE(11);
+S36:
   c1 = m.FSM_CHAR();
-  if (160 <= c1 && c1 <= 191) goto S80;
-  if (128 <= c1 && c1 <= 159) goto S58;
+  if (160 <= c1 && c1 <= 191) goto S81;
   return m.FSM_HALT(c1);
 
-S37:
-  m.FSM_TAKE(11);
+S38:
   c1 = m.FSM_CHAR();
   if (128 <= c1 && c1 <= 191) goto S83;
   return m.FSM_HALT(c1);
 
 S40:
-  m.FSM_TAKE(11);
   c1 = m.FSM_CHAR();
-  if (160 <= c1 && c1 <= 191) goto S58;
-  if (128 <= c1 && c1 <= 159) goto S86;
+  if (128 <= c1 && c1 <= 159) goto S85;
+  return m.FSM_HALT(c1);
+
+S42:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S87;
   return m.FSM_HALT(c1);
 
 S44:
-  m.FSM_TAKE(11);
   c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S89;
+  if (144 <= c1 && c1 <= 191) goto S89;
   return m.FSM_HALT(c1);
 
-S47:
-  m.FSM_TAKE(11);
+S46:
   c1 = m.FSM_CHAR();
-  if (144 <= c1 && c1 <= 191) goto S92;
-  if (128 <= c1 && c1 <= 143) goto S58;
+  if (128 <= c1 && c1 <= 191) goto S91;
   return m.FSM_HALT(c1);
 
-S51:
-  m.FSM_TAKE(11);
+S48:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 143) goto S93;
+  return m.FSM_HALT(c1);
+
+S50:
+  m.FSM_TAKE(2);
+  c1 = m.FSM_CHAR();
+  if (c1 == 244) goto S122;
+  if (241 <= c1 && c1 <= 243) goto S120;
+  if (c1 == 240) goto S118;
+  if (238 <= c1 && c1 <= 239) goto S116;
+  if (c1 == 237) goto S114;
+  if (225 <= c1 && c1 <= 236) goto S112;
+  if (c1 == 224) goto S110;
+  if (194 <= c1 && c1 <= 223) goto S108;
+  if (128 <= c1 && c1 <= 191) goto S64;
+  if (c1 == '\\') goto S78;
+  if ('#' <= c1 && c1 <= 127) goto S95;
+  if ('"' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '!') goto S95;
+  return m.FSM_HALT(c1);
+
+S64:
+  m.FSM_TAKE(3);
+  c1 = m.FSM_CHAR();
+  if (c1 == 244) goto S122;
+  if (241 <= c1 && c1 <= 243) goto S120;
+  if (c1 == 240) goto S118;
+  if (238 <= c1 && c1 <= 239) goto S116;
+  if (c1 == 237) goto S114;
+  if (225 <= c1 && c1 <= 236) goto S112;
+  if (c1 == 224) goto S110;
+  if (194 <= c1 && c1 <= 223) goto S108;
+  if (128 <= c1 && c1 <= 191) goto S64;
+  if (c1 == '\\') goto S78;
+  if ('#' <= c1 && c1 <= 127) goto S95;
+  if ('"' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '!') goto S95;
+  return m.FSM_HALT(c1);
+
+S78:
+  c1 = m.FSM_CHAR();
+  if ('\v' <= c1) goto S64;
+  if ('\n' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '\t') goto S64;
+  return m.FSM_HALT(c1);
+
+S81:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S83:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S85:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S87:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S89:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S124;
+  return m.FSM_HALT(c1);
+
+S91:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S126;
+  return m.FSM_HALT(c1);
+
+S93:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S128;
+  return m.FSM_HALT(c1);
+
+S95:
+  m.FSM_TAKE(3);
+  c1 = m.FSM_CHAR();
+  if (c1 == 244) goto S122;
+  if (241 <= c1 && c1 <= 243) goto S120;
+  if (c1 == 240) goto S118;
+  if (238 <= c1 && c1 <= 239) goto S116;
+  if (c1 == 237) goto S114;
+  if (225 <= c1 && c1 <= 236) goto S112;
+  if (c1 == 224) goto S110;
+  if (194 <= c1 && c1 <= 223) goto S108;
+  if (c1 == '\\') goto S78;
+  if ('#' <= c1 && c1 <= 127) goto S95;
+  if ('"' <= c1) return m.FSM_HALT(c1);
+  if (0 <= c1 && c1 <= '!') goto S95;
+  return m.FSM_HALT(c1);
+
+S108:
   c1 = m.FSM_CHAR();
   if (128 <= c1 && c1 <= 191) goto S95;
   return m.FSM_HALT(c1);
 
-S54:
-  m.FSM_TAKE(11);
+S110:
   c1 = m.FSM_CHAR();
-  if (144 <= c1 && c1 <= 191) goto S58;
-  if (128 <= c1 && c1 <= 143) goto S98;
+  if (160 <= c1 && c1 <= 191) goto S130;
   return m.FSM_HALT(c1);
 
-S58:
-  m.FSM_TAKE(11);
+S112:
   c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S58;
-  return m.FSM_HALT(c1);
-
-S61:
-  m.FSM_TAKE(2);
-  return m.FSM_HALT();
-
-S63:
-  m.FSM_TAKE(3);
-  return m.FSM_HALT();
-
-S65:
-  m.FSM_TAKE(4);
-  return m.FSM_HALT();
-
-S67:
-  m.FSM_TAKE(5);
-  return m.FSM_HALT();
-
-S69:
-  m.FSM_TAKE(6);
-  return m.FSM_HALT();
-
-S71:
-  m.FSM_TAKE(7);
-  return m.FSM_HALT();
-
-S73:
-  c1 = m.FSM_CHAR();
-  if ('a' <= c1 && c1 <= 'f') goto S101;
-  if ('A' <= c1 && c1 <= 'F') goto S101;
-  if ('0' <= c1 && c1 <= '9') goto S101;
-  return m.FSM_HALT(c1);
-
-S77:
-  m.FSM_TAKE(10);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S58;
-  return m.FSM_HALT(c1);
-
-S80:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S83:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S86:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S89:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S92:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S105;
-  return m.FSM_HALT(c1);
-
-S95:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S108;
-  return m.FSM_HALT(c1);
-
-S98:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S111;
-  return m.FSM_HALT(c1);
-
-S101:
-  c1 = m.FSM_CHAR();
-  if ('a' <= c1 && c1 <= 'f') goto S114;
-  if ('A' <= c1 && c1 <= 'F') goto S114;
-  if ('0' <= c1 && c1 <= '9') goto S114;
-  return m.FSM_HALT(c1);
-
-S105:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S108:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
-  return m.FSM_HALT(c1);
-
-S111:
-  m.FSM_TAKE(11);
-  c1 = m.FSM_CHAR();
-  if (128 <= c1 && c1 <= 191) goto S77;
+  if (128 <= c1 && c1 <= 191) goto S132;
   return m.FSM_HALT(c1);
 
 S114:
   c1 = m.FSM_CHAR();
-  if ('a' <= c1 && c1 <= 'f') goto S118;
-  if ('A' <= c1 && c1 <= 'F') goto S118;
-  if ('0' <= c1 && c1 <= '9') goto S118;
+  if (128 <= c1 && c1 <= 159) goto S134;
+  return m.FSM_HALT(c1);
+
+S116:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S136;
   return m.FSM_HALT(c1);
 
 S118:
   c1 = m.FSM_CHAR();
-  if ('a' <= c1 && c1 <= 'f') goto S122;
-  if ('A' <= c1 && c1 <= 'F') goto S122;
-  if ('0' <= c1 && c1 <= '9') goto S122;
+  if (144 <= c1 && c1 <= 191) goto S138;
+  return m.FSM_HALT(c1);
+
+S120:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S140;
   return m.FSM_HALT(c1);
 
 S122:
-  m.FSM_TAKE(8);
-  return m.FSM_HALT();
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 143) goto S142;
+  return m.FSM_HALT(c1);
+
+S124:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S126:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S128:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S21;
+  return m.FSM_HALT(c1);
+
+S130:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S132:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S134:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S136:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S138:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S144;
+  return m.FSM_HALT(c1);
+
+S140:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S146;
+  return m.FSM_HALT(c1);
+
+S142:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S148;
+  return m.FSM_HALT(c1);
+
+S144:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S146:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
+
+S148:
+  c1 = m.FSM_CHAR();
+  if (128 <= c1 && c1 <= 191) goto S95;
+  return m.FSM_HALT(c1);
 }
 
 } // namespace rf_json

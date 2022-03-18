@@ -6,7 +6,7 @@
 
 #include "overloaded.h"
 
-namespace rr {
+namespace er {
 
 // declaring a slightly more readable state of nothing
 using None = std::monostate;
@@ -38,8 +38,12 @@ struct Variant {
   }
 
   template <typename SomeT>
-  bool is() {
+  [[nodiscard]] inline bool is() const {
     return std::holds_alternative<SomeT>(_content);
+  }
+
+  [[nodiscard]] inline size_t variant_idx() const {
+    return _content.index();
   }
 
   template <typename SomeT>
@@ -52,8 +56,18 @@ struct Variant {
     return *pointer;
   }
 
+  template <typename SomeT>
+  inline const SomeT& unsafe_get() const {
+    return std::get<SomeT>(_content);
+  }
+
+  template <typename SomeT>
+  inline SomeT& unsafe_get() {
+    return std::get<SomeT>(_content);
+  }
+
  protected:
   std::variant<T...> _content;
 };
 
-}  // namespace rr
+}  // namespace er

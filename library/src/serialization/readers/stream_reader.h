@@ -5,23 +5,20 @@
 
 #include "ireader.h"
 
-namespace rr {
+namespace er {
 
-template <unsigned int size>
 struct StreamReader final : IReader {
   StreamReader() = delete;
 
   explicit StreamReader(std::istream& stream) : _stream(stream) {
   }
 
-  const void* read(size_t bytes) const override {
-    _stream.read(&_buff[0], static_cast<ssize_t>(bytes));
-    return _buff;
+  void read(void* buff, size_t size) const override {
+    _stream.read(static_cast<char*>(buff), static_cast<std::streamsize>(size));
   }
 
  private:
   std::istream& _stream;
-  mutable char _buff[size];
 };
 
-}  // namespace rr
+}  // namespace er

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace rr {
+namespace er {
 
 // a little helper for std::variant
 template <typename... Ts>
@@ -12,4 +12,4 @@ struct Overloaded : Ts... {
 template <typename... Ts>
 Overloaded(Ts...) -> Overloaded<Ts...>;
 
-} // namespace rr
+}  // namespace er

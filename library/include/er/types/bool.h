@@ -3,7 +3,7 @@
 #include "common_actions.h"
 #include "er/reflection/the_great_table.h"
 
-namespace rr {
+namespace er {
 
 struct BoolActions {
   static TypeInfo reflect(void* value, bool is_const) {
@@ -28,4 +28,4 @@ inline TypeId TypeId::get(bool* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er

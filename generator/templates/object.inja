@@ -1,35 +1,27 @@
-#pragma once
+#include "{{file_name}}.er.h"
 
-//clang-format off
+// clang-format off
 #include "er/reflection/the_great_table.h"
 #include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
 
-// injected
-#include "{{origin}}"
-
-namespace rr {
+namespace er {
 
 template <>
 struct TypeActions<{{name}}> {
   static TypeInfo reflect(void* value, bool is_const) {
-    auto p = static_cast<{{name}}*>(value);
+    auto* p = static_cast<{{name}}*>(value);
 
-    std::map<std::string_view, FieldInfo> map {
+    static std::map<std::string_view, FieldDesc> map {
       {% for item in fields_static -%}
-      {"{{item.alias}}", FieldInfo(&{{name}}::{{item.name}}, {{item.access}})},
+      {"{{item.alias}}", FieldDesc::create_static(Var(&{{name}}::{{item.name}}), {{item.access}})},
+      {% endfor %}
+      {% for item in fields -%}
+      {"{{item.alias}}", FieldDesc::create_member(value, Var(&p->{{item.name}}), {{item.access}})},
       {% endfor %}
     };
 
-    if (p != nullptr) {
-      map.insert({
-        {% for item in fields -%}
-        {"{{item.alias}}", FieldInfo(&p->{{item.name}}, {{item.access}})},
-        {% endfor %}
-      });
-    }
-
-    return Object(Var(p, is_const), std::move(map));
+    return Object(Var(p, is_const), &map);
   }
 };
 
@@ -44,6 +36,6 @@ TypeId TypeId::get({{name}}* /*unused*/) {
   return id;
 }
 
-}  // namespace rr
+}  // namespace er
 
-//clang-format on
+// clang-format on

@@ -8,7 +8,7 @@
 #include "er/variable/box.h"
 #include "lexer_yaml.yy.h"
 
-namespace rr {
+namespace er {
 
 struct TypeInfo;
 
@@ -39,23 +39,23 @@ class ParserYaml : rf_yaml::LexerYaml {
   inline Expected<None> add_to_obj(Object& obj);
   inline Expected<None> add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value);
 
-  wchar_t next();
-
   static inline bool is_end(int token);
   static inline bool is_new_line(int token);
 
   inline Error error(const char* str);
-  inline Error error_token(wchar_t token);
+  inline Error error_token(char token);
   inline Error error_match();
 
-  static inline bool parse_bool(const std::string& str);
-  static inline int64_t parse_int(const std::string& str);
-  static inline double parse_double(const std::string& str);
+  static inline bool parse_bool(std::string& str);
+  static inline int64_t parse_int(std::string_view str);
+  static inline double parse_double(std::string_view str);
 
-  wchar_t _token;
+  inline void next();
+  char _token;
+
   std::unordered_map<std::string, Box> _anchors;
 };
 
-}  // namespace rr
+}  // namespace er
 
 #undef __retry

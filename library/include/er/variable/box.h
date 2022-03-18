@@ -2,7 +2,7 @@
 
 #include "var.h"
 
-namespace rr {
+namespace er {
 
 struct Box {
   Box(const Box& other) = delete;
@@ -18,6 +18,8 @@ struct Box {
   Var var();
   Box clone();
 
+  bool uses_heap() const;
+
  private:
   TypeId _type;
   bool _optimized;
@@ -30,4 +32,4 @@ struct Box {
   } _data;
 };
 
-}  // namespace rr
+}  // namespace er

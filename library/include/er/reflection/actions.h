@@ -3,7 +3,7 @@
 #include "er/type_info/type_info.h"
 #include "er/variable/var.h"
 
-namespace rr {
+namespace er {
 
 struct Actions {
 
@@ -34,4 +34,4 @@ struct Actions {
   void (*copy)(void*, const void*);
 };
 
-}  // namespace rr
+}  // namespace er

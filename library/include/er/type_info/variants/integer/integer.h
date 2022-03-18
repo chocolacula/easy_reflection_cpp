@@ -2,45 +2,82 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "iinteger.h"
 #include "int.h"
 
-namespace rr {
+namespace er {
 
-struct Integer : IInteger {
+struct Integer final {
   Integer() = delete;
 
   template <typename T>
-  Integer(T* value, bool is_const) : _integer(std::make_shared<Int<T>>(value, is_const)) {
+  Integer(T* value, bool is_const) {
+    new (_mem) Int<T>(value, is_const);
   }
 
-  Var var() const override {
-    return _integer->var();
+  Expected<None> assign(Var var) {
+    return reinterpret_cast<IInteger*>(&_mem[0])->assign(var);
   }
 
-  size_t size() const override {
-    return _integer->size();
+  void unsafe_assign(void* ptr) {
+    reinterpret_cast<IInteger*>(&_mem[0])->unsafe_assign(ptr);
   }
 
-  bool is_signed() const override {
-    return _integer->is_signed();
+  Var var() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->var();
   }
 
-  int64_t get() const override {
-    return _integer->get();
+  size_t size() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->size();
   }
 
-  Expected<None> set(int64_t value) override {
-    return _integer->set(value);
+  bool is_signed() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->is_signed();
   }
 
-  std::string to_string() const override {
-    return _integer->to_string();
+  int64_t as_signed() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->as_signed();
+  }
+
+  uint64_t as_unsigned() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->as_unsigned();
+  }
+
+  template <typename T>
+  typename std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T>,  //
+                            Expected<None>>
+  set(T value) {
+    return reinterpret_cast<IInteger*>(&_mem[0])->set_signed(value);
+  }
+
+  template <typename T>
+  typename std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>,  //
+                            Expected<None>>
+  set(T value) {
+    return reinterpret_cast<IInteger*>(&_mem[0])->set_unsigned(value);
+  }
+
+  Expected<None> set_signed(int64_t value) {
+    return reinterpret_cast<IInteger*>(&_mem[0])->set_signed(value);
+  }
+
+  Expected<None> set_unsigned(uint64_t value) {
+    return reinterpret_cast<IInteger*>(&_mem[0])->set_unsigned(value);
+  }
+
+  std::string to_string() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0])->to_string();
   }
 
  private:
-  std::shared_ptr<IInteger> _integer;
+  // a little hack to reduce dynamic memory allocation
+  // this approach is little faster then use shared_ptr but still faster
+  //
+  // it's just a memory bunch for a pointer and is_const flag
+  // all kinds of Int wrapper has the same sizeof()
+  char _mem[sizeof(Int<int>)];
 };
 
-}  // namespace rr
+}  // namespace er

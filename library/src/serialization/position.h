@@ -5,7 +5,7 @@
 
 #include "er/tools/format.h"
 
-namespace rr {
+namespace er {
 
 struct Position {
   size_t column = 0;
@@ -16,4 +16,4 @@ struct Position {
   }
 };
 
-}  // namespace rr
+}  // namespace er

@@ -2,7 +2,7 @@
 
 #include <streambuf>
 
-namespace rr {
+namespace er {
 
 class AppendBuf : public std::streambuf {
  public:
@@ -25,4 +25,4 @@ class AppendBuf : public std::streambuf {
   std::string* _buf;
 };
 
-}  // namespace rr
+}  // namespace er

@@ -71,7 +71,7 @@ class ParserCpp {
         handle_class(c, nullptr, *result.SourceManager, result.Context->getLangOpts());
       }
       if (const auto* e = result.Nodes.getNodeAs<EnumDecl>("e")) {
-        handle_enum(e, *result.SourceManager, result.Context->getLangOpts());
+        handle_enum(e, nullptr, *result.SourceManager, result.Context->getLangOpts());
       }
     }
 
@@ -111,6 +111,7 @@ class ParserCpp {
       for (auto&& d : c->getPrimaryContext()->decls()) {
         nlohmann::json item;
 
+        // handle a field
         if (const auto* f = dyn_cast<FieldDecl>(d)) {
           auto offset = get_offset(f, sm, opts);
 
@@ -137,6 +138,7 @@ class ParserCpp {
           continue;
         }
 
+        // handle a static field
         if (const auto* v = dyn_cast<VarDecl>(d)) {
           auto offset = get_offset(v, sm, opts);
 
@@ -149,7 +151,7 @@ class ParserCpp {
             continue;
           }
 
-          item["access"] = to_access_string(acc) + " | Access::kStatic";
+          item["access"] = to_access_string(acc);
           item["name"] = v->getNameAsString();
 
           auto it = _ctx->alias_map.find(offset);
@@ -163,10 +165,15 @@ class ParserCpp {
           continue;
         }
 
+        // if the declaration is nested class
         if (const auto* nc = dyn_cast<CXXRecordDecl>(d)) {
           if (nc->isThisDeclarationADefinition()) {
             handle_class(nc, attr, sm, opts);
           }
+        }
+        // or nested enum
+        if (const auto* ne = dyn_cast<EnumDecl>(d)) {
+          handle_enum(ne, attr, sm, opts);
         }
       }
 
@@ -175,11 +182,14 @@ class ParserCpp {
       _ctx->result.emplace(std::make_pair(json["name"].get<std::string>(), std::move(json)));
     }
 
-    inline void handle_enum(const EnumDecl* e, const SourceManager& sm, const LangOptions& opts) {
-      auto it = _ctx->reflect_map.find(get_offset(e, sm, opts));
+    inline void handle_enum(const EnumDecl* e, AttrReflect* attr, const SourceManager& sm, const LangOptions& opts) {
 
-      if (it == _ctx->reflect_map.end()) {
-        return;
+      if (attr == nullptr) {
+        auto it = _ctx->reflect_map.find(get_offset(e, sm, opts));
+        if (it == _ctx->reflect_map.end()) {
+          return;
+        }
+        attr = &it->second;
       }
 
       nlohmann::json json;
@@ -236,7 +246,8 @@ class ParserCpp {
 
   class MacroCallback : public PPCallbacks {
    public:
-    explicit MacroCallback(SourceManager& sm, LangOptions& opts, Context* ctx) : _sm(sm), _opts(opts), _ctx(ctx) {
+    explicit MacroCallback(SourceManager& sm, LangOptions& opts, Context* ctx)  //
+        : _sm(sm), _opts(opts), _ctx(ctx) {
     }
 
     void MacroExpands(const Token& token, const MacroDefinition& /*def*/, SourceRange /*range*/,

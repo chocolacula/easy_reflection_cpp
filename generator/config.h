@@ -10,6 +10,7 @@ struct Config {
   std::string compdb_dir;
 
   struct Templates {
+    std::string header;
     ER_ALIAS("enum")
     std::string for_enum;
     std::string object;

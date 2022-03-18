@@ -5,7 +5,7 @@
 #include "er/reflection/the_great_table.h"
 #include "er/tools/names.h"
 
-namespace rr {
+namespace er {
 
 template <typename T>
 struct CommonActions {
@@ -40,4 +40,4 @@ struct CommonActions {
   }
 };
 
-}  // namespace rr
+}  // namespace er

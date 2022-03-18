@@ -5,7 +5,7 @@
 #include "expected.h"
 #include "tools/format.h"
 
-namespace rr {
+namespace er {
 
 /// the analogue of tree based map container with fixed type of second argument
 /// and the same log(N) search performance
@@ -98,17 +98,17 @@ class ConstexprMap {
 
     while (begin < end) {
 
-      auto middleIdx = (begin + end) / 2;
-      auto middleVal = _name_ptr[middleIdx]->name;
+      auto middle_idx = (begin + end) / 2;
+      auto middle_val = _name_ptr[middle_idx]->name;
 
-      if (name == middleVal) {
-        return _name_ptr[middleIdx];
+      if (name == middle_val) {
+        return _name_ptr[middle_idx];
       }
 
-      if (name < middleVal) {
-        end = middleIdx;
+      if (name < middle_val) {
+        end = middle_idx;
       } else {
-        begin = ++middleIdx;
+        begin = ++middle_idx;
       }
     }
 
@@ -147,4 +147,4 @@ class ConstexprMap {
   };
 };
 
-}  // namespace rr
+}  // namespace er
