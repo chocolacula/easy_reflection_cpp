@@ -2,7 +2,9 @@
 
 #include <cfloat>
 #include <climits>
+#include <cmath>
 #include <cstdint>
+#include <limits>
 
 #include "er/attributes.h"
 
@@ -26,4 +28,6 @@ struct Tresholds {
   float f32_max = FLT_MAX;
   double f64_min = -DBL_MAX;
   double f64_max = DBL_MAX;
+  double inf = std::numeric_limits<double>::infinity();
+  double nan = std::nan("");
 };
