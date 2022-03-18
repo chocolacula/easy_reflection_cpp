@@ -46,10 +46,6 @@ struct StdBasicString : IString {
     return _var;
   }
 
-  bool owns_data() const override {
-    return true;
-  }
-
  private:
   Var _var;
 };

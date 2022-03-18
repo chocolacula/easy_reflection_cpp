@@ -13,7 +13,7 @@ template <typename T>
 struct StdBasicStringView : IString {
   StdBasicStringView() = delete;
 
-  StdBasicStringView(std::basic_string_view<T>* str, bool is_const) : _var(str, is_const) {
+  StdBasicStringView(std::basic_string_view<T>* str) : _var(str, true) {
   }
 
   Expected<None> assign(Var var) override {
@@ -35,19 +35,17 @@ struct StdBasicStringView : IString {
   }
 
   Expected<None> set(std::string_view value) override {
-    if (_var.is_const()) {
-      return Error("Trying to set const value");
-    }
-    *static_cast<std::string_view*>(_var.raw_mut()) = value;
-    return None();
+    return Error("Trying to set const value");
+    // keep it as possible implementation
+    // if (_var.is_const()) {
+    //   return Error("Trying to set const value");
+    // }
+    // *static_cast<std::string_view*>(_var.raw_mut()) = value;
+    // return None();
   }
 
   Var var() const override {
     return _var;
-  }
-
-  bool owns_data() const override {
-    return false;
   }
 
  private:

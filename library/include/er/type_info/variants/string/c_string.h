@@ -12,7 +12,7 @@ namespace er {
 template <typename T>
 struct CString : IString {
 
-  CString(const T** str, bool is_const) : _var(str, is_const) {
+  CString(const T** str) : _var(str, true) {
   }
 
   Expected<None> assign(Var var) override {
@@ -34,22 +34,20 @@ struct CString : IString {
   }
 
   Expected<None> set(std::string_view value) override {
-    if (_var.is_const()) {
-      return Error("Trying to set const value");
-    }
-    if (*value.end() != '\0') {
-      return Error("C string value should be null terminated");
-    }
-    *static_cast<const T**>(_var.raw_mut()) = value.data();
-    return None();
+    return Error("Trying to set const value");
+    // keep it as possible implementation
+    // if (_var.is_const()) {
+    //   return Error("Trying to set const value");
+    // }
+    // if (*value.end() != '\0') {
+    //   return Error("C string value should be null terminated");
+    // }
+    // *static_cast<const T**>(_var.raw_mut()) = value.data();
+    // return None();
   }
 
   Var var() const override {
     return _var;
-  }
-
-  bool owns_data() const override {
-    return false;
   }
 
  private:

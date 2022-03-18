@@ -1,3 +1,4 @@
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -59,6 +60,8 @@ void compare_various(const Various& lhs, const Various& rhs) {
   }
 
   ASSERT_EQ(lhs.str, rhs.str);
+  ASSERT_EQ(lhs.str_v, rhs.str_v);
+  ASSERT_TRUE(std::strcmp(lhs.c_str, rhs.c_str) == 0);
   ASSERT_EQ(lhs.std_arr, rhs.std_arr);
   ASSERT_EQ(lhs.vec, rhs.vec);
   ASSERT_EQ(lhs.list, rhs.list);

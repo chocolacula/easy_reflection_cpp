@@ -48,6 +48,9 @@ struct FieldDesc {
   const bool _is_const;
   const bool _is_static;
 
+  // it means
+  // const bool _is_immutable;
+
   Access _access;
 
   static uintptr_t delta(const void* base, const void* ptr) {

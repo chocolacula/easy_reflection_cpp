@@ -13,18 +13,18 @@ struct String final {
   String() = delete;
 
   template <typename T>
-  String(std::basic_string_view<T>* str, bool is_const) {
-    new (_mem) StdBasicStringView<T>(str, is_const);
-  }
-
-  template <typename T>
   String(std::basic_string<T>* str, bool is_const) {
     new (_mem) StdBasicString<T>(str, is_const);
   }
 
   template <typename T>
+  String(std::basic_string_view<T>* str, bool is_const) {
+    new (_mem) StdBasicStringView<T>(str);
+  }
+
+  template <typename T>
   String(const T** str, bool is_const) {
-    new (_mem) CString<T>(str, is_const);
+    new (_mem) CString<T>(str);
   }
 
   Expected<None> assign(Var var) {
@@ -45,10 +45,6 @@ struct String final {
 
   Var var() const {
     return reinterpret_cast<const IString*>(&_mem[0])->var();
-  }
-
-  bool owns_data() const {
-    return reinterpret_cast<const IString*>(&_mem[0])->owns_data();
   }
 
  private:

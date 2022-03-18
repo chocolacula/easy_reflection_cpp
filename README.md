@@ -186,6 +186,10 @@ auto employee = serialization::json::from_string<Employee>(str_from_mongo).unwra
 
 Please see ```example/main.cpp``` for more details.
 
+## Strings
+
+It's not easy to make decision how to deserialize strings. ```std::string_view``` and ```const char*``` are just references to data nomater const or not. While you deserialize data which you've got from someware you cannot just take a reference you need something to own data. Use ```std::string``` to own and serialize/deserialize data and reference types like something const which you could print or analyze but not set while deserialization. For this reason reflection marks ```std::string_view``` and C string like ```const``` even without specifier.
+
 ## Performance
 
 The repository includes ```benchmarks``` folder, feel free to check it on your own hardware.

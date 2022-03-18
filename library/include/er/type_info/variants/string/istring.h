@@ -13,7 +13,6 @@ struct IString {
   virtual std::string_view get() const = 0;
   virtual Expected<None> set(std::string_view value) = 0;
   virtual Var var() const = 0;
-  virtual bool owns_data() const = 0;
 };
 
 }  // namespace er
