@@ -67,10 +67,6 @@ struct Integer final {
     return reinterpret_cast<IInteger*>(&_mem[0])->set_unsigned(value);
   }
 
-  std::string to_string() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->to_string();
-  }
-
  private:
   // a little hack to reduce dynamic memory allocation
   // this approach is little faster then use shared_ptr but still faster

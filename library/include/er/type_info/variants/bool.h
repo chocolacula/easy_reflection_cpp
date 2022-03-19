@@ -50,10 +50,6 @@ struct Bool {
     return Var(_value, _is_const);
   }
 
-  std::string_view to_string() const {
-    return *_value ? "true" : "false";
-  }
-
  private:
   bool* _value;
   bool _is_const;

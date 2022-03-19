@@ -6,6 +6,7 @@
 #include "er/reflection/reflection.h"
 #include "er/tools/format.h"
 #include "er/type_info/type_info.h"
+#include "er/type_info/variants/floating/floating.h"
 #include "er/types/all_types.h"
 #include "er/variable/box.h"
 #include "simdjson.h"
@@ -48,6 +49,19 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
         info->unsafe_get<String>().set(elem.get_string());
       } else if (info->is<Enum>()) {
         info->unsafe_get<Enum>().parse(elem.get_string());
+      } else if (info->is<Floating>()) {
+        double v;
+        auto str = elem.get_string().value_unsafe();
+        if (str == "-inf") {
+          v = -std::numeric_limits<double>::infinity();
+        } else if (str == "inf") {
+          v = std::numeric_limits<double>::infinity();
+        } else if (str == "nan") {
+          v = std::nan("");
+        } else {
+          return Error(format("Expected -inf, inf, nan but {} reached", str));
+        }
+        info->unsafe_get<Floating>().set(v);
       } else {
         return Error(format("Cannot deserialize string to {}", info->get_kind_str()));
       }

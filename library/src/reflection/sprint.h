@@ -3,6 +3,7 @@
 #include <string>
 
 #include "er/reflection/reflection.h"
+#include "er/tools/stringify.h"
 #include "er/type_info/type_info.h"
 #include "er/type_info/variants/object/access.h"
 
@@ -29,9 +30,15 @@ void sprint(const TypeInfo& info, std::string* result, int indention) {
           }
         }
       },
-      [result](const Bool& b) { *result += b.to_string(); },     //
-      [result](const Integer& i) { *result += i.to_string(); },  //
-      [result](const Floating& f) { *result += f.to_string(); },
+      [result](const Bool& b) { *result += to_string(b.get()); },  //
+      [result](const Integer& i) {
+        if (i.is_signed()) {
+          *result += to_string(i.as_signed());
+        } else {
+          *result += to_string(i.as_unsigned());
+        }
+      },
+      [result](const Floating& f) { *result += to_string(f.get(), 2); },
       [result](const String& s) {
         *result += "'";
         *result += s.get();

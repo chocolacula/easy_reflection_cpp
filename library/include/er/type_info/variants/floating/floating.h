@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iomanip>
 #include <memory>
-#include <sstream>
 
 #include "./float.h"
 #include "ifloating.h"
@@ -39,10 +37,6 @@ struct Floating final {
 
   Expected<None> set(double value) {
     return reinterpret_cast<IFloating*>(&_mem[0])->set(value);
-  }
-
-  std::string to_string(int precision = 2) const {
-    return reinterpret_cast<const IFloating*>(&_mem[0])->to_string(precision);
   }
 
  private:

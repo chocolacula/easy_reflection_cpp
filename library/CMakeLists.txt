@@ -13,6 +13,7 @@ set(SOURCES
         src/err_helper.cpp
         src/variable/var.cpp
         src/variable/box.cpp
+        src/tools/stringify.cpp
         src/serialization/json/json.cpp
         src/serialization/json/simd_json.cpp
         src/serialization/json/lexer_json.yy.cpp

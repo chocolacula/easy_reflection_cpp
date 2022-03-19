@@ -100,8 +100,8 @@ struct Various {
   std::string str;
 
   // string_view and C string are referencing to const data
-  std::string_view str_v = "c++ 17 string_view";
-  const char* c_str = "good old C string";
+  // std::string_view str_v = "c++ 17 string_view";
+  // const char* c_str = "good old C string";
 
   std::array<int, 3> std_arr;
   std::vector<int> vec;

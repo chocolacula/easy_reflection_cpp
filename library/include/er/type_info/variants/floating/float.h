@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iomanip>
 #include <limits>
-#include <sstream>
 
 #include "er/reflection/type_name.h"
 #include "ifloating.h"
@@ -48,19 +46,13 @@ struct Float : IFloating {
     if (_is_const) {
       return Error("Trying to set const value");
     }
-    if (std::numeric_limits<T>::max() < value || -std::numeric_limits<T>::max() > value) {
+    if (value != -std::numeric_limits<double>::infinity() && value != std::numeric_limits<double>::infinity() &&
+        (std::numeric_limits<T>::max() < value || -std::numeric_limits<T>::max() > value)) {
       return Error("The value too big to set float variable");
     }
 
     *_value = value;
     return None();
-  }
-
-  std::string to_string(int precision) const override {
-    std::stringstream stream;
-    stream << std::setiosflags(std::ios::fixed) << std::setprecision(precision) << *_value;
-
-    return stream.str();
   }
 
  private:
