@@ -14,7 +14,7 @@ struct TypeActions<ComplexMapVec> {
 
     static std::map<std::string_view, FieldDesc> map {
       
-      {"content", FieldDesc::create_member(value, Var(&p->content), Access::kPublic)},
+      {"content", FieldDesc::create_member(p, &p->content, FieldAttributes::kPublic)},
       
     };
 

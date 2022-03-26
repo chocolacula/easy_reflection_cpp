@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "er/tools/names.h"
 #include "er/tools/traits.h"
 
 #ifndef NDEBUG
@@ -30,7 +31,7 @@ struct TypeId {
 
   /// proxy function for using with implicit type in TypeId::get<T>() way without argument
   template <typename T>
-  static TypeId get() {
+  static inline TypeId get() {
     return get(static_cast<T*>(nullptr));
   }
 

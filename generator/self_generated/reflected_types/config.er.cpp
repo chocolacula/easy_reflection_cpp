@@ -2,6 +2,7 @@
 
 // clang-format off
 #include "er/reflection/the_great_table.h"
+#include "er/type_info/variants/object/field_attributes.h"
 #include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
 
@@ -13,10 +14,10 @@ struct TypeActions<Config> {
     auto* p = static_cast<Config*>(value);
 
     static std::map<std::string_view, FieldDesc> map {
-      {"compdb_dir", FieldDesc::create_member(value, Var(&p->compdb_dir), Access::kPublic)},
-      {"templates", FieldDesc::create_member(value, Var(&p->templates), Access::kPublic)},
-      {"input", FieldDesc::create_member(value, Var(&p->input), Access::kPublic)},
-      {"output_dir", FieldDesc::create_member(value, Var(&p->output_dir), Access::kPublic)},
+      {"compdb_dir", FieldDesc::create_member(p, &p->compdb_dir, FieldAttributes::kPublic)},
+      {"templates", FieldDesc::create_member(p, &p->templates, FieldAttributes::kPublic)},
+      {"input", FieldDesc::create_member(p, &p->input, FieldAttributes::kPublic)},
+      {"output_dir", FieldDesc::create_member(p, &p->output_dir, FieldAttributes::kPublic)},
 
     };
 

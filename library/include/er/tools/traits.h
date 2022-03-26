@@ -18,6 +18,21 @@
 namespace er {
 
 template <typename T>
+struct is_ref_type : std::false_type {};
+
+template <typename T>
+inline constexpr bool is_ref_type_v = is_ref_type<T>::value;  // NOLINT std like name
+
+template <typename T>
+struct is_ref_type<std::basic_string_view<T>> : std::true_type {};
+
+template <>
+struct is_ref_type<const char*> : std::true_type {};
+
+template <>
+struct is_ref_type<const wchar_t*> : std::true_type {};
+
+template <typename T>
 struct is_expected : std::false_type {};
 
 template <typename T>

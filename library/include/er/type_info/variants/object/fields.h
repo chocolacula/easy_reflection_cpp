@@ -7,7 +7,7 @@
 namespace er {
 
 struct Fields {
-  Fields(const void* base, const std::map<std::string_view, FieldDesc>* map, Access access)  //
+  Fields(const void* base, const std::map<std::string_view, FieldDesc>* map, FieldAttributes access)  //
       : _base(base), _map(map), _access(access) {
   }
 
@@ -31,7 +31,7 @@ struct Fields {
  private:
   const void* _base;
   const std::map<std::string_view, FieldDesc>* _map;
-  Access _access;
+  FieldAttributes _access;
 };
 
 }  // namespace er

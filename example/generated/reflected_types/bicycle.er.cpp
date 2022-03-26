@@ -13,15 +13,15 @@ struct TypeActions<Bicycle> {
     auto* p = static_cast<Bicycle*>(value);
 
     static std::map<std::string_view, FieldDesc> map {
-      {"kIsCool", FieldDesc::create_static(Var(&Bicycle::kIsCool), Access::kPublic)},
+      {"kIsCool", FieldDesc::create_static(&Bicycle::kIsCool, FieldAttributes::kPublic)},
       
-      {"id", FieldDesc::create_member(value, Var(&p->id), Access::kPublic)},
-      {"is_hardtail", FieldDesc::create_member(value, Var(&p->is_hardtail), Access::kPublic)},
-      {"manufacturer", FieldDesc::create_member(value, Var(&p->manufacturer), Access::kPublic)},
-      {"model", FieldDesc::create_member(value, Var(&p->model), Access::kPublic)},
-      {"weight", FieldDesc::create_member(value, Var(&p->frame_weight), Access::kPublic)},
-      {"wheel_size", FieldDesc::create_member(value, Var(&p->wheel_size_inch), Access::kPublic)},
-      {"colors", FieldDesc::create_member(value, Var(&p->colors), Access::kPublic)},
+      {"id", FieldDesc::create_member(p, &p->id, FieldAttributes::kPublic)},
+      {"is_hardtail", FieldDesc::create_member(p, &p->is_hardtail, FieldAttributes::kPublic)},
+      {"manufacturer", FieldDesc::create_member(p, &p->manufacturer, FieldAttributes::kPublic)},
+      {"model", FieldDesc::create_member(p, &p->model, FieldAttributes::kPublic)},
+      {"weight", FieldDesc::create_member(p, &p->frame_weight, FieldAttributes::kPublic)},
+      {"wheel_size", FieldDesc::create_member(p, &p->wheel_size_inch, FieldAttributes::kPublic)},
+      {"colors", FieldDesc::create_member(p, &p->colors, FieldAttributes::kPublic)},
       
     };
 

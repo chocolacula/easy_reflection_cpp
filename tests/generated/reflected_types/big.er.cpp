@@ -14,14 +14,14 @@ struct TypeActions<Big> {
 
     static std::map<std::string_view, FieldDesc> map {
       
-      {"int1", FieldDesc::create_member(value, Var(&p->int1), Access::kPublic)},
-      {"int2", FieldDesc::create_member(value, Var(&p->int2), Access::kPublic)},
-      {"int3", FieldDesc::create_member(value, Var(&p->int3), Access::kPublic)},
-      {"int4", FieldDesc::create_member(value, Var(&p->int4), Access::kPublic)},
-      {"str1", FieldDesc::create_member(value, Var(&p->str1), Access::kPublic)},
-      {"str2", FieldDesc::create_member(value, Var(&p->str2), Access::kPublic)},
-      {"str3", FieldDesc::create_member(value, Var(&p->str3), Access::kPublic)},
-      {"str4", FieldDesc::create_member(value, Var(&p->str4), Access::kPublic)},
+      {"int1", FieldDesc::create_member(p, &p->int1, FieldAttributes::kPublic)},
+      {"int2", FieldDesc::create_member(p, &p->int2, FieldAttributes::kPublic)},
+      {"int3", FieldDesc::create_member(p, &p->int3, FieldAttributes::kPublic)},
+      {"int4", FieldDesc::create_member(p, &p->int4, FieldAttributes::kPublic)},
+      {"str1", FieldDesc::create_member(p, &p->str1, FieldAttributes::kPublic)},
+      {"str2", FieldDesc::create_member(p, &p->str2, FieldAttributes::kPublic)},
+      {"str3", FieldDesc::create_member(p, &p->str3, FieldAttributes::kPublic)},
+      {"str4", FieldDesc::create_member(p, &p->str4, FieldAttributes::kPublic)},
       
     };
 

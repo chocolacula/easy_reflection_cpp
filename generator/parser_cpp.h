@@ -233,13 +233,13 @@ class ParserCpp {
       // fast convert to er/info/access.h Access enum constants string representation
       switch (access) {
         case clang::AS_public:
-          return "Access::kPublic";
+          return "kPublic";
         case clang::AS_protected:
-          return "Access::kProtected";
+          return "kProtected";
         case clang::AS_private:
-          return "Access::kPrivate";
+          return "kPrivate";
         default:
-          return "Access::kNone";
+          return "kNone";
       }
     }
   };
@@ -366,7 +366,8 @@ class ParserCpp {
       _finder.addMatcher(enum_matcher, &_matcher);
     }
 
-    std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& compiler, StringRef /*in_file*/) override {
+    std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& compiler, StringRef /*in_file*/)
+    override {
       // register macro handler
       compiler.getPreprocessor().addPPCallbacks(std::make_unique<MacroCallback>(compiler.getSourceManager(),  //
                                                                                 compiler.getLangOpts(),       //

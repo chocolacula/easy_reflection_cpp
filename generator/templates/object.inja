@@ -14,10 +14,10 @@ struct TypeActions<{{name}}> {
 
     static std::map<std::string_view, FieldDesc> map {
       {% for item in fields_static -%}
-      {"{{item.alias}}", FieldDesc::create_static(Var(&{{name}}::{{item.name}}), {{item.access}})},
+      {"{{item.alias}}", FieldDesc::create_static(&{{name}}::{{item.name}}, FieldAttributes::{{item.access}})},
       {% endfor %}
       {% for item in fields -%}
-      {"{{item.alias}}", FieldDesc::create_member(value, Var(&p->{{item.name}}), {{item.access}})},
+      {"{{item.alias}}", FieldDesc::create_member(p, &p->{{item.name}}, FieldAttributes::{{item.access}})},
       {% endfor %}
     };
 

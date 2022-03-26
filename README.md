@@ -214,3 +214,4 @@ Easy Reflection, on the other hand, provides ready-made object with all values w
 - Test YAML parser extensively
 - Add parent class fields to serialized fields
 - Add support of user's template classes with different number of template arguments
+- Add custom allocators in supported containers

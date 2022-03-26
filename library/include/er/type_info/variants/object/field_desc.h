@@ -1,23 +1,41 @@
 #pragma once
 
-#include "access.h"
+#include <type_traits>
+
+#include "er/tools/traits.h"
 #include "er/type_id.h"
 #include "er/variable/var.h"
+#include "field_attributes.h"
 
 namespace er {
 
 struct FieldDesc {
 
-  static FieldDesc create_static(Var field, Access acc) {
-    return FieldDesc(reinterpret_cast<uintptr_t>(field.raw()), field.type(), field.is_const(), true, acc);
+  template <typename T>
+  static FieldDesc create_static(T* ptr, FieldAttributes atr) {
+    atr = atr | FieldAttributes::kStatic;
+    if (is_ref_type_v<T>) {
+      atr = atr | FieldAttributes::kReadOnly;
+    }
+    return {reinterpret_cast<uintptr_t>(ptr),       //
+            TypeId::get<std::remove_const_t<T>>(),  //
+            std::is_const_v<T>,                     //
+            atr};
   }
 
-  static FieldDesc create_member(const void* base, Var member, Access acc) {
-    return FieldDesc(delta(base, member.raw()), member.type(), member.is_const(), false, acc);
+  template <typename T>
+  static FieldDesc create_member(void* base, T* ptr, FieldAttributes atr) {
+    if (is_ref_type_v<T>) {
+      atr = atr | FieldAttributes::kReadOnly;
+    }
+    return {delta(base, ptr),                       //
+            TypeId::get<std::remove_const_t<T>>(),  //
+            std::is_const_v<T>,                     //
+            atr};
   }
 
-  FieldDesc(uintptr_t value, TypeId type, bool is_const, bool is_static, Access acc)
-      : _value(value), _type(type), _is_const(is_const), _is_static(is_static), _access(acc) {
+  FieldDesc(uintptr_t value, TypeId type, bool is_const, FieldAttributes acc)
+      : _value(value), _type(type), _is_const(is_const), _atr(acc) {
   }
 
   uintptr_t value() const {
@@ -33,25 +51,31 @@ struct FieldDesc {
   }
 
   bool is_static() const {
-    return _is_static;
+    return (_atr & FieldAttributes::kStatic) != FieldAttributes::kNone;
   }
 
-  Access access() const {
-    return _access;
+  bool is_public() const {
+    return (_atr & FieldAttributes::kPublic) != FieldAttributes::kNone;
+  }
+
+  bool is_protected() const {
+    return (_atr & FieldAttributes::kProtected) != FieldAttributes::kNone;
+  }
+
+  bool is_private() const {
+    return (_atr & FieldAttributes::kPrivate) != FieldAttributes::kNone;
+  }
+
+  FieldAttributes attributes() const {
+    return _atr;
   }
 
  private:
   uintptr_t _value;  // pointer for static fields, offset for members
-
   TypeId _type;
-
   const bool _is_const;
-  const bool _is_static;
 
-  // it means
-  // const bool _is_immutable;
-
-  Access _access;
+  FieldAttributes _atr;
 
   static uintptr_t delta(const void* base, const void* ptr) {
     return reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(base);

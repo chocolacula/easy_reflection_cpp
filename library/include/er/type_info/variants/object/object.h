@@ -43,7 +43,7 @@ struct Object {
     return Error(format("There is no field with name: {}", name));
   }
 
-  Fields get_fields(Access access = Access::kPublic) const {
+  Fields get_fields(FieldAttributes access = FieldAttributes::kPublic) const {
     return Fields(_var.raw(), _fields, access);
   }
 

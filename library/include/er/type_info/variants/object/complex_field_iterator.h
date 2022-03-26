@@ -3,7 +3,7 @@
 #include <map>
 #include <string_view>
 
-#include "access.h"
+#include "field_attributes.h"
 #include "field_info.h"
 
 namespace er {
@@ -13,7 +13,7 @@ class ComplexFieldIterator {
   using item = std::pair<std::string_view, FieldInfo>;
 
  public:
-  ComplexFieldIterator(const void* base, const_iterator it, const_iterator end, Access access)  //
+  ComplexFieldIterator(const void* base, const_iterator it, const_iterator end, FieldAttributes access)  //
       : _base(base), _it(it), _end(end), _access(access) {
   }
 
@@ -41,7 +41,7 @@ class ComplexFieldIterator {
   };
 
   bool is_valid() {
-    if ((_it->second.access() & _access) != Access::kNone) {
+    if ((_it->second.attributes() & _access) != FieldAttributes::kNone) {
       return _base != nullptr || _it->second.is_static();
     }
     return false;
@@ -57,7 +57,7 @@ class ComplexFieldIterator {
   const void* _base;
   const_iterator _it;
   const_iterator _end;
-  Access _access;
+  FieldAttributes _access;
 };
 
 }  // namespace er

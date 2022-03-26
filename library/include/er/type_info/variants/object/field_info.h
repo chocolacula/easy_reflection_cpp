@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "access.h"
 #include "er/type_id.h"
+#include "field_attributes.h"
 #include "field_desc.h"
 
 namespace er {
@@ -47,20 +47,16 @@ class FieldInfo {
     return _data->is_static();
   }
 
-  Access access() const {
-    return _data->access();
-  }
-
   bool is_public() const {
-    return (_data->access() & Access::kPublic) != Access::kNone;
+    return _data->is_public();
   }
 
   bool is_protected() const {
-    return (_data->access() & Access::kProtected) != Access::kNone;
+    return _data->is_protected();
   }
 
   bool is_private() const {
-    return (_data->access() & Access::kPrivate) != Access::kNone;
+    return _data->is_private();
   }
 
  private:
