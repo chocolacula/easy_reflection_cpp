@@ -34,6 +34,7 @@ class ParserJson : rf_json::LexerJson {
   inline Expected<std::pair<std::string, std::string>> parse_tag(std::string_view str);
   static inline bool parse_bool(std::string_view str);
   static inline int64_t parse_int(std::string_view str);
+  static inline Expected<double> parse_double_special(std::string_view str);
   static inline double parse_double(std::string_view str);
 
   inline void next();

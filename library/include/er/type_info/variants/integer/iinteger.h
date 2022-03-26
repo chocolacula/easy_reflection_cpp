@@ -18,7 +18,6 @@ struct IInteger {
   virtual uint64_t as_unsigned() const = 0;
   virtual Expected<None> set_signed(int64_t value) = 0;
   virtual Expected<None> set_unsigned(uint64_t value) = 0;
-  virtual std::string to_string() const = 0;
 };
 
 }  // namespace er

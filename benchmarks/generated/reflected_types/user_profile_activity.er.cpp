@@ -14,8 +14,8 @@ struct TypeActions<UserProfile::Activity> {
 
     static std::map<std::string_view, FieldDesc> map {
       
-      {"photo_url", FieldDesc::create_member(value, Var(&p->photo_url), Access::kPublic)},
-      {"grade", FieldDesc::create_member(value, Var(&p->grade), Access::kPublic)},
+      {"photo_url", FieldDesc::create_member(p, &p->photo_url, FieldAttributes::kPublic)},
+      {"grade", FieldDesc::create_member(p, &p->grade, FieldAttributes::kPublic)},
       
     };
 

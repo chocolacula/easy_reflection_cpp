@@ -83,10 +83,6 @@ struct Int : IInteger {
     return None();
   }
 
-  std::string to_string() const override {
-    return std::to_string(*_value);
-  }
-
  private:
   T* _value;
   bool _is_const;

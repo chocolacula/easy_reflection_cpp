@@ -29,8 +29,6 @@ struct TypeActions<Various> {
       {"f64", FieldDesc::create_member(p, &p->f64, FieldAttributes::kPublic)},
       {"arr", FieldDesc::create_member(p, &p->arr, FieldAttributes::kPublic)},
       {"str", FieldDesc::create_member(p, &p->str, FieldAttributes::kPublic)},
-      {"str_v", FieldDesc::create_member(p, &p->str_v, FieldAttributes::kPublic)},
-      {"c_str", FieldDesc::create_member(p, &p->c_str, FieldAttributes::kPublic)},
       {"std_arr", FieldDesc::create_member(p, &p->std_arr, FieldAttributes::kPublic)},
       {"vec", FieldDesc::create_member(p, &p->vec, FieldAttributes::kPublic)},
       {"list", FieldDesc::create_member(p, &p->list, FieldAttributes::kPublic)},

@@ -14,9 +14,9 @@ struct TypeActions<UserProfile::UserName> {
 
     static std::map<std::string_view, FieldDesc> map {
       
-      {"first_name", FieldDesc::create_member(value, Var(&p->first_name), Access::kPublic)},
-      {"second_name", FieldDesc::create_member(value, Var(&p->second_name), Access::kPublic)},
-      {"last_name", FieldDesc::create_member(value, Var(&p->last_name), Access::kPublic)},
+      {"first_name", FieldDesc::create_member(p, &p->first_name, FieldAttributes::kPublic)},
+      {"second_name", FieldDesc::create_member(p, &p->second_name, FieldAttributes::kPublic)},
+      {"last_name", FieldDesc::create_member(p, &p->last_name, FieldAttributes::kPublic)},
       
     };
 

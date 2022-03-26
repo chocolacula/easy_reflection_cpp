@@ -65,6 +65,11 @@ Expected<None> ParserJson::parse(TypeInfo* info, char token) {
           [this](Enum& e) -> Expected<None> {
             return e.parse(get_word());
           },
+          [this](Floating& f) -> Expected<None> {
+            auto ex = parse_double_special(get_word());
+            __retry(ex);
+            return f.set(ex.unwrap());
+          },
           [this](auto&&) -> Expected<None> {
             return error_match();
           });
@@ -312,6 +317,19 @@ Expected<std::pair<std::string, std::string>> ParserJson::parse_tag(std::string_
 
 bool ParserJson::parse_bool(std::string_view str) {
   return str != "false";
+}
+
+Expected<double> ParserJson::parse_double_special(std::string_view str) {
+  if (str == "-inf") {
+    return -std::numeric_limits<double>::infinity();
+  }
+  if (str == "inf") {
+    return std::numeric_limits<double>::infinity();
+  }
+  if (str == "nan") {
+    return std::nan("");
+  }
+  return Error(format("Expected -inf, inf, nan but {} reached", str));
 }
 
 double ParserJson::parse_double(std::string_view str) {

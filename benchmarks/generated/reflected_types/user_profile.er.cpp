@@ -14,13 +14,13 @@ struct TypeActions<UserProfile> {
 
     static std::map<std::string_view, FieldDesc> map {
       
-      {"user_id", FieldDesc::create_member(value, Var(&p->user_id), Access::kPublic)},
-      {"name", FieldDesc::create_member(value, Var(&p->name), Access::kPublic)},
-      {"homeworld", FieldDesc::create_member(value, Var(&p->homeworld), Access::kPublic)},
-      {"affiliation", FieldDesc::create_member(value, Var(&p->affiliation), Access::kPublic)},
-      {"profile_photo_url", FieldDesc::create_member(value, Var(&p->profile_photo_url), Access::kPublic)},
-      {"friends", FieldDesc::create_member(value, Var(&p->friends), Access::kPublic)},
-      {"last24hours_activity", FieldDesc::create_member(value, Var(&p->last24hours_activity), Access::kPublic)},
+      {"user_id", FieldDesc::create_member(p, &p->user_id, FieldAttributes::kPublic)},
+      {"name", FieldDesc::create_member(p, &p->name, FieldAttributes::kPublic)},
+      {"homeworld", FieldDesc::create_member(p, &p->homeworld, FieldAttributes::kPublic)},
+      {"affiliation", FieldDesc::create_member(p, &p->affiliation, FieldAttributes::kPublic)},
+      {"profile_photo_url", FieldDesc::create_member(p, &p->profile_photo_url, FieldAttributes::kPublic)},
+      {"friends", FieldDesc::create_member(p, &p->friends, FieldAttributes::kPublic)},
+      {"last24hours_activity", FieldDesc::create_member(p, &p->last24hours_activity, FieldAttributes::kPublic)},
       
     };
 

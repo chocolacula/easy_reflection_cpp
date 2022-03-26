@@ -28,6 +28,12 @@ struct Tresholds {
   float f32_max = FLT_MAX;
   double f64_min = -DBL_MAX;
   double f64_max = DBL_MAX;
-  double inf = std::numeric_limits<double>::infinity();
-  double nan = std::nan("");
+
+  float f32_ninf = -std::numeric_limits<float>::infinity();
+  float f32_inf = std::numeric_limits<float>::infinity();
+  float f32_nan = std::nanf("");
+
+  double f64_ninf = -std::numeric_limits<double>::infinity();
+  double f64_inf = std::numeric_limits<double>::infinity();
+  double f64_nan = std::nan("");
 };

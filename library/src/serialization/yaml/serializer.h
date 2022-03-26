@@ -4,6 +4,7 @@
 
 #include "../writers/iwriter.h"
 #include "er/reflection/reflection.h"
+#include "er/tools/stringify.h"
 #include "er/type_info/type_info.h"
 #include "er/type_info/variants/integer/integer.h"
 
@@ -30,18 +31,36 @@ inline bool is_complex(TypeInfo::Kind kind) {
 template <typename SeqT>
 inline void serialize_sequence(const SeqT& seq, IWriter* writer, int indent);
 
+std::string double_to_string(double value) {
+  if (value == -std::numeric_limits<double>::infinity()) {
+    return "!!float .-inf";
+  }
+  if (value == std::numeric_limits<double>::infinity()) {
+    return "!!float .inf";
+  }
+  if (std::isnan(value)) {
+    return "!!float .nan";
+  }
+  return to_string(value, 9);
+}
+
 void serialize_recursive(IWriter* writer, const TypeInfo& info, int indent) {
   auto k = info.get_kind();
 
   switch (k) {
     case TypeInfo::Kind::kBool:
-      append(writer, info.unsafe_get<Bool>().to_string());
+      append(writer, to_string(info.unsafe_get<Bool>().get()));
       break;
-    case TypeInfo::Kind::kInteger:
-      append(writer, info.unsafe_get<Integer>().to_string());
-      break;
+    case TypeInfo::Kind::kInteger: {
+      auto i = info.unsafe_get<Integer>();
+      if (i.is_signed()) {
+        append(writer, to_string(i.as_signed()));
+      } else {
+        append(writer, to_string(i.as_unsigned()));
+      }
+    } break;
     case TypeInfo::Kind::kFloating:
-      append(writer, info.unsafe_get<Floating>().to_string(6));
+      append(writer, double_to_string(info.unsafe_get<Floating>().get()));
       break;
     case TypeInfo::Kind::kString:
       append(writer, info.unsafe_get<String>().get());

@@ -375,5 +375,14 @@ bool ParserYaml::parse_bool(std::string& str) {
 }
 
 double ParserYaml::parse_double(std::string_view str) {
+  if (str == ".-inf") {
+    return -std::numeric_limits<double>::infinity();
+  }
+  if (str == ".inf") {
+    return std::numeric_limits<double>::infinity();
+  }
+  if (str == ".nan") {
+    return std::nan("");
+  }
   return std::strtod(&str[0], nullptr);
 }

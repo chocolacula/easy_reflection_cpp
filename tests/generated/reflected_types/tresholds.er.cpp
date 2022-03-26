@@ -30,8 +30,12 @@ struct TypeActions<Tresholds> {
       {"f32_max", FieldDesc::create_member(p, &p->f32_max, FieldAttributes::kPublic)},
       {"f64_min", FieldDesc::create_member(p, &p->f64_min, FieldAttributes::kPublic)},
       {"f64_max", FieldDesc::create_member(p, &p->f64_max, FieldAttributes::kPublic)},
-      {"inf", FieldDesc::create_member(p, &p->inf, FieldAttributes::kPublic)},
-      {"nan", FieldDesc::create_member(p, &p->nan, FieldAttributes::kPublic)},
+      {"f32_ninf", FieldDesc::create_member(p, &p->f32_ninf, FieldAttributes::kPublic)},
+      {"f32_inf", FieldDesc::create_member(p, &p->f32_inf, FieldAttributes::kPublic)},
+      {"f32_nan", FieldDesc::create_member(p, &p->f32_nan, FieldAttributes::kPublic)},
+      {"f64_ninf", FieldDesc::create_member(p, &p->f64_ninf, FieldAttributes::kPublic)},
+      {"f64_inf", FieldDesc::create_member(p, &p->f64_inf, FieldAttributes::kPublic)},
+      {"f64_nan", FieldDesc::create_member(p, &p->f64_nan, FieldAttributes::kPublic)},
       
     };
 
