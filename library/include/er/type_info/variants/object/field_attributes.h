@@ -18,6 +18,7 @@ enum class FieldAttributes : uint8_t {  //
   //▲▲▲ do not edit ▲▲▲
   kStatic = 0b01000,
   kReadOnly = 0b10000,
+  kAnyAccess = 0b00111,
   kAll = 0b11111,
 };
 
