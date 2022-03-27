@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <cmath>
 
 #include "../define_retry.h"
 #include "er/expected.h"
