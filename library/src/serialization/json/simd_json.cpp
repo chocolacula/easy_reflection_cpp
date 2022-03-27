@@ -1,6 +1,7 @@
 #include "er/serialization/simd_json.h"
 
 #include <string_view>
+#include <cmath>
 
 #include "../define_retry.h"
 #include "er/reflection/reflection.h"
