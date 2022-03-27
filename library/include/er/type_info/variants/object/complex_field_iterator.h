@@ -42,24 +42,9 @@ class ComplexFieldIterator {
   };
 
   bool is_valid() {
-    // check access modifiers first
-    if ((_it->second.attributes() & _atr & FieldAttributes::kAnyAccess) != FieldAttributes::kNone) {
-      // check read only attribute
-      if ((_it->second.attributes() & FieldAttributes::kReadOnly) != FieldAttributes::kNone &&
-          (_atr & FieldAttributes::kReadOnly) == FieldAttributes::kNone) {
-        return false;
-      }
-      // check static
-      if ((_it->second.attributes() & FieldAttributes::kStatic) != FieldAttributes::kNone &&
-          (_atr & FieldAttributes::kStatic) == FieldAttributes::kNone) {
-        return false;
-      }
-      if (_base == nullptr && !_it->second.is_static()) {
-        return false;
-      }
-      return true;
-    }
-    return false;
+    return !(!right_access() ||           //
+             !right_static_readonly() ||  //
+             (_base == nullptr && !_it->second.is_static()));
   }
 
   void next_valid() {
@@ -73,6 +58,20 @@ class ComplexFieldIterator {
   const_iterator _it;
   const_iterator _end;
   FieldAttributes _atr;
+
+  inline bool right_access() {
+    return (_it->second.attributes() & _atr & FieldAttributes::kAnyAccess) != FieldAttributes::kNone;
+  }
+
+  // build from Karnaugh Map
+  inline bool right_static_readonly() {
+    bool nx0 = (_it->second.attributes() & FieldAttributes::kReadOnly) == FieldAttributes::kNone;
+    bool nx1 = (_it->second.attributes() & FieldAttributes::kStatic) == FieldAttributes::kNone;
+    bool x2 = (_atr & FieldAttributes::kReadOnly) != FieldAttributes::kNone;
+    bool x3 = (_atr & FieldAttributes::kStatic) != FieldAttributes::kNone;
+
+    return (nx0 || x2) && (nx1 || x3);
+  }
 };
 
 }  // namespace er
