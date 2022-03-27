@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <string_view>
 
 #include "../writers/iwriter.h"

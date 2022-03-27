@@ -10,7 +10,7 @@ COPY . ./reflection_cpp
 # RUN git clone https://github.com/chocolacula/reflection_cpp.git
 
 RUN cd reflection_cpp \
-  && git submodule update --init --recursive && vcpkg/bootstrap-vcpkg.sh -disableMetrics \
+  && git submodule update --init --recursive \
   && mkdir build && cd build \
   && cmake .. \
   -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
