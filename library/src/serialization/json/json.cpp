@@ -1,5 +1,6 @@
 #include "er/serialization/json.h"
 
+#include <cmath>
 #include <string_view>
 
 #include "../writers/iwriter.h"
