@@ -1,5 +1,6 @@
 #include "er/serialization/simd_json.h"
 
+#include <cmath>
 #include <string_view>
 #include <cmath>
 
