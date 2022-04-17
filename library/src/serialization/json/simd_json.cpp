@@ -1,7 +1,7 @@
 #include "er/serialization/simd_json.h"
 
-#include <string_view>
 #include <cmath>
+#include <string_view>
 
 #include "../define_retry.h"
 #include "er/reflection/reflection.h"
@@ -21,18 +21,20 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
   switch (t) {
     case dom::element_type::BOOL:
       if (info->is<Bool>()) {
-        info->unsafe_get<Bool>().set(elem.get_bool());
+        info->unsafe_get<Bool>().set(elem.get_bool().value_unsafe());
       } else {
         return Error(format("Cannot deserialize number to {}", info->get_kind_str()));
       }
       break;
     case dom::element_type::INT64:
+      [[fallthrough]];
+    case dom::element_type::UINT64:
       if (info->is<Integer>()) {
         auto i = info->unsafe_get<Integer>();
         if (i.is_signed()) {
-          i.set_signed(elem.get_int64());
+          i.set_signed(elem.get_int64().value_unsafe());
         } else {
-          i.set_unsigned(elem.get_uint64());
+          i.set_unsigned(elem.get_uint64().value_unsafe());
         }
       } else {
         return Error(format("Cannot deserialize number to {}", info->get_kind_str()));
@@ -40,7 +42,7 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
       break;
     case dom::element_type::DOUBLE:
       if (info->is<Floating>()) {
-        info->unsafe_get<Floating>().set(elem.get_double());
+        info->unsafe_get<Floating>().set(elem.get_double().value_unsafe());
       } else {
         return Error(format("Cannot deserialize double to {}", info->get_kind_str()));
       }
@@ -135,6 +137,7 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
       break;
     default:
       // found null, do nothing
+      std::cout << elem.type() << std::endl;
       break;
   }
   return None();

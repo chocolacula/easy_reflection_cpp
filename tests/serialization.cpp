@@ -84,7 +84,24 @@ void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_EQ(lhs.un_map, rhs.un_map);
 
   ASSERT_EQ(lhs.obj, rhs.obj);
-  ASSERT_EQ(lhs.monstro, rhs.monstro);
+
+  auto vl = lhs.monstro.begin();
+  auto vr = rhs.monstro.begin();
+  while (vl != lhs.monstro.end() && vr != rhs.monstro.end()) {
+    ASSERT_EQ(vl->size(), vr->size());
+
+    auto ml = vl->begin();
+    while (ml != vl->end()) {
+      auto mr = vr->find(ml->first);
+
+      ASSERT_EQ(ml->first, mr->first);
+      ASSERT_EQ(ml->second, mr->second);
+      ml++;
+    }
+
+    vl++;
+    vr++;
+  }
 }
 
 TEST(SerializationJson, Thresholds) {
@@ -126,7 +143,7 @@ TEST(SerializationBinary, Thresholds) {
 }
 
 TEST(SerializationJson, BackAndForth) {
-  auto struct1 = Various::make_default();
+  auto struct1 = Various::make_random();
 
   auto time_1 = std::chrono::steady_clock::now();
 
@@ -156,7 +173,7 @@ TEST(SerializationJson, BackAndForth) {
 
 #ifdef USE_SIMD_JSON
 TEST(SerializationSimdJson, BackAndForth) {
-  auto struct1 = Various::make_default();
+  auto struct1 = Various::make_random();
 
   auto str = er::serialization::json::to_string(&struct1).unwrap();
   auto struct2 = er::serialization::simd_json::from_string<Various>(str).unwrap();
@@ -166,7 +183,7 @@ TEST(SerializationSimdJson, BackAndForth) {
 #endif
 
 TEST(SerializationYaml, BackAndForth) {
-  auto struct1 = Various::make_default();
+  auto struct1 = Various::make_random();
 
   auto time_1 = std::chrono::steady_clock::now();
 
@@ -209,7 +226,7 @@ TEST(SerializationYaml, Anchors) {
 }
 
 TEST(SerializationBinary, BackAndForth) {
-  auto struct1 = Various::make_default();
+  auto struct1 = Various::make_random();
 
   auto time_1 = std::chrono::steady_clock::now();
 

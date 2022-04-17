@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <deque>
@@ -16,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "../random/random.h"
 #include "er/attributes.h"
 
 ER_REFLECT()
@@ -23,6 +25,70 @@ enum class Numbers { kOne, kTwo, kThree };
 
 ER_REFLECT()
 struct Various {
+  static Various make_random() {
+    Various v;
+
+    v.ch = Random::get_int<char>('a', 'z');
+    v.uch = Random::get_int<unsigned char>('a', 'z');
+    v.sch = Random::get_int<signed char>('a', 'z');
+
+    v.u8 = Random::get_int<uint8_t>();
+    v.u16 = Random::get_int<uint16_t>();
+    v.u32 = Random::get_int<uint32_t>();
+    v.u64 = Random::get_int<uint64_t>();
+
+    v.i8 = Random::get_int<int8_t>();
+    v.i16 = Random::get_int<int16_t>();
+    v.i32 = Random::get_int<int32_t>();
+    v.i64 = Random::get_int<int64_t>();
+
+    v.f32 = Random::get_float(0.0, 10.0);
+    v.f64 = Random::get_float<double>(0.0, 10.0);
+
+    v.arr[0] = Random::get_int();
+    v.arr[1] = Random::get_int();
+    v.arr[2] = Random::get_int();
+
+    v.str = generate_string(128);
+
+    v.std_arr = {Random::get_int(), Random::get_int(), Random::get_int()};
+    v.vec = {Random::get_int(), Random::get_int(), Random::get_int()};
+    v.list = {Random::get_int(), Random::get_int(), Random::get_int()};
+    v.deq = {Random::get_int(), Random::get_int(), Random::get_int()};
+
+    v.que.push(Random::get_int());
+    v.que.push(Random::get_int());
+    v.que.push(Random::get_int());
+
+    v.stack.push(Random::get_int());
+    v.stack.push(Random::get_int());
+    v.stack.push(Random::get_int());
+
+    v.set = {Random::get_int(), Random::get_int(), Random::get_int()};
+    v.un_set = {Random::get_int(), Random::get_int(), Random::get_int()};
+
+    v.map = {{Random::get_int(), Numbers::kOne},
+             {Random::get_int(), Numbers::kTwo},
+             {Random::get_int(), Numbers::kThree}};
+
+    v.un_map = {{Random::get_int(), generate_string(32)},
+                {Random::get_int(), generate_string(32)},
+                {Random::get_int(), generate_string(32)}};
+
+    v.obj = {Random::get_int(), generate_string(64)};
+
+    v.monstro = {{
+        {ComplexValue(Random::get_int(), generate_string(64)),
+         {{Random::get_int(), Random::get_int(), Random::get_int()},
+          {Random::get_int(), Random::get_int(), Random::get_int()}}},
+        {ComplexValue(Random::get_int(), generate_string(64)),
+         {{Random::get_int(), Random::get_int(), Random::get_int()},
+          {Random::get_int(), Random::get_int(), Random::get_int()}}}  //
+    }};
+
+    return v;
+  }
+
   static Various make_default() {
     Various v;
 
@@ -135,4 +201,19 @@ struct Various {
   ComplexValue obj;
 
   std::vector<std::map<ComplexValue, std::list<std::set<int>>>> monstro;
+
+ private:
+  static std::string generate_string(size_t length) {
+    auto str = Random::get_rand_string(length, Random::CharSet::WoSymbols);
+
+    // YAML string should not start and end with ' '
+    // if (str[0] == ' ') {
+    // str[0] = Random::get_int<char>('a', 'z');
+    // }
+    // if (str[str.length() - 1] == ' ') {
+    // str[str.length() - 1] = Random::get_int<char>('a', 'z');
+    // }
+
+    return str;
+  }
 };
