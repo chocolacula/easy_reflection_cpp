@@ -1,6 +1,7 @@
 #include "parser_yaml.h"
 
 #include <cctype>
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <string>
