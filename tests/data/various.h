@@ -190,7 +190,7 @@ struct Various {
     std::string v2;
 
     bool operator<(const ComplexValue& other) const {
-      return v1 < other.v1 || v2 < other.v2;
+      return v1 < other.v1;
     }
 
     bool operator==(const ComplexValue& other) const {

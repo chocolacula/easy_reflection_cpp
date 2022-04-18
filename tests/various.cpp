@@ -63,6 +63,7 @@ void compare_various(const Various& lhs, const Various& rhs) {
     auto ml = vl->begin();
     while (ml != vl->end()) {
       auto mr = vr->find(ml->first);
+      ASSERT_NE(mr, vr->end());
 
       ASSERT_EQ(ml->first, mr->first);
       ASSERT_EQ(ml->second, mr->second);
