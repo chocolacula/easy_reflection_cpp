@@ -17,6 +17,10 @@ struct StreamReader final : IReader {
     _stream.read(static_cast<char*>(buff), static_cast<std::streamsize>(size));
   }
 
+  bool empty() const override {
+    return _stream.peek() == EOF;
+  }
+
  private:
   std::istream& _stream;
 };

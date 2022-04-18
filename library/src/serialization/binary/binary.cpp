@@ -168,6 +168,7 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
 
       auto n = reader.read_unsigned();
       for (auto i = 0; i < n; i++) {
+        // TODO optimize reflection call on each iteration
         auto entry_info = reflection::reflect(entry_box.var());
         deserialize_recursive(&entry_info, reader);
 

@@ -10,6 +10,11 @@
 
 ER_REFLECT()
 struct Tresholds {
+  uint8_t u8_min = 0;
+  uint16_t u16_min = 0;
+  uint32_t u32_min = 0;
+  uint64_t u64_min = 0;
+
   uint8_t u8_max = UCHAR_MAX;
   uint16_t u16_max = USHRT_MAX;
   uint32_t u32_max = UINT_MAX;

@@ -78,7 +78,7 @@ struct GroupReader {
 
     // read next word in the header
     _word++;
-    if (_word > 1) {
+    if (_word > 1 && !_reader->empty()) {
       _reader->read(&_header, 1);
       _word = 0;
     }

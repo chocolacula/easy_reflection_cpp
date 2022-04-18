@@ -18,6 +18,10 @@ struct VectorReader final : IReader {
     _i += size;
   }
 
+  bool empty() const override {
+    return _i >= _vector.size();
+  }
+
  private:
   const std::vector<uint8_t>& _vector;
   mutable size_t _i;

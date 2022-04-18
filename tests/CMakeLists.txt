@@ -14,7 +14,8 @@ include_directories(../library/include)
 set(SOURCES
     random/random.cpp
     library.cpp
-    serialization.cpp
+    tresholds.cpp
+    various.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
 add_custom_command(

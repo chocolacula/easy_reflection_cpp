@@ -22,10 +22,12 @@ struct VectorWriter final : IWriter {
 
   void write(char ch) override {
     _vector->push_back(ch);
+    _i += 1;
   }
 
   void step_back(size_t bytes) override {
     _vector->resize(_vector->size() - bytes);
+    _i -= bytes;
   }
 
  private:

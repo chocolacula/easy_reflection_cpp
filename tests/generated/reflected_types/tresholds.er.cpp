@@ -14,6 +14,10 @@ struct TypeActions<Tresholds> {
 
     static std::map<std::string_view, FieldDesc> map {
       
+      {"u8_min", FieldDesc::create_member(p, &p->u8_min, FieldAttributes::kPublic)},
+      {"u16_min", FieldDesc::create_member(p, &p->u16_min, FieldAttributes::kPublic)},
+      {"u32_min", FieldDesc::create_member(p, &p->u32_min, FieldAttributes::kPublic)},
+      {"u64_min", FieldDesc::create_member(p, &p->u64_min, FieldAttributes::kPublic)},
       {"u8_max", FieldDesc::create_member(p, &p->u8_max, FieldAttributes::kPublic)},
       {"u16_max", FieldDesc::create_member(p, &p->u16_max, FieldAttributes::kPublic)},
       {"u32_max", FieldDesc::create_member(p, &p->u32_max, FieldAttributes::kPublic)},
