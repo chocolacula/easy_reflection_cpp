@@ -26,6 +26,10 @@ struct GroupWriter {
     }
   }
 
+  void write_null() {
+    write_one(static_cast<uint64_t>(kNull), false);
+  }
+
   void write(bool value) {
     write_one(static_cast<uint64_t>(value), false);
   }
@@ -84,6 +88,8 @@ struct GroupWriter {
   }
 
  private:
+  const uint32_t kNull = 0x6E756C6C;  // n(6E) u(75) l(6C) l(6C)
+
   IWriter* _writer;
   std::array<uint8_t, 17> _group;
   size_t _i;

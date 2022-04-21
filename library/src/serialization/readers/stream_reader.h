@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <istream>
 
 #include "ireader.h"
@@ -15,6 +14,11 @@ struct StreamReader final : IReader {
 
   void read(void* buff, size_t size) const override {
     _stream.read(static_cast<char*>(buff), static_cast<std::streamsize>(size));
+  }
+
+  void peek(void* buff, size_t size) const override {
+    _stream.read(static_cast<char*>(buff), static_cast<std::streamsize>(size));
+    _stream.seekg(-static_cast<std::streamoff>(size), std::ios_base::cur);
   }
 
   bool empty() const override {

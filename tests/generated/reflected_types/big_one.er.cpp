@@ -1,4 +1,4 @@
-#include "big.er.h"
+#include "big_one.er.h"
 
 // clang-format off
 #include "er/reflection/the_great_table.h"
@@ -8,9 +8,9 @@
 namespace er {
 
 template <>
-struct TypeActions<Big> {
+struct TypeActions<BigOne> {
   static TypeInfo reflect(void* value, bool is_const) {
-    auto* p = static_cast<Big*>(value);
+    auto* p = static_cast<BigOne*>(value);
 
     static std::map<std::string_view, FieldDesc> map {
       
@@ -30,13 +30,13 @@ struct TypeActions<Big> {
 };
 
 template <>
-TypeId TypeId::get(Big* /*unused*/) {
-  static TypeId id(TheGreatTable::record(Actions(&TypeActions<Big>::reflect,        //
-                                                 &CommonActions<Big>::type_name,    //
-                                                 &CommonActions<Big>::type_size,    //
-                                                 &CommonActions<Big>::call_new,     //
-                                                 &CommonActions<Big>::call_delete,  //
-                                                 &CommonActions<Big>::copy)));
+TypeId TypeId::get(BigOne* /*unused*/) {
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<BigOne>::reflect,        //
+                                                 &CommonActions<BigOne>::type_name,    //
+                                                 &CommonActions<BigOne>::type_size,    //
+                                                 &CommonActions<BigOne>::call_new,     //
+                                                 &CommonActions<BigOne>::call_delete,  //
+                                                 &CommonActions<BigOne>::copy)));
   return id;
 }
 

@@ -37,10 +37,11 @@ class ParserYaml : rf_yaml::LexerYaml {
   Expected<None> parse_map_value(Map& map);
 
   inline Expected<None> add_to_obj(Object& obj);
-  inline Expected<None> add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value);
+  inline Expected<None> add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value);
 
   static inline bool is_end(int token);
   static inline bool is_new_line(int token);
+  static inline bool is_null(const std::string& word);
 
   inline Error error(const char* str);
   inline Error error_token(char token);

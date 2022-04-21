@@ -18,6 +18,25 @@ using namespace simdjson;
 Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
   auto t = elem.type();
 
+  if (t == dom::element_type::NULL_VALUE) {
+    return None();
+  }
+
+  if (info->is<Pointer>()) {
+    auto p = info->unsafe_get<Pointer>();
+    auto n = p.get_nested();
+    return n.match_move(  //
+        [&p, elem](const Error& /*err*/) -> Expected<None> {
+          p.init();
+          auto nested_info = reflection::reflect(p.var());
+          return deserialize_recursive(&nested_info, elem);
+        },
+        [info, elem](Var var) -> Expected<None> {
+          auto nested_info = reflection::reflect(var);
+          return deserialize_recursive(&nested_info, elem);
+        });
+  }
+
   switch (t) {
     case dom::element_type::BOOL:
       if (info->is<Bool>()) {
@@ -73,11 +92,13 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
       if (info->is<Array>()) {
         auto a = info->unsafe_get<Array>();
 
-        Box box(a.nested_type());
-        auto entry_info = reflection::reflect(box.var());
+        auto entry_info = reflection::reflect(Var(nullptr, a.nested_type(), false));
 
         auto i = 0;
         for (auto&& e : elem.get_array()) {
+          Box box(a.nested_type());  // Box should be a new object for each iteration
+          entry_info.unsafe_assign(box.var().raw_mut());
+
           __retry(deserialize_recursive(&entry_info, e));
 
           auto item = a.at(i).unwrap();
@@ -88,10 +109,12 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
         auto s = info->unsafe_get<Sequence>();
         s.clear();
 
-        Box box(s.nested_type());
-        auto entry_info = reflection::reflect(box.var());
+        auto entry_info = reflection::reflect(Var(nullptr, s.nested_type(), false));
 
         for (auto&& e : elem.get_array()) {
+          Box box(s.nested_type());  // Box should be a new object for each iteration
+          entry_info.unsafe_assign(box.var().raw_mut());
+
           __retry(deserialize_recursive(&entry_info, e));
 
           s.push(box.var());
@@ -100,12 +123,15 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
         auto m = info->unsafe_get<Map>();
         m.clear();
 
-        Box key_box(m.key_type());
-        Box val_box(m.val_type());
-
-        auto key_info = reflection::reflect(key_box.var());
-        auto val_info = reflection::reflect(val_box.var());
+        auto key_info = reflection::reflect(Var(nullptr, m.key_type(), false));
+        auto val_info = reflection::reflect(Var(nullptr, m.val_type(), false));
         for (auto&& entry : elem.get_array()) {
+          Box key_box(m.key_type());  // Box should be a new object for each iteration
+          key_info.unsafe_assign(key_box.var().raw_mut());
+
+          Box val_box(m.val_type());
+          val_info.unsafe_assign(val_box.var().raw_mut());
+
           auto key = entry["key"].value_unsafe();
           auto val = entry["val"].value_unsafe();
 
@@ -134,10 +160,6 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
       } else {
         return Error(format("Expected Object but {} found", info->get_kind_str()));
       }
-      break;
-    default:
-      // found null, do nothing
-      std::cout << elem.type() << std::endl;
       break;
   }
   return None();

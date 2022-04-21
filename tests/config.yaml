@@ -8,7 +8,8 @@ templates: #pathes to template files
 input:
   - ../tests/data/tresholds.h
   - ../tests/data/various.h
-  - ../tests/data/big.h
-  - ../tests/data/complex_map.h
+  - ../tests/data/big_one.h
+  - ../tests/data/pointers.h
+  - ../tests/data/simple.h
 
 output_dir: ../tests/generated

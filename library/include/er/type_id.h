@@ -48,6 +48,7 @@ struct TypeId {
     return TypeId(0);
   }
 
+  /// specializations defined in ./types
   template <typename T>
   static typename std::enable_if_t<std::is_integral_v<T>, TypeId>  //
   get(T* ptr);
@@ -73,6 +74,12 @@ struct TypeId {
   template <typename T>
   static typename std::enable_if_t<is_map_v<T>, TypeId>  //
   get(T* ptr);
+
+  template <typename T>
+  static TypeId get(std::unique_ptr<T>* ptr);
+
+  template <typename T>
+  static TypeId get(std::shared_ptr<T>* ptr);
 
   // other methods
   bool operator==(const TypeId& other) const {

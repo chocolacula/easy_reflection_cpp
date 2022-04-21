@@ -4,14 +4,14 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/complex_map.h"
+#include "../../data/simple.h"
 
 namespace er {
 
 template <>
-struct TypeActions<ComplexMapObj::Key>;
+struct TypeActions<Simple>;
 
 template <>
-TypeId TypeId::get(ComplexMapObj::Key* /*unused*/);
+TypeId TypeId::get(Simple* /*unused*/);
 
 }  // namespace er

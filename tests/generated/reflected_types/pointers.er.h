@@ -4,14 +4,14 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/big.h"
+#include "../../data/pointers.h"
 
 namespace er {
 
 template <>
-struct TypeActions<Big>;
+struct TypeActions<Pointers>;
 
 template <>
-TypeId TypeId::get(Big* /*unused*/);
+TypeId TypeId::get(Pointers* /*unused*/);
 
 }  // namespace er

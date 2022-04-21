@@ -2,8 +2,11 @@
 #include <iostream>
 #include <utility>
 
+#include "data/bicycle.h"
+#include "er/reflection/reflection.h"
 #include "er/serialization/json.h"
 #include "er/serialization/yaml.h"
+#include "er/variable/box.h"
 #include "generated/reflection.h"
 #include "print.h"
 
@@ -91,14 +94,20 @@ int main() {
   } else {
     println("Bikes are boring");
   }
+  println();
 
   // for debug purposes there is a possibility to print out struct content
   // via print() and sprint() functions in Reflection namespace
-  println();
   reflection::print(bicycle_info);
 
   // TypeInfo made from nullptr could print static fields only
   println("\n{}", reflection::sprint(static_info));
+
+  // it supports even smart pointers by proxying nested type to reflection system
+  auto smart_ptr = std::make_unique<Bicycle>();
+  *smart_ptr = gt_avalanche;
+  reflection::print(&smart_ptr);
+  println();
 
   // and for a sweet one you can serialize to struct and vice vera
   const auto* str =

@@ -17,8 +17,13 @@ struct StreamWriter final : IWriter {
     _stream.write(static_cast<const char*>(ptr), static_cast<std::streamsize>(bytes));
   }
 
-  void write(char ch) override {
+  void write(uint8_t ch) override {
     _stream.put(ch);
+  }
+
+  uint8_t peek() const override {
+    std::streamsize pos = _stream.tellp();
+    return *static_cast<uint8_t*>(_stream.pword(pos));
   }
 
   void step_back(size_t bytes) override {

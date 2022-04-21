@@ -1,6 +1,9 @@
+#include <memory>
 #include <string_view>
 
-#include "data/various.h"
+// #include "data/big_one.h"
+// #include "data/tresholds.h"
+// #include "data/various.h"
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
 #include "er/variable/box.h"
@@ -97,7 +100,7 @@ TEST(TypeInfo, VariantIndex) {
   ASSERT_TRUE(info.is<Enum>());
   ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kEnum);
 
-  Various::ComplexValue o;
+  Simple o;
   info = er::reflection::reflect(&o);
   ASSERT_TRUE(info.is<Object>());
   ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kObject);
@@ -119,32 +122,74 @@ TEST(TypeInfo, VariantIndex) {
 }
 
 TEST(Box, Allocation) {
-  // keep it in separate code block to check for correct deletion
-  {
-    // heap allocated type
-    auto type = TypeId::get<Big>();
-    Box box(type);
+  for (auto i = 0; i < REPEATS; i++) {
+    // keep it in separate code block to check for correct deletion
+    {
+      // heap allocated type
+      auto type = TypeId::get<BigOne>();
+      Box box(type);
 
-    auto* ptr = box.var().raw_mut();
-    ASSERT_NE(ptr, nullptr);
-    ASSERT_TRUE(box.uses_heap());
+      auto* ptr = box.var().raw_mut();
+      ASSERT_NE(ptr, nullptr);
+      ASSERT_TRUE(box.uses_heap());
+    }
+    {
+      // a regular one type
+      auto type = TypeId::get<uint64_t>();
+      Box box(type);
+
+      auto* ptr = box.var().raw_mut();
+      ASSERT_NE(ptr, nullptr);
+      ASSERT_FALSE(box.uses_heap());
+    }
+    {
+      // the biggest type which could be allocated on the stack
+      auto type = TypeId::get<std::unordered_map<int, int>>();
+      Box box(type);
+
+      auto* ptr = box.var().raw_mut();
+      ASSERT_NE(ptr, nullptr);
+      ASSERT_FALSE(box.uses_heap());
+    }
   }
-  {
-    // a regular one type
-    auto type = TypeId::get<uint64_t>();
+}
+
+TEST(SmartPointers, Unique) {
+  for (auto i = 0; i < REPEATS; i++) {
+    auto unique = std::make_unique<Tresholds>();
+
+    auto type = TypeId::get<std::unique_ptr<Tresholds>>();
     Box box(type);
 
-    auto* ptr = box.var().raw_mut();
-    ASSERT_NE(ptr, nullptr);
-    ASSERT_FALSE(box.uses_heap());
+    auto unique_info = reflection::reflect(&unique);
+    auto box_info = reflection::reflect(box.var());
+
+    ASSERT_EQ(unique_info.var().type(), box_info.var().type());
+
+    // copy should move unique_ptr
+    reflection::copy(box.var(), Var(&unique));
+
+    ASSERT_EQ(unique.get(), nullptr);
   }
-  {
-    // the biggest type which could be allocated on the stack
-    auto type = TypeId::get<std::unordered_map<int, int>>();
-    Box box(type);
+}
 
-    auto* ptr = box.var().raw_mut();
-    ASSERT_NE(ptr, nullptr);
-    ASSERT_FALSE(box.uses_heap());
+TEST(SmartPointers, Shared) {
+  for (auto i = 0; i < REPEATS; i++) {
+    auto shared = std::make_shared<Tresholds>();
+    {
+      auto type = TypeId::get<std::shared_ptr<Tresholds>>();
+      Box box(type);
+
+      auto shared_info = reflection::reflect(&shared);
+      auto box_info = reflection::reflect(box.var());
+
+      ASSERT_EQ(shared_info.var().type(), box_info.var().type());
+
+      reflection::copy(box.var(), Var(&shared));
+
+      ASSERT_EQ(shared.use_count(), 2);
+    }
+
+    ASSERT_EQ(shared.use_count(), 1);
   }
 }

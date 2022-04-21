@@ -9,7 +9,7 @@
 
 namespace er {
 
-struct Integer final {
+struct Integer {
   Integer() = delete;
 
   template <typename T>

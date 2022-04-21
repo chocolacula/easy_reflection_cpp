@@ -41,7 +41,10 @@ struct TypeActions<Various> {
       {"un_set", FieldDesc::create_member(p, &p->un_set, FieldAttributes::kPublic)},
       {"map", FieldDesc::create_member(p, &p->map, FieldAttributes::kPublic)},
       {"un_map", FieldDesc::create_member(p, &p->un_map, FieldAttributes::kPublic)},
+      {"empty_vec", FieldDesc::create_member(p, &p->empty_vec, FieldAttributes::kPublic)},
+      {"empty_map", FieldDesc::create_member(p, &p->empty_map, FieldAttributes::kPublic)},
       {"obj", FieldDesc::create_member(p, &p->obj, FieldAttributes::kPublic)},
+      {"ptrs", FieldDesc::create_member(p, &p->ptrs, FieldAttributes::kPublic)},
       {"monstro", FieldDesc::create_member(p, &p->monstro, FieldAttributes::kPublic)},
       
     };

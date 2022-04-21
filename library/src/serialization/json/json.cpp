@@ -6,6 +6,7 @@
 #include "../writers/iwriter.h"
 #include "../writers/stream_writer.h"
 #include "../writers/string_writer.h"
+#include "er/error/error.h"
 #include "er/reflection/reflection.h"
 #include "er/tools/stringify.h"
 #include "er/type_info/type_info.h"
@@ -88,8 +89,8 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info) {
       }
       writer->step_back(1);
       append(writer, '}');
-      break;
-    }
+
+    } break;
     case TypeInfo::Kind::kArray:
       serialize_sequence(info.unsafe_get<Array>(), writer);
       break;
@@ -122,8 +123,16 @@ void serialize_recursive(IWriter* writer, const TypeInfo& info) {
       });
       writer->step_back(1);
       append(writer, ']');
-      break;
-    }
+    } break;
+    case TypeInfo::Kind::kPointer: {
+      auto p = info.unsafe_get<Pointer>();
+      p.get_nested().match_move(  //
+          [writer](const Error& /*err*/) { append(writer, "null"); },
+          [writer](Var var) {
+            auto info = reflection::reflect(var);
+            serialize_recursive(writer, info);
+          });
+    } break;
   }
 }
 

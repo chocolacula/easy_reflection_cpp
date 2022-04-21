@@ -14,8 +14,6 @@
 
 using namespace er;
 
-const int kN = 10000;
-
 void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_TRUE(lhs.ch == rhs.ch &&    //
               lhs.uch == rhs.uch &&  //
@@ -53,7 +51,11 @@ void compare_various(const Various& lhs, const Various& rhs) {
   ASSERT_EQ(lhs.map, rhs.map);
   ASSERT_EQ(lhs.un_map, rhs.un_map);
 
+  ASSERT_EQ(lhs.empty_vec, rhs.empty_vec);
+  ASSERT_EQ(lhs.empty_map, rhs.empty_map);
+
   ASSERT_EQ(lhs.obj, rhs.obj);
+  ASSERT_EQ(lhs.ptrs, rhs.ptrs);
 
   auto vl = lhs.monstro.begin();
   auto vr = rhs.monstro.begin();
@@ -76,7 +78,7 @@ void compare_various(const Various& lhs, const Various& rhs) {
 }
 
 TEST(SerializationJson, BackAndForth) {
-  for (auto i = 0; i < kN; i++) {
+  for (auto i = 0; i < REPEATS; i++) {
     auto struct1 = Various::make_random();
 
     auto str = er::serialization::json::to_string(&struct1).unwrap();
@@ -94,7 +96,7 @@ TEST(SerializationJson, BackAndForth) {
 
 #ifdef USE_SIMD_JSON
 TEST(SerializationSimdJson, BackAndForth) {
-  for (auto i = 0; i < kN; i++) {
+  for (auto i = 0; i < REPEATS; i++) {
     auto struct1 = Various::make_random();
 
     auto str = er::serialization::json::to_string(&struct1).unwrap();
@@ -106,7 +108,7 @@ TEST(SerializationSimdJson, BackAndForth) {
 #endif
 
 TEST(SerializationYaml, BackAndForth) {
-  for (auto i = 0; i < kN; i++) {
+  for (auto i = 0; i < REPEATS; i++) {
     auto struct1 = Various::make_random();
 
     auto str = er::serialization::yaml::to_string(&struct1).unwrap();
@@ -137,7 +139,7 @@ TEST(SerializationYaml, Anchors) {
 }
 
 TEST(SerializationBinary, BackAndForth) {
-  for (auto i = 0; i < kN; i++) {
+  for (auto i = 0; i < REPEATS; i++) {
     auto struct1 = Various::make_random();
 
     auto binary_data = er::serialization::binary::to_vector(&struct1).unwrap();

@@ -18,7 +18,6 @@ template <typename SeqT>
 inline void serialize_sequence(const SeqT& seq, GroupWriter* writer);
 
 inline void serialize_recursive(GroupWriter* writer, const TypeInfo& info) {
-
   auto k = info.get_kind();
 
   switch (k) {
@@ -66,6 +65,15 @@ inline void serialize_recursive(GroupWriter* writer, const TypeInfo& info) {
     case TypeInfo::Kind::kSequence:
       serialize_sequence(info.unsafe_get<Sequence>(), writer);
       break;
+    case TypeInfo::Kind::kPointer: {
+      auto p = info.unsafe_get<Pointer>();
+      p.get_nested().match_move(  //
+          [writer](const Error& /*err*/) { writer->write_null(); },
+          [writer](Var var) {
+            auto info = reflection::reflect(var);
+            serialize_recursive(writer, info);
+          });
+    } break;
   }
 }
 
@@ -131,17 +139,22 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
       break;
     case TypeInfo::Kind::kMap: {
       auto m = info->unsafe_get<Map>();
-      Box key_box(m.key_type());
-      Box val_box(m.val_type());
       m.clear();
+
+      auto key_info = reflection::reflect(Var(nullptr, m.key_type(), false));
+      auto val_info = reflection::reflect(Var(nullptr, m.val_type(), false));
 
       auto n = reader.read_unsigned();
       for (auto i = 0; i < n; i++) {
-        auto key_info = reflection::reflect(key_box.var());
+        Box key_box(m.key_type());  // Box should be a new object for each iteration
+        key_info.unsafe_assign(key_box.var().raw_mut());
+
         deserialize_recursive(&key_info, reader);
 
-        auto value_info = reflection::reflect(val_box.var());
-        deserialize_recursive(&value_info, reader);
+        Box val_box(m.val_type());
+        val_info.unsafe_assign(val_box.var().raw_mut());
+
+        deserialize_recursive(&val_info, reader);
 
         m.insert(key_box.var(), val_box.var());
       }
@@ -163,17 +176,36 @@ inline void deserialize_recursive(TypeInfo* info, const GroupReader& reader) {
     } break;
     case TypeInfo::Kind::kSequence: {
       auto s = info->unsafe_get<Sequence>();
-      Box entry_box(s.nested_type());
       s.clear();
+
+      auto entry_info = reflection::reflect(Var(nullptr, s.nested_type(), false));
 
       auto n = reader.read_unsigned();
       for (auto i = 0; i < n; i++) {
-        // TODO optimize reflection call on each iteration
-        auto entry_info = reflection::reflect(entry_box.var());
+        Box entry_box(s.nested_type());  // Box should be a new object for each iteration
+        entry_info.unsafe_assign(entry_box.var().raw_mut());
+
         deserialize_recursive(&entry_info, reader);
 
         s.push(entry_box.var());
       }
+    } break;
+    case TypeInfo::Kind::kPointer: {
+      if (reader.is_null()) {
+        reader.read_unsigned();  // skip a byte
+        return;
+      }
+      auto p = info->unsafe_get<Pointer>();
+      p.get_nested().match_move(  //
+          [&reader, &p](const Error& /*err*/) {
+            p.init();
+            auto nested_info = reflection::reflect(p.var());
+            deserialize_recursive(&nested_info, reader);
+          },
+          [&reader](Var var) {
+            auto nested_info = reflection::reflect(var);
+            deserialize_recursive(&nested_info, reader);
+          });
     } break;
   }
 }

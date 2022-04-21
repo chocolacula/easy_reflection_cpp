@@ -12,6 +12,7 @@ It makes possible determine a variable type and do right job - print, serialize/
 - Linux, MacOS and Windows(beta) support
 - translate enums to string and vise versa
 - support of stl containers like ```std::vector```, ```std::list```, ```std::map```, etc.
+- smart pointers support
 - native serialization directly to an object and without third parties for:
   - **JSON**
   - **YAML 1.2** even with anchors, but keep in mind that variables behind anchors have to have the same type.
@@ -211,11 +212,15 @@ The length in bytes of serialized in different ways objects has the following re
 
 ## TO DO
 
-- Better Windows support
-- Add smart pointers to supported types
-- Test UTF-8 and wide strings
-- Optimize size of Expected<> in parsers
+- Cleanup all `TODO`s in the code
+- Default value in case of `null` in parsers
+- Prettify `reflection::print()`
+- Add default constructable **SFINAE** guard
+- Add support of move semantic
+- Optimize size of `Expected<>` in parsers
 - Test YAML parser extensively
+- Test wide strings
+- Better Windows support
 - Add parent class fields to serialized fields
 - Add support of user's template classes with different number of template arguments
 - Add custom allocators in supported containers

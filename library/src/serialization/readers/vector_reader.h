@@ -18,6 +18,10 @@ struct VectorReader final : IReader {
     _i += size;
   }
 
+  void peek(void* buff, size_t size) const override {
+    std::memcpy(buff, &_vector[_i], size);
+  }
+
   bool empty() const override {
     return _i >= _vector.size();
   }

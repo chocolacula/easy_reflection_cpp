@@ -31,13 +31,28 @@ Expected<None> ParserJson::deserialize(TypeInfo* info) {
 }
 
 Expected<None> ParserJson::parse(TypeInfo* info, char token) {
+  if (get_word() == "null") {
+    // do nothing, just skip the field
+    return None();
+  }
+
+  if (info->is<Pointer>()) {
+    auto p = info->unsafe_get<Pointer>();
+    return p.get_nested().match_move(  //
+        [this, &p, token](const Error& /*err*/) -> Expected<None> {
+          p.init();
+          auto nested_info = reflection::reflect(p.var());
+          return parse(&nested_info, token);
+        },
+        [this, info, token](Var var) -> Expected<None> {
+          auto nested_info = reflection::reflect(var);
+          return parse(&nested_info, token);
+        });
+  }
+
   switch (token) {
-    // clang-format off
+      // clang-format off
     case 's': {
-      if (get_word() == "null") {
-        // do nothing
-        return None();
-      }
       return info->match(
           [this](Bool& b) -> Expected<None> {  //
             return b.set(parse_bool(get_word()));
@@ -116,10 +131,13 @@ Expected<None> ParserJson::parse_array(TypeId nested_type, std::function<Expecte
     return None();
   }
 
-  Box box(nested_type);
-  auto boxed_info = reflection::reflect(box.var());
+  // save few ns for each iteration of the loop
+  auto boxed_info = reflection::reflect(Var(nullptr, nested_type, false));
 
   for (size_t i = 0; /**/; ++i) {
+    Box box(nested_type);  // Box should be a new object for each iteration
+    boxed_info.unsafe_assign(box.var().raw_mut());
+
     auto ex = parse(&boxed_info, _token)
                   .match_move([&, i](None&&) -> Expected<None> { return add(i, box.var()); },
                               [](Error&& err) -> Expected<None> { return err; });
@@ -179,7 +197,11 @@ Expected<None> ParserJson::parse_object(TypeInfo* info) {
 Expected<None> ParserJson::parse_map(Map& map) {
   map.clear();
 
-  next();
+  next();  // skip '['
+  if (_token == ']') {
+    // an empty map
+    return None();
+  }
 
   std::string key = "key";
   std::string val = "val";
@@ -205,18 +227,23 @@ Expected<None> ParserJson::parse_map(Map& map) {
     } else {
       return error("Cannot reach the map tag or '{'");
     }
-  } else if (_token != '{') {
+  }
+
+  else if (_token != '{') {
     return error_token(_token);
   }
 
-  Box key_box(map.key_type());
-  auto key_info = reflection::reflect(key_box.var());
-
-  Box val_box(map.val_type());
-  auto val_info = reflection::reflect(val_box.var());
+  auto key_info = reflection::reflect(Var(nullptr, map.key_type(), false));
+  auto val_info = reflection::reflect(Var(nullptr, map.val_type(), false));
 
   // token '{' has already been read
   while (true) {
+    Box key_box(map.key_type());  // Box should be a new object for each iteration
+    key_info.unsafe_assign(key_box.var().raw_mut());
+
+    Box val_box(map.val_type());
+    val_info.unsafe_assign(val_box.var().raw_mut());
+
     // parse first field key or val
     next();
     if (_token != '$') {

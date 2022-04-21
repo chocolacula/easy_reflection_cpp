@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <cmath>
 
 #include "../define_retry.h"
 #include "er/expected.h"
@@ -59,6 +58,26 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
   if (_token == '&') {
     anchor = get_word();
     next();
+  }
+
+  if (is_null(get_word())) {
+    // do nothing, just skip the field
+    next();
+    return None();
+  }
+
+  if (info->is<Pointer>()) {
+    auto p = info->unsafe_get<Pointer>();
+    return p.get_nested().match_move(  //
+        [this, &p](const Error& /*err*/) -> Expected<None> {
+          p.init();
+          auto nested_info = reflection::reflect(p.var());
+          return parse(&nested_info);
+        },
+        [this, info](Var var) -> Expected<None> {
+          auto nested_info = reflection::reflect(var);
+          return parse(&nested_info);
+        });
   }
 
   Expected<None> ex = None();
@@ -171,7 +190,7 @@ Expected<None> ParserYaml::parse_seq(TypeInfo* info) {
         s.clear();
         return parse_seq(s.nested_type(), [&](size_t, Var var) { return s.push(var); });
       },
-      [this](auto&& a) -> Expected<None> { return error_match(); });
+      [this](auto&& /*others*/) -> Expected<None> { return error_match(); });
 }
 
 Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<None>(size_t, Var)> add) {
@@ -181,12 +200,12 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
 
   size_t i = 0;
 
-  Box box(nested_type);
-  auto info = reflection::reflect(box.var());
-
   auto ind_first = get_border();
 
+  auto info = reflection::reflect(Var(nullptr, nested_type, false));
   while (!is_end(_token)) {
+    Box box(nested_type);  // Box should be a new object for each iteration
+    info.unsafe_assign(box.var().raw_mut());
 
     auto ind_next = get_border();
     if (ind_next < ind_first) {
@@ -211,10 +230,11 @@ Expected<None> ParserYaml::parse_flow_seq(TypeId nested_type, std::function<Expe
 
   size_t i = 0;
 
-  Box box(nested_type);
-  auto info = reflection::reflect(box.var());
-
+  auto info = reflection::reflect(Var(nullptr, nested_type, false));
   while (!is_end(_token) && _token != 'S' && _token != ']') {
+    Box box(nested_type);  // Box should be a new object for each iteration
+    info.unsafe_assign(box.var().raw_mut());
+
     __retry(parse(&info));
     i++;
     __retry(add(i, box.var()));
@@ -240,14 +260,11 @@ Expected<None> ParserYaml::add_to_array(Array& a, size_t i, Var var) {
 }
 
 Expected<None> ParserYaml::parse_map(Map& map) {
-  Box key_box(map.key_type());
-  Box val_box(map.val_type());
-
-  auto info_k = reflection::reflect(key_box.var());
-  auto info_v = reflection::reflect(val_box.var());
+  auto info_key = reflection::reflect(Var(nullptr, map.key_type(), false));
+  auto info_val = reflection::reflect(Var(nullptr, map.val_type(), false));
 
   map.clear();
-  return parse_map([&]() { return add_to_map(map, &info_k, &info_v, key_box.var(), val_box.var()); });
+  return parse_map([&]() { return add_to_map(map, &info_key, &info_val); });
 }
 
 Expected<None> ParserYaml::parse_map(std::function<Expected<None>()> add) {
@@ -298,16 +315,14 @@ Expected<None> ParserYaml::parse_flow_map(std::function<Expected<None>()> add) {
 }
 
 Expected<None> ParserYaml::parse_flow_map(Map& map) {
-  Box box_key(map.key_type());
-  Box box_val(map.val_type());
-
-  auto info_key = reflection::reflect(box_key.var());
-  auto info_val = reflection::reflect(box_val.var());
+  auto info_key = reflection::reflect(Var(nullptr, map.key_type(), false));
+  auto info_val = reflection::reflect(Var(nullptr, map.val_type(), false));
 
   map.clear();
-  return parse_flow_map([&]() { return add_to_map(map, &info_key, &info_val, box_key.var(), box_val.var()); });
+  return parse_flow_map([&]() { return add_to_map(map, &info_key, &info_val); });
 }
 
+// map in YAML could be an object in C++
 inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
   if (_token == '$') {
     next();
@@ -327,7 +342,13 @@ inline Expected<None> ParserYaml::add_to_obj(Object& obj) {
   return None();
 }
 
-Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value, Var var_key, Var var_value) {
+Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* info_value) {
+  Box box_key(map.key_type());
+  info_key->unsafe_assign(box_key.var().raw_mut());
+
+  Box box_val(map.val_type());
+  info_value->unsafe_assign(box_val.var().raw_mut());
+
   // get a key
   if (_token == '$') {
     __retry(parse_str(info_key));
@@ -346,7 +367,7 @@ Expected<None> ParserYaml::add_to_map(Map& map, TypeInfo* info_key, TypeInfo* in
   // get a value
   __retry(parse(info_value));
 
-  return map.insert(var_key, var_value);
+  return map.insert(box_key.var(), box_val.var());
 }
 
 void ParserYaml::next() {
@@ -357,6 +378,10 @@ void ParserYaml::next() {
 
 bool ParserYaml::is_end(int token) {
   return token == 0 || token == 'E';
+}
+
+bool ParserYaml::is_null(const std::string& word) {
+  return word == "null" || word == "Null" || word == "NULL" || word == "~";
 }
 
 Error ParserYaml::error(const char* str) {

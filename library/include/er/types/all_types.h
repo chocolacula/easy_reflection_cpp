@@ -8,5 +8,7 @@
 #include "common_actions.h"
 #include "integer.h"
 #include "map.h"
+#include "pointers/std_shared_ptr.h"
+#include "pointers/std_unique_ptr.h"
 #include "sequence.h"
 #include "unknown.h"

@@ -20,9 +20,13 @@ struct VectorWriter final : IWriter {
     _i += bytes;
   }
 
-  void write(char ch) override {
+  void write(uint8_t ch) override {
     _vector->push_back(ch);
     _i += 1;
+  }
+
+  uint8_t peek() const override {
+    return _vector->at(_vector->size() - 1);
   }
 
   void step_back(size_t bytes) override {

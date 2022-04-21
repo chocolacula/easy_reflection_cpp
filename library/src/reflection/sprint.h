@@ -9,6 +9,9 @@
 
 namespace er {
 
+template <typename T>
+void print_sequence(const T& sequence, std::string* result, int indention);
+
 void sprint(const TypeInfo& info, std::string* result, int indention) {
   info.match(
       [result, indention](const Object& o) {
@@ -70,21 +73,35 @@ void sprint(const TypeInfo& info, std::string* result, int indention) {
         result->resize(result->size() - 2);
         *result += "]";
       },
-      [result, indention](const auto& as) {  // Array or Sequence
-        if (as.size() == 0) {
-          *result += "[]\n";
-        }
-
-        *result += "[";
-        as.for_each([result, indention](Var entry) {
-          auto entry_info = reflection::reflect(entry);
-
-          sprint(entry_info, result, indention);
-          *result += ", ";
-        });
-        result->resize(result->size() - 2);
-        *result += "]";
+      [result, indention](const Array& a) { print_sequence(a, result, indention); },
+      [result, indention](const Sequence& s) { print_sequence(s, result, indention); },
+      [result, indention](const Pointer& p) {
+        auto nested_ptr = p.get_nested();
+        nested_ptr.match_move(  //
+            [result](const Error& /*err*/) { *result += "nullptr"; },
+            [result, indention](Var var) {
+              auto info = reflection::reflect(var);
+              sprint(info, result, indention);
+            });
       });
+}
+
+template <typename T>
+void print_sequence(const T& sequence, std::string* result, int indention) {
+  if (sequence.size() == 0) {
+    *result += "[]\n";
+    return;
+  }
+
+  *result += "[";
+  sequence.for_each([result, indention](Var entry) {
+    auto entry_info = reflection::reflect(entry);
+
+    sprint(entry_info, result, indention);
+    *result += ", ";
+  });
+  result->resize(result->size() - 2);
+  *result += "]";
 }
 
 }  // namespace er

@@ -7,6 +7,7 @@
 #include <deque>
 #include <list>
 #include <map>
+#include <memory>
 #include <queue>
 #include <set>
 #include <stack>
@@ -19,12 +20,147 @@
 
 #include "../random/random.h"
 #include "er/attributes.h"
+#include "pointers.h"
 
 ER_REFLECT()
 enum class Numbers { kOne, kTwo, kThree };
 
 ER_REFLECT()
 struct Various {
+  Various() = default;
+
+  Various(const Various& other) {
+    ch = other.ch;
+    uch = other.uch;
+    sch = other.sch;
+
+    u8 = other.u8;
+    u16 = other.u16;
+    u32 = other.u32;
+    u64 = other.u64;
+
+    i8 = other.i8;
+    i16 = other.i16;
+    i32 = other.i32;
+    i64 = other.i64;
+
+    f32 = other.f32;
+    f64 = other.f64;
+
+    std::memcpy(&arr[0], &other.arr[0], sizeof(arr));
+
+    str = other.str;
+
+    std_arr = other.std_arr;
+    vec = other.vec;
+    list = other.list;
+    deq = other.deq;
+    que = other.que;
+    stack = other.stack;
+    set = other.set;
+    un_set = other.un_set;
+
+    map = other.map;
+    un_map = other.un_map;
+
+    obj = other.obj;
+    ptrs = other.ptrs;
+
+    monstro = other.monstro;
+  }
+
+  Various& operator=(const Various& other) {
+    if (this == &other) {
+      return *this;
+    }
+
+    ch = other.ch;
+    uch = other.uch;
+    sch = other.sch;
+
+    u8 = other.u8;
+    u16 = other.u16;
+    u32 = other.u32;
+    u64 = other.u64;
+
+    i8 = other.i8;
+    i16 = other.i16;
+    i32 = other.i32;
+    i64 = other.i64;
+
+    f32 = other.f32;
+    f64 = other.f64;
+
+    std::memcpy(&arr[0], &other.arr[0], sizeof(arr));
+
+    str = other.str;
+
+    std_arr = other.std_arr;
+    vec = other.vec;
+    list = other.list;
+    deq = other.deq;
+    que = other.que;
+    stack = other.stack;
+    set = other.set;
+    un_set = other.un_set;
+
+    map = other.map;
+    un_map = other.un_map;
+
+    obj = other.obj;
+    ptrs = other.ptrs;
+
+    monstro = other.monstro;
+
+    return *this;
+  }
+
+  char ch;
+  unsigned char uch;
+  signed char sch;
+
+  uint8_t u8;
+  uint16_t u16;
+  uint32_t u32;
+  uint64_t u64;
+
+  int8_t i8;
+  int16_t i16;
+  int32_t i32;
+  int64_t i64;
+
+  float f32;
+  double f64;
+
+  int arr[3];
+
+  std::string str;
+
+  // string_view and C string are referencing to const data
+  std::string_view str_v = "c++ 17 string_view";
+  const char* c_str = "good old C string";
+
+  std::array<int, 3> std_arr;
+  std::vector<int> vec;
+  std::list<int> list;
+  std::deque<int> deq;
+  std::queue<int> que;
+  std::stack<int> stack;
+  std::set<int> set;
+  std::unordered_set<int> un_set;
+
+  std::map<int, Numbers> map;
+  std::unordered_map<int, std::string> un_map;
+
+  // check an empty sequence and a map
+  std::vector<int> empty_vec;
+  std::map<int, int> empty_map;
+
+  Simple obj;
+  Pointers ptrs;
+
+  std::vector<std::map<Simple, std::list<std::set<int>>>> monstro;
+
   static Various make_random() {
     Various v;
 
@@ -76,12 +212,13 @@ struct Various {
                 {Random::get_int(), generate_string(32)}};
 
     v.obj = {Random::get_int(), generate_string(64)};
+    v.ptrs = Pointers::make_random();
 
     v.monstro = {{
-        {ComplexValue(Random::get_int(), generate_string(64)),
+        {Simple(Random::get_int(), generate_string(64)),
          {{Random::get_int(), Random::get_int(), Random::get_int()},
           {Random::get_int(), Random::get_int(), Random::get_int()}}},
-        {ComplexValue(Random::get_int(), generate_string(64)),
+        {Simple(Random::get_int(), generate_string(64)),
          {{Random::get_int(), Random::get_int(), Random::get_int()},
           {Random::get_int(), Random::get_int(), Random::get_int()}}}  //
     }};
@@ -135,85 +272,13 @@ struct Various {
     v.un_map = {{1, "one"}, {2, "two"}, {3, "three"}};
 
     v.obj = {888, "nested object"};
+    v.ptrs = Pointers::make_default();
 
     v.monstro = {{
-        {ComplexValue(222, "some string"), {{-1, 2, 5}, {5, 2, -1}}},
-        {ComplexValue(333, "the second string"), {{38, 16, 87}, {44, 41, 38}}}  //
+        {Simple(222, "some string"), {{-1, 2, 5}, {5, 2, -1}}},
+        {Simple(333, "the second string"), {{38, 16, 87}, {44, 41, 38}}}  //
     }};
 
     return v;
-  }
-
-  char ch;
-  unsigned char uch;
-  signed char sch;
-
-  uint8_t u8;
-  uint16_t u16;
-  uint32_t u32;
-  uint64_t u64;
-
-  int8_t i8;
-  int16_t i16;
-  int32_t i32;
-  int64_t i64;
-
-  float f32;
-  double f64;
-
-  int arr[3];
-
-  std::string str;
-
-  // string_view and C string are referencing to const data
-  std::string_view str_v = "c++ 17 string_view";
-  const char* c_str = "good old C string";
-
-  std::array<int, 3> std_arr;
-  std::vector<int> vec;
-  std::list<int> list;
-  std::deque<int> deq;
-  std::queue<int> que;
-  std::stack<int> stack;
-  std::set<int> set;
-  std::unordered_set<int> un_set;
-
-  std::map<int, Numbers> map;
-  std::unordered_map<int, std::string> un_map;
-
-  struct ComplexValue {
-    ComplexValue() = default;
-    ComplexValue(int integer, std::string str) : v1(integer), v2(std::move(str)) {
-    }
-
-    int v1;
-    std::string v2;
-
-    bool operator<(const ComplexValue& other) const {
-      return v1 < other.v1;
-    }
-
-    bool operator==(const ComplexValue& other) const {
-      return v1 == other.v1 && v2 == other.v2;
-    }
-  };
-
-  ComplexValue obj;
-
-  std::vector<std::map<ComplexValue, std::list<std::set<int>>>> monstro;
-
- private:
-  static std::string generate_string(size_t length) {
-    auto str = Random::get_rand_string(length, Random::CharSet::WoSymbols);
-
-    // YAML string should not start and end with ' '
-    // if (str[0] == ' ') {
-    // str[0] = Random::get_int<char>('a', 'z');
-    // }
-    // if (str[str.length() - 1] == ' ') {
-    // str[str.length() - 1] = Random::get_int<char>('a', 'z');
-    // }
-
-    return str;
   }
 };

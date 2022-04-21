@@ -41,6 +41,35 @@ monstro:
 obj:
   v1: 888
   v2: nested object
+ptrs:
+  arr:
+    - v1: 111
+      v2: an object behind shared_ptr in an array at 0
+    - v1: 222
+      v2: an object behind shared_ptr in an array at 1
+    - v1: 333
+      v2: an object behind shared_ptr in an array at 2
+  map:
+    11:
+      v1: 111
+      v2: an object behind shared_ptr in a map at 0
+    22:
+      v1: 222
+      v2: an object behind shared_ptr in a map at 1
+    33:
+      v1: 333
+      v2: an object behind shared_ptr in a map at 2
+  null_ptr: null
+  obj:
+    v1: 999
+    v2: nested object behind shared_ptr
+  vec:
+    - v1: 111
+      v2: an object behind shared_ptr in a vector at 0
+    - v1: 222
+      v2: an object behind shared_ptr in a vector at 1
+    - v1: 333
+      v2: an object behind shared_ptr in a vector at 2
 que:
   - 1
   - 2

@@ -15,19 +15,22 @@
 #include "variants/integer/integer.h"
 #include "variants/map/map.h"
 #include "variants/object/object.h"
+#include "variants/pointer/pointer.h"
 #include "variants/sequence/sequence.h"
 #include "variants/string/string.h"
 
 namespace er {
 
-#define BASE Variant<Bool, Integer, Floating, String, Enum, Object, Array, Sequence, Map>
+#define BASE Variant<Bool, Integer, Floating, String, Enum, Object, Array, Sequence, Map, Pointer>
 
 /// The sum type contains information about nature of stored value
 ///
 /// Primitive for int, float, std::string and others
 /// Object for structs and classes
+/// Array
 /// Sequence for arrays and containers with one generic parameter
-/// Dictionary for associative container such as std::map
+/// Map for associative container such as std::map
+/// Pointer for smart pointers
 class TypeInfo : public BASE {
  public:
   TypeInfo(Bool value) : BASE(value) {  // NOLINT implicit constructor
@@ -57,6 +60,9 @@ class TypeInfo : public BASE {
   TypeInfo(Map value) : BASE(value) {  // NOLINT implicit constructor
   }
 
+  TypeInfo(Pointer value) : BASE(value) {  // NOLINT implicit constructor
+  }
+
   Expected<None> assign(Var var) {
     return match([=](auto&& v) { return v.assign(var); });
   }
@@ -73,17 +79,16 @@ class TypeInfo : public BASE {
   }
 
   enum class Kind {
-    // more or less primitive kinds
-    kBool = 0,
-    kInteger = 1,
-    kFloating = 2,
-    kString = 3,
-    kEnum = 4,
-    // others kinds bealow are complex
-    kObject = 5,
-    kArray = 6,
-    kSequence = 7,
-    kMap = 8
+    kBool,
+    kInteger,
+    kFloating,
+    kString,
+    kEnum,
+    kObject,
+    kArray,
+    kSequence,
+    kMap,
+    kPointer,
   };
 
   [[nodiscard]] Kind get_kind() const {

@@ -66,7 +66,15 @@ struct GroupReader {
     return str;
   }
 
+  bool is_null() const {
+    uint32_t v = 0;
+    _reader->peek(&v, sizeof(v));
+    return v == kNull;
+  }
+
  private:
+  const uint32_t kNull = 0x6E756C6C;  // n(6E) u(75) l(6C) l(6C)
+
   IReader* _reader;
 
   mutable uint8_t _header;
