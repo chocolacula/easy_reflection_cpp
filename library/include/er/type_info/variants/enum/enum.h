@@ -42,7 +42,7 @@ struct Enum final {
   //
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of array has the same sizeof()
-  char _mem[sizeof(EnumImpl<void, 0>)];
+  char _mem[sizeof(EnumImpl<int, 0>)];
 };
 
 }  // namespace er

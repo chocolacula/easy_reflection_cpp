@@ -47,7 +47,7 @@ struct Pointer {
   //
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of Pointer wrapper has the same sizeof()
-  char _mem[sizeof(StdSharedPtr<void>)];
+  char _mem[sizeof(StdSharedPtr<int>)];
 };
 
 }  // namespace er
