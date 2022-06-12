@@ -10,7 +10,7 @@
 
 namespace er {
 
-struct TypeInfo;
+class TypeInfo;
 
 class ParserYaml : rf_yaml::LexerYaml {
  public:
