@@ -19,9 +19,10 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
 add_custom_command(
+    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     OUTPUT
         ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
-    COMMAND cd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} && er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+    COMMAND er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
     DEPENDS
         data/bicycle.h
         data/colors.h

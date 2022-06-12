@@ -115,7 +115,7 @@ int main(int argc, const char** argv) {
     auto file_name_h = fs_reflected_dir / (file_name + L".h");
     auto file_name_cpp = fs_reflected_dir / (file_name + L".cpp");
 #else
-    auto& file_name = file_name_multibyte;
+    auto& file_name = file_name_utf8;
     auto file_name_h = fs_reflected_dir / (file_name + ".h");
     auto file_name_cpp = fs_reflected_dir / (file_name + ".cpp");
 #endif

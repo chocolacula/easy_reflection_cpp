@@ -36,6 +36,7 @@ void Files::correct_config(Config* config) {
   complete_files(&(config->input));
 }
 
+#if defined(_WIN32)
 std::string Files::to_utf8(const wchar_t* str, size_t size) {
   int size_utf8 = WideCharToMultiByte(CP_UTF8,                 //
                                       WC_ERR_INVALID_CHARS,    //
@@ -72,6 +73,7 @@ std::wstring Files::from_utf8(const char* str, size_t size) {
 
   return str_w;
 }
+#endif
 
 inline std::string Files::executable_name() {
 #if defined(__linux__)
@@ -121,7 +123,7 @@ void Files::correct_path(std::string* path) {
 #if defined(_WIN32)
     std::filesystem::path fs_p(from_utf8(path->data(), path->size()));
 #else
-    std::filesystem::path fs_p(path);
+    std::filesystem::path fs_p(*path);
 #endif
     if (std::filesystem::is_directory(fs_p)) {
       *path += kDelim;
