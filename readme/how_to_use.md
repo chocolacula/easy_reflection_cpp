@@ -1,4 +1,4 @@
-# How to use
+# How To Use
 
 Lets assume you are developer of a company employees registry and have a class:
 
