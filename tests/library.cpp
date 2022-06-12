@@ -1,9 +1,6 @@
 #include <memory>
 #include <string_view>
 
-// #include "data/big_one.h"
-// #include "data/tresholds.h"
-// #include "data/various.h"
 #include "er/reflection/reflection.h"
 #include "er/type_info/type_info.h"
 #include "er/variable/box.h"
@@ -52,7 +49,6 @@ TEST(TypeInfo, SequenceSizeof) {
   ASSERT_EQ(seq, sizeof(StdVector<int>));
   ASSERT_EQ(seq, sizeof(StdList<int>));
   ASSERT_EQ(seq, sizeof(StdDeque<int>));
-  ASSERT_EQ(seq, sizeof(StdStack<int>));
   ASSERT_EQ(seq, sizeof(StdQueue<int>));
   ASSERT_EQ(seq, sizeof(StdStack<int>));
   ASSERT_EQ(seq, sizeof(StdSet<int>));

@@ -2,6 +2,8 @@
 
 #include <stack>
 
+namespace er {
+
 template <typename T>
 struct StackIterator : public std::stack<T> {
   static decltype(auto) begin(std::stack<T>* stack) {
@@ -15,3 +17,5 @@ struct StackIterator : public std::stack<T> {
   template <typename SameT>
   friend class StdStack;
 };
+
+}  // namespace er

@@ -3,7 +3,8 @@
 #include <cctype>
 #include <string>
 
-inline std::string to_snake_case(const std::string& str) {
+// returns filename in snake_case
+inline std::string to_filename(const std::string& str) {
   std::string name;
 
   name += std::tolower(str[0]);

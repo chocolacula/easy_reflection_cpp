@@ -8,26 +8,22 @@
 #include <vector>
 
 #include "er/serialization/yaml.h"
-#include "file_manager.h"
-#include "parser_cpp.h"
+#include "parser/parser_cpp.h"
 #include "self_generated/reflection.h"
-#include "to_snake_case.h"
+#include "to_filename.h"
+#include "tools/files.h"
 
 // tclap
 #include "tclap/CmdLine.h"
-
-// clang
-#include "clang/Tooling/CompilationDatabase.h"
 
 // inja
 #include "inja/inja.hpp"
 #include "inja/template.hpp"
 
 int main(int argc, const char** argv) {
-
   TCLAP::CmdLine cmd("Easy Reflection code generator", ' ', VERSION);
 
-  ::FileManager file_manager;
+  Files file_manager;
 
   TCLAP::ValueArg<std::string> c_arg("c", "config", "Explicitly specify path to the config file",  //
                                      false, file_manager.root() + "config.yaml", "path");
@@ -53,28 +49,25 @@ int main(int argc, const char** argv) {
 
   auto time_1 = std::chrono::steady_clock::now();
 
-  std::string err;
-  auto compdb = CompilationDatabase::autoDetectFromDirectory(file_manager.root() + conf.compdb_dir, err);
-
-  if (compdb == nullptr) {
-    std::cerr << "Cannot find compilation database, aborted" << std::endl;
-    return -1;
-  }
-
   // correct pathes and find all files recursive inside input folders
   file_manager.correct_config(&conf);
 
+#if defined(_WIN32)
+  std::filesystem::path fs_output_dir(Files::from_utf8(conf.output_dir.data(), conf.output_dir.size()));
+#else
+  std::filesystem::path fs_output_dir(conf.output_dir);
+#endif
   // check output directory
-  if (!std::filesystem::exists(conf.output_dir)) {
-    std::filesystem::create_directory(conf.output_dir);
+  if (!std::filesystem::exists(fs_output_dir)) {
+    std::filesystem::create_directory(fs_output_dir);
   }
 
   // parse source files
-  ParserCpp parser(*compdb,     //
-                   conf.input,  //
-                   std::filesystem::path(conf.output_dir));
-  auto parsed = parser.parse();
+  ParserCpp parser(conf.compdb_dir,  //
+                   conf.input,       //
+                   conf.output_dir);
 
+  auto parsed = parser.parse();
   auto time_2 = std::chrono::steady_clock::now();
 
   // load templates
@@ -83,11 +76,10 @@ int main(int argc, const char** argv) {
   auto template_object = inja_env.parse_template(conf.templates.object);
   auto template_enum = inja_env.parse_template(conf.templates.for_enum);
 
-  // create main files
-  std::ofstream ref_h;
-  ref_h.open(conf.output_dir + "/reflection.h");
+  // create primary files
+  std::ofstream reflection_h(fs_output_dir / "reflection.h");
 
-  ref_h << R"(#pragma once
+  reflection_h << R"(#pragma once
 
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
@@ -95,36 +87,41 @@ int main(int argc, const char** argv) {
 // generated:
 )";
 
-  std::ofstream ref_cpp;
-  ref_cpp.open(conf.output_dir + "/reflection.cpp");
+  std::ofstream reflection_cpp(fs_output_dir / "reflection.cpp");
 
-  ref_cpp << R"(#include "reflection.h"
+  reflection_cpp << R"(#include "reflection.h"
 
 // clang-format off
 )";
 
   // clear and make 'reflected_types' directory
-  auto reflected_dir = conf.output_dir + "/reflected_types/";
+  auto fs_reflected_dir = fs_output_dir / "reflected_types";
 
-  if (std::filesystem::exists(reflected_dir)) {
-    std::filesystem::remove_all(reflected_dir);
+  if (std::filesystem::exists(fs_reflected_dir)) {
+    std::filesystem::remove_all(fs_reflected_dir);
   }
-  std::filesystem::create_directory(reflected_dir);
+  std::filesystem::create_directory(fs_reflected_dir);
 
   // generate templates
-  for (auto&& item : parsed) {
-    auto file_name = to_snake_case(item.first);
+  for (auto&& [object_name, json] : parsed) {
+    auto file_name_utf8 = to_filename(object_name);
+    json["file_name"] = file_name_utf8;
 
-    auto& json = item.second;
-    json["file_name"] = file_name;
+    file_name_utf8 += ".er";
 
-    file_name += ".er";
+#if defined(_WIN32)
+    auto file_name = Files::from_utf8(file_name_utf8.data(), file_name_utf8.size());
 
-    std::ofstream output_h;
-    output_h.open(reflected_dir + file_name + ".h");
+    auto file_name_h = fs_reflected_dir / (file_name + L".h");
+    auto file_name_cpp = fs_reflected_dir / (file_name + L".cpp");
+#else
+    auto& file_name = file_name_multibyte;
+    auto file_name_h = fs_reflected_dir / (file_name + ".h");
+    auto file_name_cpp = fs_reflected_dir / (file_name + ".cpp");
+#endif
 
-    std::ofstream output_cpp;
-    output_cpp.open(reflected_dir + file_name + ".cpp");
+    std::ofstream output_h(file_name_h);
+    std::ofstream output_cpp(file_name_cpp);
 
     inja_env.render_to(output_h, template_header, json);
     output_h.close();
@@ -138,14 +135,14 @@ int main(int argc, const char** argv) {
 
     const std::string_view include_str = "#include \"reflected_types/";
 
-    ref_h << include_str << file_name << ".h\"\n";
-    ref_cpp << include_str << file_name << ".cpp\" //NOLINT\n";
+    reflection_h << include_str << file_name_utf8 << ".h\"\n";
+    reflection_cpp << include_str << file_name_utf8 << ".cpp\" //NOLINT\n";
   }
 
-  ref_cpp << "// clang-format on\n";
-  ref_cpp.close();
+  reflection_cpp << "// clang-format on\n";
+  reflection_cpp.close();
 
-  ref_h.close();
+  reflection_h.close();
 
   auto time_3 = std::chrono::steady_clock::now();
 

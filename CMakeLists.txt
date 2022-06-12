@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
-execute_process(COMMAND python3 ${CMAKE_SOURCE_DIR}/version.py ${CMAKE_SOURCE_DIR}/vcpkg.json
+cmake_policy(SET CMP0091 NEW)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+find_program(PYTHON "python3")
+if(NOT PYTHON)
+    find_program(PYTHON "python")
+endif()
+
+execute_process(COMMAND PYTHON ${CMAKE_SOURCE_DIR}/version.py ${CMAKE_SOURCE_DIR}/vcpkg.json
     OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION)
 
 cmake_policy(SET CMP0048 NEW)

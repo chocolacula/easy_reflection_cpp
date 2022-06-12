@@ -14,6 +14,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
+if (MSVC)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+
 include_directories(../library/include)
 
 find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
@@ -33,7 +38,7 @@ find_package(inja CONFIG REQUIRED)
 
 set(SOURCES
     main.cpp
-    executable_name.cpp
+    tools/files.cpp
     self_generated/reflection.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -43,10 +48,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 
 option(LINK_CLANG_STATIC "Link LLVM and clang libraries statically" OFF)
 
-if(LINK_CLANG_STATIC OR WIN32)
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE version)
+endif()
+
+if(LINK_CLANG_STATIC)
     message("clang libs will be linked statically")
     target_link_libraries(${PROJECT_NAME} PRIVATE
         LLVMDiff
+        LLVMOption
+        LLVMFrontendOpenMP
+        LLVMSupport
         clangAST
         clangASTMatchers
         clangAnalysis

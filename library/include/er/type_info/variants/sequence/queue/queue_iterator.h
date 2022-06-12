@@ -2,6 +2,8 @@
 
 #include <queue>
 
+namespace er {
+
 template <typename T>
 struct QueueIterator : public std::queue<T> {
   static decltype(auto) begin(std::queue<T>* queue) {
@@ -15,3 +17,5 @@ struct QueueIterator : public std::queue<T> {
   template <typename SameT>
   friend class StdQueue;
 };
+
+}  // namespace er

@@ -30,16 +30,10 @@ class Random {
   static std::string get_rand_string(size_t length, CharSet chars);
 
   template <typename T = int>
-  static T get_int() {
-    std::uniform_int_distribution<T> dist(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
-    return dist(_mt);
-  }
+  static T get_int();
 
   template <typename T = int>
-  static T get_int(T from, T to) {
-    std::uniform_int_distribution<T> dist(from, to);
-    return dist(_mt);
-  }
+  static T get_int(T from, T to);
 
   template <typename T = float>
   static T get_float() {
@@ -84,3 +78,58 @@ inline Random::CharSet operator|(Random::CharSet lhs, Random::CharSet rhs) {
 inline Random::CharSet operator&(Random::CharSet lhs, Random::CharSet rhs) {
   return static_cast<Random::CharSet>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
 }
+
+template <typename T>
+T Random::get_int() {
+  std::uniform_int_distribution<T> dist(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+  return dist(_mt);
+}
+
+template <typename T>
+T Random::get_int(T from, T to) {
+  std::uniform_int_distribution<T> dist(from, to);
+  return dist(_mt);
+}
+
+#if _MSC_VER
+// error C2338: static_assert failed: 'note: char, signed char, unsigned char,
+// char8_t, int8_t, and uint8_t are not allowed'
+template <>
+inline char Random::get_int<char>() {
+  std::uniform_int_distribution<int16_t> dist(std::numeric_limits<char>::min(),  //
+                                              std::numeric_limits<char>::max());
+  return static_cast<char>(dist(_mt));
+}
+
+template <>
+inline signed char Random::get_int<signed char>() {
+  std::uniform_int_distribution<int16_t> dist(std::numeric_limits<signed char>::min(),  //
+                                              std::numeric_limits<signed char>::max());
+  return static_cast<signed char>(dist(_mt));
+}
+
+template <>
+inline unsigned char Random::get_int<unsigned char>() {
+  std::uniform_int_distribution<uint16_t> dist(std::numeric_limits<unsigned char>::min(),  //
+                                               std::numeric_limits<unsigned char>::max());
+  return static_cast<unsigned char>(dist(_mt));
+}
+
+template <>
+inline char Random::get_int<char>(char from, char to) {
+  std::uniform_int_distribution<int16_t> dist(from, to);
+  return static_cast<char>(dist(_mt));
+}
+
+template <>
+inline signed char Random::get_int<signed char>(signed char from, signed char to) {
+  std::uniform_int_distribution<int16_t> dist(from, to);
+  return static_cast<signed char>(dist(_mt));
+}
+
+template <>
+inline unsigned char Random::get_int<unsigned char>(unsigned char from, unsigned char to) {
+  std::uniform_int_distribution<uint16_t> dist(from, to);
+  return static_cast<unsigned char>(dist(_mt));
+}
+#endif
