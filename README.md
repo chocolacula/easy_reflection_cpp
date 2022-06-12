@@ -51,7 +51,7 @@ obj = json::from_string<Object>(str).unwrap();
 ...
 ```
 
-For more details see [How To Use](readme/installation.md).
+For more details see [How To Use](readme/how_to_use.md).
 
 ## Performance
 
