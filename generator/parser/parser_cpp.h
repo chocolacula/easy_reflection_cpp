@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string_view>
@@ -49,6 +50,9 @@ class ParserCpp {
     auto compdb = tooling::CompilationDatabase::autoDetectFromDirectory(source, err);
 
     if (compdb == nullptr) {
+#if _WIN32
+      std::cerr << "Cannot find compilation database, aborted" << std::endl;
+#endif
       throw std::runtime_error("Cannot find compilation database, aborted");
     }
     return compdb;

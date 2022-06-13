@@ -10,7 +10,7 @@
 
 namespace er {
 
-struct TypeInfo;
+class TypeInfo;
 
 class ParserJson : rf_json::LexerJson {
  public:
