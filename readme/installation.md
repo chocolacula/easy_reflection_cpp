@@ -53,7 +53,7 @@ You need to install and add to `PATH` variable:
   - C++ ATL
   - Windows SDK
 - Cmake
-- Ninja(optional)
+- Ninja
 
 Clone llvm-project from [GitHub](https://github.com/llvm/llvm-project) and create build directory as usual.  
 
@@ -82,13 +82,7 @@ VCPKG_TARGET_TRIPLET="x64-windows-static"
 You can use MSVC to build your project and Easy Reflection but code generation tool `er_gen`  
 uses Clang `LibTooling` which works with `compile_commands.json` for analysis, so you should have it.  
 
-MSVC unfortunately doesn't create that file, but we have freshly built Clang.  
-A possible workaround:
-
-- Open **Command Prompt for VS**
-- Create another one build folder
-- Configure the project with Cmake, Clang and Ninja
-- Copy `compile_commands.json` to MSVC configured build folder
+Standard Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead of.
 
 ## Further steps
 
