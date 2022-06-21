@@ -7,9 +7,6 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
 
-// using namespace clang;
-// using namespace clang::ast_matchers;
-
 class Action : public ASTFrontendAction {
  public:
   explicit Action(Context* ctx) : _ast_callback(ctx), _ctx(ctx) {
@@ -19,7 +16,8 @@ class Action : public ASTFrontendAction {
     _finder.addMatcher(enum_matcher, &_ast_callback);
   }
 
-  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& compiler, StringRef /*in_file*/) override {
+  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance& compiler, StringRef /*in_file*/)
+  override {
     // register macro handler
     compiler.getPreprocessor().addPPCallbacks(std::make_unique<MacroCallback>(compiler.getSourceManager(),  //
                                                                               compiler.getLangOpts(),       //
@@ -37,11 +35,9 @@ class Action : public ASTFrontendAction {
 class ActionFactory : public tooling::FrontendActionFactory {
  public:
   explicit ActionFactory(Context* ctx) : _ctx(ctx) {
-    std::cout << "ActionFactory()" << std::endl;
   }
 
   std::unique_ptr<FrontendAction> create() override {
-    std::cout << "create()" << std::endl;
     return std::make_unique<Action>(_ctx);
   }
 

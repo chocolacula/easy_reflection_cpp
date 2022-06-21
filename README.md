@@ -74,7 +74,8 @@ The length in bytes of serialized in different ways objects has the following re
 
 ## TO DO
 
-- Make `TypeId` compile time generated
+- Specialize `constexpr TypeId` for analyzed types
+- Construct fields map in compile time
 - Cleanup all `TODO`s in the code
 - Default value in case of `null` in parsers
 - Prettify `reflection::print()`

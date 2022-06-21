@@ -82,7 +82,7 @@ VCPKG_TARGET_TRIPLET="x64-windows-static"
 You can use MSVC to build your project and Easy Reflection but code generation tool `er_gen`  
 uses Clang `LibTooling` which works with `compile_commands.json` for analysis, so you should have it.  
 
-Standard Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead of.
+Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead of.
 
 ## Further steps
 
