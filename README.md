@@ -7,6 +7,8 @@ It parses C++ sourcecode for special attributes. In the simplest situation you o
 The main idea is use kinda dynamic typing and **Run Time Type Checking** for some type agnostic operations, like copying or taking name of a type.  
 It makes possible determine a variable type and do right job - print, serialize/deserialize or whatever.
 
+If you are curious about the details of how it works you can find them in [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).  
+
 ## Features
 
 - Linux, MacOS and Windows support
