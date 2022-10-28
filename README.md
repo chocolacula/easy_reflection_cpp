@@ -81,6 +81,7 @@ The length in bytes of serialized in different ways objects has the following re
 - Cleanup all `TODO`s in the code
 - Default value in case of `null` in parsers
 - Prettify `reflection::print()`
+- Write mocking library
 - Add default constructable **SFINAE** guard
 - Add support of move semantic
 - Optimize size of `Expected<>` in parsers
