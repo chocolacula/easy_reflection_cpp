@@ -1,6 +1,7 @@
 # Easy Reflection solution for C++
 
 [![CMake build and test](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml)
+<a href="https://github.com/fffaraz/awesome-cpp#reflection"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Listed on Awesome C++"></img></a>
 
 It parses C++ sourcecode for special attributes. In the simplest situation you only need mark an object by `ER_REFLECT()` macro. All other work will be done by code generation tool and reflection library.
 
