@@ -4,7 +4,7 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/user_profile.h"
+#include "../../../../benchmarks/data/user_profile.h"
 
 namespace er {
 

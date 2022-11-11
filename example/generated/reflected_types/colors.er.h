@@ -4,7 +4,7 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/colors.h"
+#include "../../../../example/data/colors.h"
 
 namespace er {
 

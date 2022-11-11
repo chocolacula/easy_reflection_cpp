@@ -4,7 +4,7 @@
 #include "er/types/type_actions.h"
 
 // injected
-#include "../../data/pointers.h"
+#include "../../../../tests/data/pointers.h"
 
 namespace er {
 
