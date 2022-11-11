@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "constexpr_sort.h"
 #include "expected.h"
 #include "tools/format.h"
 
@@ -92,7 +93,7 @@ class ConstexprMap {
 
     // nothing is found
     return nullptr;
-  };
+  }
 
   constexpr Entry* search_by_name(std::string_view name, size_t begin, size_t end) const {
 
@@ -114,37 +115,16 @@ class ConstexprMap {
 
     // nothing is found
     return nullptr;
-  };
+  }
 
   constexpr void sort_value_ptr() {
-    // insertion sort O(N^2)
-    for (auto i = 1; i < _value_ptr.size(); i++) {
-      auto key = _value_ptr[i];
-
-      auto j = i;
-      while (j > 0 && _value_ptr[j - 1]->value > key->value) {
-        _value_ptr[j] = _value_ptr[j - 1];
-        j--;
-      }
-
-      _value_ptr[j] = key;
-    }
-  };
-
+    ConstexprSort::sort(_value_ptr.data(), _value_ptr.size(),  //
+                        [](auto a, auto b) { return a->value > b->value; });
+  }
   constexpr void sort_name_ptr() {
-    // insertion sort O(N^2)
-    for (auto i = 1; i < _name_ptr.size(); i++) {
-      auto key = _name_ptr[i];
-
-      auto j = i;
-      while (j > 0 && _name_ptr[j - 1]->name > key->name) {
-        _name_ptr[j] = _name_ptr[j - 1];
-        j--;
-      }
-
-      _name_ptr[j] = key;
-    }
-  };
+    ConstexprSort::sort(_name_ptr.data(), _name_ptr.size(),  //
+                        [](auto a, auto b) { return a->name > b->name; });
+  }
 };
 
 }  // namespace er
