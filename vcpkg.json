@@ -1,6 +1,6 @@
 {
   "name": "reflection-cpp",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "dependencies": [
     "simdjson",
     "gtest",

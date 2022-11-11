@@ -8,8 +8,7 @@ if(NOT PYTHON)
     find_program(PYTHON "python")
 endif()
 
-execute_process(COMMAND PYTHON ${CMAKE_SOURCE_DIR}/version.py ${CMAKE_SOURCE_DIR}/vcpkg.json
-    OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION)
+execute_process(COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/version.py ${CMAKE_SOURCE_DIR}/vcpkg.json OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION)
 
 cmake_policy(SET CMP0048 NEW)
 project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
