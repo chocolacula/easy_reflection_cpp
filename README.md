@@ -12,7 +12,7 @@ If you are curious about the details of how it works you can find them in [DEV a
 
 ## Features
 
-- Linux, MacOS and Windows support
+- Linux, MacOS and Windows, x86 and ARM support
 - translate enums to string and vise versa
 - support of stl containers like `std::vector`, `std::list`, `std::map`, etc.
 - smart pointers support

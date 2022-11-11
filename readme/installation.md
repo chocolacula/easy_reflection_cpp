@@ -33,7 +33,7 @@ It's quite old problem and easy to google. Do not ignore them, it would lead to 
 
 ### Docker
 
-The repository also provides a `Dockerfile` which initializes `Ubuntu 20.04` environment,  
+The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment,  
 copy project files, builds it and runs tests on startup.
 
 ## Apple
