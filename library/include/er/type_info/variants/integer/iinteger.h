@@ -9,6 +9,8 @@
 namespace er {
 
 struct IInteger {
+  virtual ~IInteger() = default;
+
   virtual Expected<None> assign(Var var) = 0;
   virtual void unsafe_assign(void* ptr) = 0;
   virtual Var var() const = 0;

@@ -7,6 +7,8 @@
 namespace er {
 
 struct IMap {
+  virtual ~IMap() = default;
+
   virtual Expected<None> assign(Var var) = 0;
   virtual void unsafe_assign(void* ptr) = 0;
   virtual Var own_var() const = 0;
