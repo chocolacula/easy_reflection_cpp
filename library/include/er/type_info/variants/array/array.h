@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "c_array.h"
+#include "er/type_info/variants/array/iarray.h"
 #include "std_array.h"
 
 namespace er {
@@ -22,59 +23,59 @@ struct Array final {
   }
 
   ~Array() {
-    reinterpret_cast<IArray*>(&_mem[0])->~IArray();
+    impl()->~IArray();
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IArray*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    return reinterpret_cast<IArray*>(&_mem[0])->unsafe_assign(ptr);
+    return impl()->unsafe_assign(ptr);
   }
 
   Var own_var() const {
-    return reinterpret_cast<const IArray*>(&_mem[0])->own_var();
+    return impl()->own_var();
   }
 
   TypeId nested_type() const {
-    return reinterpret_cast<const IArray*>(&_mem[0])->nested_type();
+    return impl()->nested_type();
   }
 
   Expected<Var> at(size_t idx) {
-    return reinterpret_cast<IArray*>(&_mem[0])->at(idx);
+    return impl()->at(idx);
   }
 
   Expected<Var> operator[](size_t idx) {
-    return reinterpret_cast<IArray*>(&_mem[0])->operator[](idx);
+    return impl()->operator[](idx);
   }
 
   Expected<Var> front() {
-    return reinterpret_cast<IArray*>(&_mem[0])->front();
+    return impl()->front();
   };
 
   Expected<Var> back() {
-    return reinterpret_cast<IArray*>(&_mem[0])->back();
+    return impl()->back();
   };
 
   Expected<None> fill(Var filler) {
-    return reinterpret_cast<IArray*>(&_mem[0])->fill(filler);
+    return impl()->fill(filler);
   }
 
   void for_each(std::function<void(Var)> callback) const {
-    reinterpret_cast<const IArray*>(&_mem[0])->for_each(std::move(callback));
+    impl()->for_each(std::move(callback));
   }
 
   void for_each(std::function<void(Var)> callback) {
-    reinterpret_cast<IArray*>(&_mem[0])->for_each(std::move(callback));
+    impl()->for_each(std::move(callback));
   }
 
   void unsafe_for_each(std::function<void(void*)> callback) const {
-    reinterpret_cast<const IArray*>(&_mem[0])->unsafe_for_each(std::move(callback));
+    impl()->unsafe_for_each(std::move(callback));
   }
 
   size_t size() const {
-    return reinterpret_cast<const IArray*>(&_mem[0])->size();
+    return impl()->size();
   }
 
  private:
@@ -84,6 +85,14 @@ struct Array final {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of array has the same sizeof()
   char _mem[sizeof(StdArray<int, 0>)];
+
+  inline const IArray* impl() const {
+    return reinterpret_cast<const IArray*>(&_mem[0]);
+  }
+
+  inline IArray* impl() {
+    return reinterpret_cast<IArray*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

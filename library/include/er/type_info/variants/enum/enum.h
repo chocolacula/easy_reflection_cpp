@@ -17,23 +17,23 @@ struct Enum final {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IEnum*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    reinterpret_cast<IEnum*>(&_mem[0])->unsafe_assign(ptr);
+    impl()->unsafe_assign(ptr);
   }
 
   Var var() const {
-    return reinterpret_cast<const IEnum*>(&_mem[0])->var();
+    return impl()->var();
   }
 
   std::string_view to_string() const {
-    return reinterpret_cast<const IEnum*>(&_mem[0])->to_string();
+    return impl()->to_string();
   }
 
   Expected<None> parse(std::string_view name) {
-    return reinterpret_cast<IEnum*>(&_mem[0])->parse(name);
+    return impl()->parse(name);
   };
 
  private:
@@ -43,6 +43,14 @@ struct Enum final {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of array has the same sizeof()
   char _mem[sizeof(EnumImpl<int, 0>)];
+
+  inline const IEnum* impl() const {
+    return reinterpret_cast<const IEnum*>(&_mem[0]);
+  }
+
+  inline IEnum* impl() {
+    return reinterpret_cast<IEnum*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

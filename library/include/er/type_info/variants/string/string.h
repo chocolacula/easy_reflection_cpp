@@ -28,23 +28,23 @@ struct String final {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IString*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    reinterpret_cast<IString*>(&_mem[0])->unsafe_assign(ptr);
+    impl()->unsafe_assign(ptr);
   }
 
   std::string_view get() const {
-    return reinterpret_cast<const IString*>(&_mem[0])->get();
+    return impl()->get();
   }
 
   Expected<None> set(std::string_view value) {
-    return reinterpret_cast<IString*>(&_mem[0])->set(value);
+    return impl()->set(value);
   }
 
   Var var() const {
-    return reinterpret_cast<const IString*>(&_mem[0])->var();
+    return impl()->var();
   }
 
  private:
@@ -54,6 +54,14 @@ struct String final {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of string has the same sizeof()
   char _mem[sizeof(CString<char>)];
+
+  inline const IString* impl() const {
+    return reinterpret_cast<const IString*>(&_mem[0]);
+  }
+
+  inline IString* impl() {
+    return reinterpret_cast<IString*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

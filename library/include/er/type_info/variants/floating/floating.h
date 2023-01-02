@@ -16,27 +16,27 @@ struct Floating final {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IFloating*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    return reinterpret_cast<IFloating*>(&_mem[0])->unsafe_assign(ptr);
+    return impl()->unsafe_assign(ptr);
   }
 
   Var var() {
-    return reinterpret_cast<IFloating*>(&_mem[0])->var();
+    return impl()->var();
   }
 
   size_t size() {
-    return reinterpret_cast<IFloating*>(&_mem[0])->size();
+    return impl()->size();
   }
 
   double get() const {
-    return reinterpret_cast<const IFloating*>(&_mem[0])->get();
+    return impl()->get();
   }
 
   Expected<None> set(double value) {
-    return reinterpret_cast<IFloating*>(&_mem[0])->set(value);
+    return impl()->set(value);
   }
 
  private:
@@ -46,6 +46,14 @@ struct Floating final {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of Float wrapper has the same sizeof()
   char _mem[sizeof(Float<float>)];
+
+  inline const IFloating* impl() const {
+    return reinterpret_cast<const IFloating*>(&_mem[0]);
+  }
+
+  inline IFloating* impl() {
+    return reinterpret_cast<IFloating*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

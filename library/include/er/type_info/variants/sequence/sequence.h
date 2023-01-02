@@ -1,5 +1,6 @@
 #pragma once
 
+#include "er/type_info/variants/sequence/isequence.h"
 #include "list/std_deque.h"
 #include "list/std_list.h"
 #include "queue/std_queue.h"
@@ -49,43 +50,43 @@ struct Sequence {
   }
 
   ~Sequence() {
-    reinterpret_cast<ISequence*>(&_mem[0])->~ISequence();
+    impl()->~ISequence();
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<ISequence*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    return reinterpret_cast<ISequence*>(&_mem[0])->unsafe_assign(ptr);
+    return impl()->unsafe_assign(ptr);
   }
 
   Var own_var() const {
-    return reinterpret_cast<const ISequence*>(&_mem[0])->own_var();
+    return impl()->own_var();
   }
 
   TypeId nested_type() const {
-    return reinterpret_cast<const ISequence*>(&_mem[0])->nested_type();
+    return impl()->nested_type();
   }
 
   void for_each(std::function<void(Var)> callback) const {
-    reinterpret_cast<const ISequence*>(&_mem[0])->for_each(callback);
+    impl()->for_each(callback);
   }
 
   void unsafe_for_each(std::function<void(void*)> callback) const {
-    reinterpret_cast<const ISequence*>(&_mem[0])->unsafe_for_each(callback);
+    impl()->unsafe_for_each(callback);
   }
 
   void clear() {
-    reinterpret_cast<ISequence*>(&_mem[0])->clear();
+    impl()->clear();
   }
 
   size_t size() const {
-    return reinterpret_cast<const ISequence*>(&_mem[0])->size();
+    return impl()->size();
   }
 
   Expected<None> push(Var value) {
-    return reinterpret_cast<ISequence*>(&_mem[0])->push(value);
+    return impl()->push(value);
   }
 
  private:
@@ -95,6 +96,14 @@ struct Sequence {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of sequence has the same sizeof()
   char _mem[sizeof(StdVector<int>)];
+
+  inline const ISequence* impl() const {
+    return reinterpret_cast<const ISequence*>(&_mem[0]);
+  }
+
+  inline ISequence* impl() {
+    return reinterpret_cast<ISequence*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

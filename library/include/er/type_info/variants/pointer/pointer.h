@@ -18,27 +18,27 @@ struct Pointer {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IPointer*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    reinterpret_cast<IPointer*>(&_mem[0])->unsafe_assign(ptr);
+    impl()->unsafe_assign(ptr);
   }
 
   Var var() const {
-    return reinterpret_cast<const IPointer*>(&_mem[0])->var();
+    return impl()->var();
   }
 
   bool is_null() const {
-    return reinterpret_cast<const IPointer*>(&_mem[0])->is_null();
+    return impl()->is_null();
   }
 
   void init() {
-    reinterpret_cast<IPointer*>(&_mem[0])->init();
+    impl()->init();
   }
 
   Expected<Var> get_nested() const {
-    return reinterpret_cast<const IPointer*>(&_mem[0])->get_nested();
+    return impl()->get_nested();
   }
 
  private:
@@ -48,6 +48,14 @@ struct Pointer {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of Pointer wrapper has the same sizeof()
   char _mem[sizeof(StdSharedPtr<int>)];
+
+  inline const IPointer* impl() const {
+    return reinterpret_cast<const IPointer*>(&_mem[0]);
+  }
+
+  inline IPointer* impl() {
+    return reinterpret_cast<IPointer*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

@@ -20,51 +20,51 @@ struct Map final {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IMap*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    reinterpret_cast<IMap*>(&_mem[0])->unsafe_assign(ptr);
+    impl()->unsafe_assign(ptr);
   }
 
   Var own_var() const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->own_var();
+    return impl()->own_var();
   }
 
   TypeId key_type() const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->key_type();
+    return impl()->key_type();
   }
 
   TypeId val_type() const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->val_type();
+    return impl()->val_type();
   }
 
   void for_each(std::function<void(Var, Var)> callback) const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->for_each(callback);
+    return impl()->for_each(callback);
   }
 
   void for_each(std::function<void(Var, Var)> callback) {
-    return reinterpret_cast<IMap*>(&_mem[0])->for_each(callback);
+    return impl()->for_each(callback);
   }
 
   void unsafe_for_each(std::function<void(void*, void*)> callback) const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->unsafe_for_each(callback);
+    return impl()->unsafe_for_each(callback);
   }
 
   void clear() {
-    reinterpret_cast<IMap*>(&_mem[0])->clear();
+    impl()->clear();
   }
 
   size_t size() const {
-    return reinterpret_cast<const IMap*>(&_mem[0])->size();
+    return impl()->size();
   }
 
   Expected<None> insert(Var key, Var value) {
-    return reinterpret_cast<IMap*>(&_mem[0])->insert(key, value);
+    return impl()->insert(key, value);
   }
 
   Expected<None> remove(Var key) {
-    return reinterpret_cast<IMap*>(&_mem[0])->remove(key);
+    return impl()->remove(key);
   }
 
  private:
@@ -74,6 +74,14 @@ struct Map final {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of map has the same sizeof()
   char _mem[sizeof(StdMap<int, int>)];
+
+  inline const IMap* impl() const {
+    return reinterpret_cast<const IMap*>(&_mem[0]);
+  }
+
+  inline IMap* impl() {
+    return reinterpret_cast<IMap*>(&_mem[0]);
+  }
 };
 
 }  // namespace er

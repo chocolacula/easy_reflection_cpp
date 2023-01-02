@@ -18,53 +18,53 @@ struct Integer {
   }
 
   Expected<None> assign(Var var) {
-    return reinterpret_cast<IInteger*>(&_mem[0])->assign(var);
+    return impl()->assign(var);
   }
 
   void unsafe_assign(void* ptr) {
-    reinterpret_cast<IInteger*>(&_mem[0])->unsafe_assign(ptr);
+    impl()->unsafe_assign(ptr);
   }
 
   Var var() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->var();
+    return impl()->var();
   }
 
   size_t size() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->size();
+    return impl()->size();
   }
 
   bool is_signed() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->is_signed();
+    return impl()->is_signed();
   }
 
   int64_t as_signed() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->as_signed();
+    return impl()->as_signed();
   }
 
   uint64_t as_unsigned() const {
-    return reinterpret_cast<const IInteger*>(&_mem[0])->as_unsigned();
+    return impl()->as_unsigned();
   }
 
   template <typename T>
   typename std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T>,  //
                             Expected<None>>
   set(T value) {
-    return reinterpret_cast<IInteger*>(&_mem[0])->set_signed(value);
+    return impl()->set_signed(value);
   }
 
   template <typename T>
   typename std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>,  //
                             Expected<None>>
   set(T value) {
-    return reinterpret_cast<IInteger*>(&_mem[0])->set_unsigned(value);
+    return impl()->set_unsigned(value);
   }
 
   Expected<None> set_signed(int64_t value) {
-    return reinterpret_cast<IInteger*>(&_mem[0])->set_signed(value);
+    return impl()->set_signed(value);
   }
 
   Expected<None> set_unsigned(uint64_t value) {
-    return reinterpret_cast<IInteger*>(&_mem[0])->set_unsigned(value);
+    return impl()->set_unsigned(value);
   }
 
  private:
@@ -74,6 +74,14 @@ struct Integer {
   // it's just a memory bunch for a pointer and is_const flag
   // all kinds of Int wrapper has the same sizeof()
   char _mem[sizeof(Int<int>)];
+
+  inline const IInteger* impl() const {
+    return reinterpret_cast<const IInteger*>(&_mem[0]);
+  }
+
+  inline IInteger* impl() {
+    return reinterpret_cast<IInteger*>(&_mem[0]);
+  }
 };
 
 }  // namespace er
