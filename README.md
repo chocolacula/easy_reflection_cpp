@@ -66,8 +66,7 @@ Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidj
 YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
 
 > **Note:** Deserialization comparisson is not absolutely fair.  
-Other libraries not always convert string represented values to `int`, `float` or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`.  
-Easy Reflection, on the other hand, provides ready-made object with all values within. And it's still fast despite it takes some time.
+Other libraries not always convert string represented values to `int`, `float` or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made object with all values within. And it's still fast despite it takes some time.
 
 ![Core i5 benchmarks](./benchmarks/performance_chart.png)
 
