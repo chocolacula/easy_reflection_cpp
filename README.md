@@ -18,7 +18,7 @@ If you are curious about the details of how it works you can find them in [DEV a
 - smart pointers support
 - native serialization directly to an object and without third parties for:
   - **JSON**
-  - **YAML 1.2** even with anchors, but keep in mind that variables behind anchors have to have the same type.
+  - **YAML 1.2** even with anchors, but keep in mind that variables behind anchors have to be the same type.
   - binary with **Variable Length Quantity** to reduce number of bytes
 - debug printing
 - understandable errors
