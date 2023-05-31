@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(include)
+
+add_subdirectory(RE-flex)
 include_directories(RE-flex/include)
 
 set(SOURCES
@@ -25,26 +27,7 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
-if(WIN32)
-    set(RE_FLEX_LIB ${CMAKE_CURRENT_SOURCE_DIR}/RE-flex/vs/reflex.lib)
-else()
-    set(RE_FLEX_LIB ${CMAKE_CURRENT_SOURCE_DIR}/RE-flex/lib/libreflex.a)
-endif()
-
-if(NOT EXISTS ${RE_FLEX_LIB})
-    message("make RE-flex library")
-    if(WIN32)
-        execute_process(
-            COMMAND RE-flex_build.bat
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/library)
-    else()
-        execute_process(
-            COMMAND ./build.sh
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/library/RE-flex)
-    endif()
-endif()
-
-target_link_libraries(${PROJECT_NAME} PRIVATE ${RE_FLEX_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLib)
 
 if (USE_SIMD_JSON)
     find_package(simdjson CONFIG REQUIRED)
