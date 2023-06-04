@@ -15,7 +15,7 @@ struct QueueIterator : public std::queue<T> {
   }
 
   template <typename SameT>
-  friend class StdQueue;
+  friend struct StdQueue;
 };
 
 }  // namespace er

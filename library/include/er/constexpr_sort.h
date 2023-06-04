@@ -55,7 +55,7 @@ struct ConstexprSort {
 
  private:
   template <typename T, typename LambdaT>
-  static constexpr void quick_sort_req(T* arr, ssize_t begin, ssize_t end, LambdaT greater) {
+  static constexpr void quick_sort_req(T* arr, size_t begin, size_t end, LambdaT greater) {
     if (begin >= end) {
       return;
     }
@@ -66,7 +66,7 @@ struct ConstexprSort {
   }
 
   template <typename T, typename LambdaT>
-  static constexpr size_t hoare(T* arr, ssize_t begin, ssize_t end, LambdaT greater) {
+  static constexpr size_t hoare(T* arr, size_t begin, size_t end, LambdaT greater) {
     auto pivot = arr[(begin + end) / 2];
 
     auto i = begin - 1;

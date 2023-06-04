@@ -15,7 +15,7 @@ struct StackIterator : public std::stack<T> {
   }
 
   template <typename SameT>
-  friend class StdStack;
+  friend struct StdStack;
 };
 
 }  // namespace er

@@ -1,10 +1,9 @@
 # Installation
 
-At first you have to download and compile **Clang**.  
-The generator as a part of this project uses Clang to analyse C++ source code.  
+The generator as a part of this project uses **Clang** libraries to analyse C++ source code.  
 You can build Clang [from source](https://clang.llvm.org/get_started.html) or install from [vcpkg](https://github.com/microsoft/vcpkg).  
 
-Theese libs link dynamically by default. There is an option of statically linking also.  
+These libs link dynamically by default. There is an option of statically linking also.  
 Set `-DLINK_CLANG_STATIC=ON` while building the generator in this case.
 
 ## Linux
@@ -43,16 +42,20 @@ See [Linux](#linux) for more information.
 
 ## Windows
 
-Unfortunately it's not as easy as on Unix like systems, but I did most of work for you.  
+Unfortunately it's not as easy as on POSIX systems, but I did most of work for you.  
 
-You need to install and add to `PATH` variable:
+On Windows you can avoid building the generator - just use latest binary release.  
+There is nowhere to take precompiled **Clang** libraries, even distributed with [MSYS2](https://packages.msys2.org/package/mingw-w64-clang-x86_64-clang?repo=clang64) are not suitable.  
+So, if you wanna build generator, you should build the libraries first.
+
+You have to install and add to `PATH` variable:
 
 - Git
 - Python
 - MSVC compiler
   - C++ ATL
   - Windows SDK
-- Cmake
+- CMake
 - Ninja
 
 Clone llvm-project from [GitHub](https://github.com/llvm/llvm-project) and create build directory as usual.  
@@ -62,7 +65,7 @@ Then open **Command Prompt for VS** as administrator and run commands:
 ```cmd
 llvm-project\build>
 cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_USE_CRT_RELEASE=MT -Thost=x64 ..\llvm
-cmake --build . --config Release -j 4 -t install
+cmake --build . --config Release -j 8 -t install
 ```
 
 > **Note:** `-DLLVM_LINK_LLVM_DYLIB=ON` is not available on Windows if you compile Clang by MSVC.  
@@ -82,7 +85,7 @@ VCPKG_TARGET_TRIPLET="x64-windows-static"
 You can use MSVC to build your project and Easy Reflection but code generation tool `er_gen`  
 uses Clang `LibTooling` which works with `compile_commands.json` for analysis, so you should have it.  
 
-Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead of.
+Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead.
 
 ## Further steps
 
@@ -98,7 +101,7 @@ One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manag
 Python is dependency of everything now and most likely you already have it, otherwise please install it manually.
 
 After you have installed all dependencies you should made a decision do you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
-Native for the solution parser will be available anyway but it's slower though a bit more flexible in map parsing.  
+Native for the solution parser will be available anyway but it's slower, though a bit more flexible in map parsing.  
 If for some reason you wanna reduce number of dependencies you can exclude `simdjson` via CMake option:
 
 ```bash

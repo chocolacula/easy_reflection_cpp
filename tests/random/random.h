@@ -81,8 +81,8 @@ inline Random::CharSet operator&(Random::CharSet lhs, Random::CharSet rhs) {
 }
 
 #if _MSC_VER
-// error C2338: static_assert failed: 'note: char, signed char, unsigned char,
-// char8_t, int8_t, and uint8_t are not allowed'
+// error C2338: static_assert failed:
+// 'note: char, signed char, unsigned char, char8_t, int8_t, and uint8_t are not allowed'
 #define __char_t uint16_t
 #else
 #define __char_t uint8_t
@@ -90,8 +90,8 @@ inline Random::CharSet operator&(Random::CharSet lhs, Random::CharSet rhs) {
 
 template <typename T>
 inline T Random::get_int() {
-  if constexpr (std::is_same_v<T, char> or           //
-                std::is_same_v<T, unsigned char> or  //
+  if constexpr (std::is_same_v<T, char> ||           //
+                std::is_same_v<T, unsigned char> ||  //
                 std::is_same_v<T, signed char>) {
     std::uniform_int_distribution<__char_t> dist(static_cast<__char_t>(std::numeric_limits<T>::min()),  //
                                                  static_cast<__char_t>(std::numeric_limits<T>::max()));
@@ -105,8 +105,8 @@ inline T Random::get_int() {
 
 template <typename T>
 inline T Random::get_int(T from, T to) {
-  if constexpr (std::is_same_v<T, char> or           //
-                std::is_same_v<T, unsigned char> or  //
+  if constexpr (std::is_same_v<T, char> ||           //
+                std::is_same_v<T, unsigned char> ||  //
                 std::is_same_v<T, signed char>) {
     std::uniform_int_distribution<__char_t> dist(static_cast<__char_t>(from),  //
                                                  static_cast<__char_t>(to));
@@ -116,3 +116,5 @@ inline T Random::get_int(T from, T to) {
     return dist(_mt);
   }
 }
+
+#undef __char_t

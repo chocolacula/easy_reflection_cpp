@@ -30,7 +30,7 @@ class MacroCallback : public PPCallbacks {
 
       while (true) {
         auto t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
-        t = t_opt.getValue();
+        t = t_opt.value();
 
         if (t.getKind() == tok::r_paren) {
           break;
@@ -51,7 +51,7 @@ class MacroCallback : public PPCallbacks {
       do {
         // skip ')' and keywords 'struct' 'class' or 'enum'
         auto t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
-        t = t_opt.getValue();
+        t = t_opt.value();
 
         spelling = spell(&t, _sm).str();
       } while (spelling == "struct" || spelling == "class" || spelling == "enum" || spelling == "const");
@@ -64,18 +64,18 @@ class MacroCallback : public PPCallbacks {
       // skip '('
       auto t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
       // get the alias token
-      t_opt = Lexer::findNextToken(t_opt.getValue().getLocation(), _sm, _opts);
-      t = t_opt.getValue();
+      t_opt = Lexer::findNextToken(t_opt.value().getLocation(), _sm, _opts);
+      t = t_opt.value();
       alias = spell(&t, _sm).str();
       // skip ')'
       t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
-      t = t_opt.getValue();
+      t = t_opt.value();
 
       auto t_origin = t;
       while (true) {
         // skip all type parts
         t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
-        t = t_opt.getValue();
+        t = t_opt.value();
 
         auto k = t.getKind();
         if (k == tok::coloncolon || k == tok::less || k == tok::greater) {
@@ -97,7 +97,7 @@ class MacroCallback : public PPCallbacks {
       while (true) {
         // skip all type parts
         auto t_opt = Lexer::findNextToken(t.getLocation(), _sm, _opts);
-        t = t_opt.getValue();
+        t = t_opt.value();
 
         auto k = t.getKind();
         if (k == tok::coloncolon || k == tok::less || k == tok::greater) {

@@ -1,5 +1,11 @@
 {
   "cmake.configureSettings": {
-    "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake"
+    "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake",
+    // Windows
+    // "LINK_CLANG_STATIC": "ON",
+    // "CMAKE_GENERATOR": "Ninja",
+    // "CMAKE_PREFIX_PATH": "C:/Program Files (x86)/LLVM/lib",
+    // "VCPKG_FORCE_SYSTEM_BINARIES": "ON",
+    // "VCPKG_TARGET_TRIPLET": "x64-windows-static"
   }
 }

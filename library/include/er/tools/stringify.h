@@ -2,6 +2,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <cstdint>
 
 namespace er {
 

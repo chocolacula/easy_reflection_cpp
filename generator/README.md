@@ -4,7 +4,7 @@ Code generation tool for Easy Reflection based on Clang tools.
 
 It combines parsed data into one json entity and forwards it to inja tempate engine.
 
-format of an object entity is
+The format of object entity is
 
 ```json
 {

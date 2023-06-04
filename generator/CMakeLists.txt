@@ -48,13 +48,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 
 option(LINK_CLANG_STATIC "Link LLVM and clang libraries statically" OFF)
 
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE version)
-endif()
-
 if(LINK_CLANG_STATIC)
     message("clang libs will be linked statically")
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+    set(LIBS
         LLVMDiff
         LLVMOption
         LLVMFrontendOpenMP
@@ -70,11 +66,17 @@ if(LINK_CLANG_STATIC)
         clangParse
         clangSema
         clangSerialization
-        clangTooling
-    )
+        clangSupport
+        clangTooling)
 else()
     message("clang libs will be linked dynamically")
-    target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
+    set(LIBS LLVM clang-cpp)
 endif()
+
+if(WIN32)
+    set(LIBS ${LIBS} LLVMWindowsDriver version)
+endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
 # configure_file(config.yaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.yaml COPYONLY)

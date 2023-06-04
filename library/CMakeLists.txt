@@ -27,7 +27,11 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLib)
+if(LINK_CLANG_STATIC)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLibStatic)
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLib)
+endif()
 
 if (USE_SIMD_JSON)
     find_package(simdjson CONFIG REQUIRED)

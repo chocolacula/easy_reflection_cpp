@@ -17,14 +17,14 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Install Clang dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y llvm-12-dev libclang-12-dev libclang-cpp12-dev
-
+          sudo apt-get install -y llvm-15-dev libclang-15-dev libclang-cpp15-dev
+          
       - name: Checkout repository
         uses: actions/checkout@v2
         # the second one submodule is vcpkg which is already installed at the virtual environment
@@ -36,7 +36,7 @@ jobs:
         run: >
           cmake -B ${{github.workspace}}/build
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_PREFIX_PATH=/usr/lib/llvm-12/lib/cmake/llvm
+          -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15/lib/cmake/llvm
           -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
 
       - name: Build
