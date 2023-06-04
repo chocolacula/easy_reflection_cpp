@@ -147,6 +147,7 @@ class Context:
         self.file.seek(0)
         self.file.truncate()
         json.dump(self.data, self.file, indent=INDENT)
+        self.file.write("\n") # trailing line
         self.file.close()
 
     def get_version(self) -> Optional[Tuple[int, int, int]]:
@@ -160,17 +161,13 @@ class Context:
             return None
 
     def push(self, message, tag):
-        proc = subprocess.Popen(["git", "add", "vcpkg.json"])
-        proc.wait()
-        proc = subprocess.Popen(["git", "commit", "-m", message])
-        proc.wait()
-        # subprocess.Popen(["git", "push"])
+        subprocess.Popen(["git", "add", "vcpkg.json"]).wait()
+        subprocess.Popen(["git", "commit", "-m", message]).wait()
+        subprocess.Popen(["git", "push"]).wait()
 
-        # if tag:
-        # proc = subprocess.Popen(["git", "tag", self.data["version"]])
-        # proc.wait()
-        # proc = subprocess.Popen(["git", "push", "--tags"])
-        # proc.wait()
+        if tag:
+            subprocess.Popen(["git", "tag", self.data["version"]]).wait()
+            subprocess.Popen(["git", "push", "--tags"]).wait()
 
 
 args = parser.parse_args()
