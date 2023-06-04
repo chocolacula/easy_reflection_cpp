@@ -46,9 +46,9 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 
-option(LINK_CLANG_STATIC "Link LLVM and clang libraries statically" OFF)
+option(LINK_ALL_STATIC "Link LLVM and clang libraries statically" OFF)
 
-if(LINK_CLANG_STATIC)
+if(LINK_ALL_STATIC)
     message("clang libs will be linked statically")
     set(LIBS
         LLVMDiff

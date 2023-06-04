@@ -8,10 +8,17 @@ if(NOT PYTHON)
     find_program(PYTHON "python")
 endif()
 
-execute_process(COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/version.py ${CMAKE_SOURCE_DIR}/vcpkg.json OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION)
+if(NOT PYTHON)
+    message(WARNING "Python is not found")
+endif()
 
-if(NOT VCPKG_MANIFEST_PROJECT_VERSION)
-    message(WARNING "Cannot get project version")
+execute_process(COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/version.py
+    get -f ${CMAKE_SOURCE_DIR}/vcpkg.json
+    OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION
+    ERROR_VARIABLE  VCPKG_VERSION_ERROR)
+
+if(VCPKG_VERSION_ERROR)
+    message(WARNING ${VCPKG_VERSION_ERROR})
 endif()
 
 cmake_policy(SET CMP0048 NEW)

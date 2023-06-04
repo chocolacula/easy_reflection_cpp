@@ -27,7 +27,7 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
-if(LINK_CLANG_STATIC)
+if(LINK_ALL_STATIC)
     target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLibStatic)
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLib)

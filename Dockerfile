@@ -8,7 +8,7 @@ FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y git g++ make ninja-build cmake pkg-config \
   build-essential tar curl zip unzip \
-  llvm-11-dev libclang-11-dev libclang-cpp11-dev
+  llvm-15-dev libclang-15-dev libclang-cpp15-dev
 
 COPY . ./reflection_cpp
 # or clone the repository directly from github
