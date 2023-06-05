@@ -44,7 +44,7 @@ See [Linux](#linux) for more information.
 
 Unfortunately it's not as easy as on POSIX systems, but I did most of work for you.  
 
-On Windows you can avoid building the generator - just use latest binary release.  
+On Windows you can avoid building the generator - just use latest binary [release](https://github.com/chocolacula/easy_reflection_cpp/releases).  
 There is nowhere to take precompiled **Clang** libraries, even distributed with [MSYS2](https://packages.msys2.org/package/mingw-w64-clang-x86_64-clang?repo=clang64) are not suitable.  
 So, if you wanna build generator, you should build the libraries first.
 
