@@ -9,7 +9,7 @@ Set `-DLINK_ALL_STATIC=ON` while building the generator in this case.
 ## Linux
 
 In Linux, hopefully, you can use libs from repositories of your distro and save a bit of time.  
-It tested with LLVM and Clang libraries from **Ubuntu** or **Arch Linux** repos.  
+It tested with LLVM and Clang libraries from **Ubuntu** and **Arch Linux** repos.  
 
 If you wanna build them from source, use required flags:
 
@@ -33,7 +33,7 @@ It's quite old problem and easy to google. Do not ignore them, it would lead to 
 ### Docker
 
 The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment,  
-copy project files, builds it and runs tests on startup.
+builds everything and runs tests on startup.
 
 ## Apple
 
@@ -46,7 +46,7 @@ Unfortunately it's not as easy as on POSIX systems, but I did most of work for y
 
 On Windows you can avoid building the generator - just use latest binary [release](https://github.com/chocolacula/easy_reflection_cpp/releases).  
 There is nowhere to take precompiled **Clang** libraries, even distributed with [MSYS2](https://packages.msys2.org/package/mingw-w64-clang-x86_64-clang?repo=clang64) are not suitable.  
-So, if you wanna build generator, you should build the libraries first.
+So, if you wanna build the generator, you should build the libraries first.
 
 You have to install and add to `PATH` variable:
 
@@ -76,8 +76,8 @@ Perhaps, you have to provide correct path to LLVM's CMake config files in `CMAKE
 We have already build Clang and libs statically, don't forget to set few variables:
 
 ```cmd
-LINK_ALL_STATIC=ON
-VCPKG_TARGET_TRIPLET="x64-windows-static"
+-DLINK_ALL_STATIC=ON
+-DVCPKG_TARGET_TRIPLET="x64-windows-static"
 ```
 
 ### A piece of bad news for MSVC users
@@ -98,7 +98,7 @@ git submodule update --init --recursive
 One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
 
 > **Note:** The project version is obtaining by `python` from `vcpkg.json` manifest file.  
-Python is dependency of everything now and most likely you already have it, otherwise please install it manually.
+Python is a dependency of everything these days and most likely you already have it, otherwise please install it manually.
 
 After you have installed all dependencies you should made a decision do you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
 Native for the solution parser will be available anyway but it's slower, though a bit more flexible in map parsing.  
