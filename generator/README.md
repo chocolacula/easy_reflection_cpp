@@ -1,4 +1,4 @@
-# rr_gen
+# er_gen
 
 Code generation tool for Easy Reflection based on Clang tools.
 
