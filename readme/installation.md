@@ -4,7 +4,7 @@ The generator as a part of this project uses **Clang** libraries to analyse C++ 
 You can build Clang [from source](https://clang.llvm.org/get_started.html) or install from [vcpkg](https://github.com/microsoft/vcpkg).  
 
 These libs link dynamically by default. There is an option of statically linking also.  
-Set `-DLINK_ALL_STATIC=ON` while building the generator in this case.
+Set `-DLINK_CLANG_STATIC=ON` while building the generator in this case.
 
 ## Linux
 
@@ -76,7 +76,7 @@ Perhaps, you have to provide correct path to LLVM's CMake config files in `CMAKE
 We have already build Clang and libs statically, don't forget to set few variables:
 
 ```cmd
--DLINK_ALL_STATIC=ON
+-DLINK_CLANG_STATIC=ON
 -DVCPKG_TARGET_TRIPLET="x64-windows-static"
 ```
 
