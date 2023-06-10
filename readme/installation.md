@@ -37,8 +37,19 @@ builds everything and runs tests on startup.
 
 ## Apple
 
-Apple's macOS doesn't have precompiled Clang libs, so you have to build them from source, the rest is almost the same.  
-See [Linux](#linux) for more information.
+Apple's macOS doesn't have precompiled Clang libs, but happily you can use brew.
+
+```bash
+brew install llvm
+```
+
+Don't forget to specify the path to LLVM.
+
+```bash
+-DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
+```
+
+To build LLVM from source see [Linux](#linux) for more information.
 
 ## Windows
 
