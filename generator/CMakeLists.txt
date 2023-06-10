@@ -27,8 +27,8 @@ include_directories(${TCLAP_INCLUDE_DIRS})
 ### LLVM and clang
 find_package(LLVM REQUIRED)
 
-message("found LLVM include directory at: \"" ${LLVM_INCLUDE_DIR} "\"")
-message("found LLVM library directory at: \"" ${LLVM_LIBRARY_DIR} "\"")
+message("Found LLVM include directory at: \"" ${LLVM_INCLUDE_DIR} "\"")
+message("Found LLVM library directory at: \"" ${LLVM_LIBRARY_DIR} "\"")
 
 include_directories(${LLVM_INCLUDE_DIR})
 link_directories(${LLVM_LIBRARY_DIR})
@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 option(LINK_ALL_STATIC "Link LLVM and clang libraries statically" OFF)
 
 if(LINK_ALL_STATIC)
-    message("clang libs will be linked statically")
+    message("Clang libs will be linked statically")
     set(LIBS
         LLVMDiff
         LLVMOption
@@ -69,7 +69,7 @@ if(LINK_ALL_STATIC)
         clangSupport
         clangTooling)
 else()
-    message("clang libs will be linked dynamically")
+    message("Clang libs will be linked dynamically")
     set(LIBS LLVM clang-cpp)
 endif()
 
