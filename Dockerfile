@@ -5,9 +5,11 @@ FROM ubuntu:22.04
 #   - installed Ninja build system
 # it's also a valid setup for non ARM build
 
+# zlib1g-dev - only for static builds
+
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y git g++ make ninja-build cmake pkg-config \
-  build-essential tar curl zip unzip \
+  build-essential tar curl zip unzip zlib1g-dev \
   llvm-15-dev libclang-15-dev libclang-cpp15-dev
 
 COPY . ./reflection_cpp
@@ -16,6 +18,7 @@ COPY . ./reflection_cpp
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 
+# build with GCC by default
 RUN cd reflection_cpp \
   && git submodule update --init --recursive \
   && mkdir build && cd build \
