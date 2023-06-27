@@ -11,11 +11,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
 if (MSVC)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
-
-include_directories(../library/include)
 
 set(SOURCES
     random/random.cpp
@@ -28,7 +26,7 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     OUTPUT
         ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
-    COMMAND er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
     DEPENDS
         data/tresholds.h
         data/various.h
@@ -41,6 +39,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 find_package(GTest CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest_main)
 
+include_directories(../library/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 
 include(GoogleTest)

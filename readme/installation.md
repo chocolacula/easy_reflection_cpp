@@ -1,64 +1,34 @@
 # Installation
 
-The generator as a part of this project uses **Clang** libraries to analyse C++ source code.  
-You can build Clang [from source](https://clang.llvm.org/get_started.html) or install from [vcpkg](https://github.com/microsoft/vcpkg).  
+The project consits of two main parts:
 
-These libs link dynamically by default. There is an option of statically linking also.  
-Set `-DLINK_CLANG_STATIC=ON` while building the generator in this case.
+- Reflection library
+- Code generator
 
-## Linux
+The generator uses **Clang** libraries to analyse C++ source code. By default the libraries are linked  
+statically to make distribution easier and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).  
 
-In Linux, hopefully, you can use libs from repositories of your distro and save a bit of time.  
-It tested with LLVM and Clang libraries from **Ubuntu** and **Arch Linux** repos.  
-
-If you wanna build them from source, use required flags:
+First of all you should decide is this option suitable for you or you need build the generator manually.  
+If you chose manual option, don't rush and update `llvm` and other submodules first:
 
 ```bash
--DLLVM_ENABLE_PROJECTS=clang
--DLLVM_ENABLE_RTTI=ON
+git submodule update --init --recursive
 ```
 
-and for enabling dynamic linking
-
-```bash
--DLLVM_LINK_LLVM_DYLIB=ON
--DCLANG_LINK_CLANG_DYLIB=ON
-```
-
-And of course, don't forget to provide `-DCMAKE_BUILD_TYPE=Release`.
 
 > **Note:** If you faced errors like `stddef.h` or `stdarg.h` not found, check include folders, perhaps you need few symlinks.  
 It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
+
+
 
 ### Docker
 
 The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment,  
 builds everything and runs tests on startup.
 
-## Apple
-
-Apple's macOS doesn't have precompiled Clang libs, but happily you can use brew.
-
-```bash
-brew install llvm
-```
-
-Don't forget to specify the path to LLVM.
-
-```bash
--DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
-```
-
-To build LLVM from source see [Linux](#linux) for more information.
-
 ## Windows
 
 Unfortunately it's not as easy as on POSIX systems, but I did most of work for you.  
-
-On Windows you can avoid building the generator - just use latest binary [release](https://github.com/chocolacula/easy_reflection_cpp/releases).  
-There is nowhere to take precompiled **Clang** libraries, even distributed with [MSYS2](https://packages.msys2.org/package/mingw-w64-clang-x86_64-clang?repo=clang64) are not suitable.  
-So, if you wanna build the generator, you should build the libraries first.
-
 You have to install and add to `PATH` variable:
 
 - Git
@@ -69,26 +39,12 @@ You have to install and add to `PATH` variable:
 - CMake
 - Ninja
 
-Clone llvm-project from [GitHub](https://github.com/llvm/llvm-project) and create build directory as usual.  
-
 Then open **Command Prompt for VS** as administrator and run commands:  
 
 ```cmd
 llvm-project\build>
-cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_USE_CRT_RELEASE=MT -Thost=x64 ..\llvm
-cmake --build . --config Release -j 8 -t install
-```
-
-> **Note:** `-DLLVM_LINK_LLVM_DYLIB=ON` is not available on Windows if you compile Clang by MSVC.  
-But it's a valid parameter if you wanna do kinda recursive thing and compile Clang libs by Clang.  
-
-Perhaps, you have to provide correct path to LLVM's CMake config files in `CMAKE_PREFIX_PATH`.
-
-We have already build Clang and libs statically, don't forget to set few variables:
-
-```cmd
--DLINK_CLANG_STATIC=ON
--DVCPKG_TARGET_TRIPLET="x64-windows-static"
+cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_CRT_RELEASE=MT -Thost=x64 ..\llvm
+cmake --build . -j 8 -t install
 ```
 
 ### A piece of bad news for MSVC users
@@ -117,4 +73,39 @@ If for some reason you wanna reduce number of dependencies you can exclude `simd
 
 ```bash
 -DUSE_SIMD_JSON=OFF
+```
+
+## LLVM & Clang dynamic linking
+
+It is not official supported way and MSVS on Windows doesn't support it at all but nevertheless it exists. 
+
+Replace `add_clang_executable` and `clang_target_link_libraries` to:
+
+```cmake
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
+```
+
+### Linux
+
+You can install libraries from package manager of your distro such as **Ubuntu** and **Arch Linux** or build manually:
+
+```bash
+cd llvm-project/build
+cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=ON ../llvm
+```
+
+### Apple
+
+Apple's macOS doesn't have precompiled Clang libs, but happily you can use brew.
+
+```bash
+brew install llvm
+```
+
+Don't forget to specify the path to LLVM.
+
+```bash
+-DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
 ```

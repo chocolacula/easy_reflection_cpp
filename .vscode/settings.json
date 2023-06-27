@@ -1,13 +1,13 @@
 {
+  "cmake.parallelJobs": 4,
   "cmake.configureSettings": {
     "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake",
+    // "LLVM_TARGETS_TO_BUILD": "X86",
+    // "LLVM_TARGETS_TO_BUILD": "AArch64",
     // macOS
     // "CMAKE_OSX_SYSROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-    // "LLVM_DIR": "/opt/homebrew/opt/llvm/lib/cmake/llvm",
     // Windows
-    // "LINK_CLANG_STATIC": "ON",
     // "CMAKE_GENERATOR": "Ninja",
-    // "LLVM_DIR": "C:/Program Files (x86)/LLVM/lib",
     // "VCPKG_FORCE_SYSTEM_BINARIES": "ON",
     // "VCPKG_TARGET_TRIPLET": "x64-windows-static"
   }

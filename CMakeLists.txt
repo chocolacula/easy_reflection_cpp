@@ -27,12 +27,6 @@ project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
 include(Dart)
 enable_testing()
 
-option(USE_SIMD_JSON "Enable SIMD JSON deserialization provider" ON)
-
-if (USE_SIMD_JSON)
-    add_definitions(-DUSE_SIMD_JSON)
-endif()
-
 add_subdirectory(library)
 add_subdirectory(generator)
 add_subdirectory(example)

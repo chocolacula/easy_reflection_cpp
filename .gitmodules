@@ -5,3 +5,6 @@
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "generator/llvm-project"]
+	path = generator/llvm-project
+	url = https://github.com/llvm/llvm-project
