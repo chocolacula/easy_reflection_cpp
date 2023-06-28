@@ -115,7 +115,7 @@ inline std::string Files::executable_name() {
 }
 
 void Files::correct_path(std::string* path) {
-  if (is_absolute(*path)) {
+  if (!is_absolute(*path)) {
     path->insert(0, _root);
   }
 
@@ -131,9 +131,9 @@ void Files::correct_path(std::string* path) {
   }
 }
 
-void Files::complete_files(std::vector<std::string>* pathes) {
-  auto old = *pathes;
-  pathes->clear();
+void Files::complete_files(std::vector<std::string>* paths) {
+  auto old = *paths;
+  paths->clear();
 
   for (auto path : old) {
     correct_path(&path);
@@ -150,11 +150,11 @@ void Files::complete_files(std::vector<std::string>* pathes) {
         auto w_str = file_path.path().wstring();
         pathes->push_back(to_utf8(w_str.data(), w_str.size()));
 #else
-        pathes->push_back(file_path.path().string());
+        paths->push_back(file_path.path().string());
 #endif
       }
     } else {
-      pathes->push_back(path);
+      paths->push_back(path);
     }
   }
 }

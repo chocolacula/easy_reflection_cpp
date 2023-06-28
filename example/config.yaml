@@ -1,6 +1,6 @@
-compdb_dir: ../build
+compdb_dir: ../build/Release
 
-templates: #pathes to template files
+templates: # paths to template files
   header: ../generator/templates/header.inja
   enum: ../generator/templates/enum.inja
   object: ../generator/templates/object.inja

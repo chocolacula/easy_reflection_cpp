@@ -27,8 +27,8 @@ class Files {
   static inline std::string executable_name();
   void correct_path(std::string* path);
 
-  // change path to a directory to pathes to files inside
-  void complete_files(std::vector<std::string>* pathes);
+  // change path to a directory to paths to files inside
+  void complete_files(std::vector<std::string>* paths);
 
   static void cut_filename(std::string* str);
   static inline bool is_absolute(const std::string& path);

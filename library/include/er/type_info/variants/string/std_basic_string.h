@@ -27,7 +27,7 @@ struct StdBasicString : IString {
   }
 
   void unsafe_assign(void* ptr) override {
-    _var = Var(ptr, _var.type(), _var.is_const());
+    _var.unsafe_assign(ptr);
   }
 
   std::string_view get() const override {

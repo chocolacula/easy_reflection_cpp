@@ -9,17 +9,15 @@ The generator uses **Clang** libraries to analyse C++ source code. By default th
 statically to make distribution easier and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).  
 
 First of all you should decide is this option suitable for you or you need build the generator manually.  
-If you chose manual option, don't rush and update `llvm` and other submodules first:
+If you chose manual option, don't rush and update `llvm` with other submodules first:
 
 ```bash
 git submodule update --init --recursive
 ```
-
+Then configure and build generator, CMake build and link everything for you.
 
 > **Note:** If you faced errors like `stddef.h` or `stdarg.h` not found, check include folders, perhaps you need few symlinks.  
 It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
-
-
 
 ### Docker
 
@@ -43,7 +41,9 @@ Then open **Command Prompt for VS** as administrator and run commands:
 
 ```cmd
 llvm-project\build>
+
 cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_CRT_RELEASE=MT -Thost=x64 ..\llvm
+
 cmake --build . -j 8 -t install
 ```
 
@@ -56,13 +56,7 @@ Visual Studio CMake generator doesn't create that file unfortunately, but you ca
 
 ## Further steps
 
-The next step is update all submodules
-
-```shell
-git submodule update --init --recursive
-```
-
-One of the submodules is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
+Another submodule is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
 
 > **Note:** The project version is obtaining by `python` from `vcpkg.json` manifest file.  
 Python is a dependency of everything these days and most likely you already have it, otherwise please install it manually.
@@ -93,6 +87,7 @@ You can install libraries from package manager of your distro such as **Ubuntu**
 
 ```bash
 cd llvm-project/build
+
 cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=ON ../llvm
 ```
 

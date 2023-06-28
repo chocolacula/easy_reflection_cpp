@@ -26,18 +26,7 @@ set(SOURCES
     tools/files.cpp
     self_generated/reflection.cpp)
 
-### LLVM and Clang ###
-set(LLVM_ENABLE_RTTI ON)
-set(LLVM_ENABLE_PROJECTS "clang")
-
-add_subdirectory(llvm-project/llvm)
-
-include_directories(
-  llvm-project/llvm/include
-  llvm-project/clang/include
-  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/clang/include)
-
-add_clang_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 include_directories(${TCLAP_INCLUDE_DIRS})
@@ -48,15 +37,25 @@ target_link_libraries(${PROJECT_NAME} PRIVATE reflection)
 find_package(inja CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE pantor::inja)
 
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE version)
+endif()
+
+### LLVM and Clang ###
+set(LLVM_ENABLE_RTTI ON)
+set(LLVM_ENABLE_PROJECTS "clang")
+
+add_subdirectory(llvm-project/llvm EXCLUDE_FROM_ALL)
+
+include_directories(
+  llvm-project/llvm/include
+  llvm-project/clang/include)
+
 clang_target_link_libraries(${PROJECT_NAME} PRIVATE
     clangAST
     clangASTMatchers
     clangFrontend
     clangLex
     clangTooling)
-
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE version)
-endif()
 
 # configure_file(config.yaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.yaml COPYONLY)

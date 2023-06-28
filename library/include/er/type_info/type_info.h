@@ -98,6 +98,11 @@ class TypeInfo : public BASE {
   [[nodiscard]] std::string_view get_kind_str() const {
     return match([](auto&& v) { return Names<decltype(v)>::get(); });
   }
+
+ private:
+#ifndef NDEBUG
+  Kind _kind = get_kind();
+#endif
 };
 
 #undef BASE

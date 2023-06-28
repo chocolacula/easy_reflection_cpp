@@ -23,7 +23,7 @@ std::string_view type_name(uint32_t id);
 
 namespace er {
 
-/// copyable value type with single one int under the hood
+/// copyable value type with single int under the hood
 /// represent sequential type id
 struct TypeId {
   TypeId() : _id(0) {
@@ -98,12 +98,12 @@ struct TypeId {
   uint32_t _id;
 
 #ifndef NDEBUG
-  std::string type_name = "unknown";
+  std::string _type_name = "unknown";
 #endif
 
   explicit TypeId(uint32_t id) : _id(id) {
 #ifndef NDEBUG
-    type_name = reflection::type_name(_id);
+    _type_name = reflection::type_name(_id);
 #endif
   }
 };
