@@ -2,32 +2,28 @@
 
 The project consits of two main parts:
 
-- Reflection library
-- Code generator
+- [Reflection library](../library)
+- [Code generator](../generator)
 
 The generator uses **Clang** libraries to analyse C++ source code. By default the libraries are linked  
 statically to make distribution easier and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).  
 
-First of all you should decide is this option suitable for you or you need build the generator manually.  
-If you chose manual option, don't rush and update `llvm` with other submodules first:
+First of all you should decide this option is suitable for you or you have to build the generator manually.  
+If you chose manual option, be patient and update `llvm` along with other submodules first:
 
 ```bash
 git submodule update --init --recursive
 ```
-Then configure and build generator, CMake build and link everything for you.
+Then configure and build generator, CMake do everything for you.
 
-> **Note:** If you faced errors like `stddef.h` or `stdarg.h` not found, check include folders, perhaps you need few symlinks.  
-It's quite old problem and easy to google. Do not ignore them, it would lead to analysis errors e.g. missed template parents of an analyzed class.
+> **Note:** If during **generation** you faced errors like `stddef.h` or `stdarg.h` not found, check include folders, perhaps you need a few symlinks. Don't ignore them, it would lead to analysis errors. 
 
-### Docker
+### Windows
 
-The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment,  
-builds everything and runs tests on startup.
+You can use MSVC to build your project but the generator works with `compile_commands.json` for analysis, so you should have it.  
+Visual Studio CMake generators doesn't create that file, but you can use [Ninja](https://ninja-build.org/) instead.
 
-## Windows
-
-Unfortunately it's not as easy as on POSIX systems, but I did most of work for you.  
-You have to install and add to `PATH` variable:
+In total, to build generator and use Easy Reflection on Windows you have to install and add to `PATH` variable:
 
 - Git
 - Python
@@ -37,32 +33,18 @@ You have to install and add to `PATH` variable:
 - CMake
 - Ninja
 
-Then open **Command Prompt for VS** as administrator and run commands:  
+### Docker
 
-```cmd
-llvm-project\build>
-
-cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_CRT_RELEASE=MT -Thost=x64 ..\llvm
-
-cmake --build . -j 8 -t install
-```
-
-### A piece of bad news for MSVC users
-
-You can use MSVC to build your project and Easy Reflection but code generation tool `er_gen`  
-uses Clang `LibTooling` which works with `compile_commands.json` for analysis, so you should have it.  
-
-Visual Studio CMake generator doesn't create that file unfortunately, but you can use [Ninja](https://ninja-build.org/) instead.
+The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment, builds everything and runs tests on startup.
 
 ## Further steps
 
 Another submodule is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
 
-> **Note:** The project version is obtaining by `python` from `vcpkg.json` manifest file.  
-Python is a dependency of everything these days and most likely you already have it, otherwise please install it manually.
+> **Note:** You need **Python** to obtain project version from `vcpkg.json` manifest file. You probably already have it, please install it otherwise.
 
-After you have installed all dependencies you should made a decision do you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
-Native for the solution parser will be available anyway but it's slower, though a bit more flexible in map parsing.  
+After you have installed all dependencies you should made a decision you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
+Native for the solution parser will be available anyway but it's not so fast, though a bit more flexible in map parsing.  
 If for some reason you wanna reduce number of dependencies you can exclude `simdjson` via CMake option:
 
 ```bash
@@ -71,19 +53,22 @@ If for some reason you wanna reduce number of dependencies you can exclude `simd
 
 ## LLVM & Clang dynamic linking
 
-It is not official supported way and MSVS on Windows doesn't support it at all but nevertheless it exists. 
+It is not supported officialy but nevertheless it exists. 
 
-Replace `add_clang_executable` and `clang_target_link_libraries` to:
+Replace lines in the end of [CMakeLists.txt](../generator/CMakeLists.txt)
 
 ```cmake
-add_executable(${PROJECT_NAME} ${SOURCES})
+find_package(LLVM REQUIRED)
+
+include_directories(${LLVM_INCLUDE_DIR})
+link_directories(${LLVM_LIBRARY_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
 ```
 
 ### Linux
 
-You can install libraries from package manager of your distro such as **Ubuntu** and **Arch Linux** or build manually:
+You can install libraries from package manager of your distro such as **Ubuntu** or **Arch Linux** or build manually:
 
 ```bash
 cd llvm-project/build
@@ -93,7 +78,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI
 
 ### Apple
 
-Apple's macOS doesn't have precompiled Clang libs, but happily you can use brew.
+Apple's macOS doesn't have standard Clang libs by default, but happily you can use brew.
 
 ```bash
 brew install llvm
@@ -104,3 +89,7 @@ Don't forget to specify the path to LLVM.
 ```bash
 -DLLVM_DIR=/opt/homebrew/opt/llvm/lib/cmake/llvm
 ```
+
+### Windows
+
+MSVC doesn't support it at all but there is some dark magic with MinGW and Clang you can dive in. Cannot help with that unfortunately.
