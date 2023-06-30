@@ -83,7 +83,6 @@ The length in bytes of serialized in different ways objects has the following re
 - Add default constructable **SFINAE** guard
 - Add support of move semantic
 - Optimize size of `Expected<>` in parsers
-- Test YAML parser extensively
 - Add parent class fields to serialized fields
 - Add support of user's template classes with different number of template arguments
 - Add custom allocators in supported containers
