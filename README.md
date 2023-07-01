@@ -73,16 +73,3 @@ Other libraries not always convert string represented values to `int`, `float` o
 The length in bytes of serialized in different ways objects has the following relation:
 
 ![Memory](./benchmarks/memory_chart.png)
-
-## TO DO
-
-- Specialize `constexpr TypeId` for analyzed types
-- Construct fields map in compile time
-- Default value in case of `null` in parsers
-- Prettify `reflection::print()`
-- Add default constructable **SFINAE** guard
-- Add support of move semantic
-- Optimize size of `Expected<>` in parsers
-- Add parent class fields to serialized fields
-- Add support of user's template classes with different number of template arguments
-- Add custom allocators in supported containers

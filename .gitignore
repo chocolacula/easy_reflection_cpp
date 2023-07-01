@@ -5,3 +5,7 @@
 output
 cmake-build*
 build
+
+example/generated
+tests/generated
+benchmarks/generated

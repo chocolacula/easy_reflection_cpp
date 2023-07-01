@@ -49,7 +49,9 @@ add_subdirectory(llvm-project/llvm EXCLUDE_FROM_ALL)
 
 include_directories(
   llvm-project/llvm/include
-  llvm-project/clang/include)
+  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/include
+  llvm-project/clang/include
+  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/tools/clang/include)
 
 clang_target_link_libraries(${PROJECT_NAME} PRIVATE
     clangAST

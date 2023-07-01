@@ -1,6 +1,7 @@
 {
-  //"cmake.parallelJobs": 4,
+  // "cmake.parallelJobs": 16,
   "cmake.buildDirectory": "${workspaceRoot}/build/${buildType}",
+  "cmake.copyCompileCommands": "${workspaceRoot}/build/compile_commands.json",
   "cmake.configureSettings": {
     "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake",
     // "LLVM_TARGETS_TO_BUILD": "X86",
@@ -11,8 +12,5 @@
     // "CMAKE_GENERATOR": "Ninja",
     // "VCPKG_FORCE_SYSTEM_BINARIES": "ON",
     // "VCPKG_TARGET_TRIPLET": "x64-windows-static"
-  },
-  "clangd.arguments": [
-    "-compile-commands-dir=build/${buildType}"
-  ]
+  }
 }

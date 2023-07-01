@@ -47,9 +47,7 @@ int main(int argc, const char** argv) {
   auto conf = er::serialization::yaml::from_stream<Config>(input).unwrap();
   input.close();
 
-  auto time_1 = std::chrono::steady_clock::now();
-
-  // correct pathes and find all files recursive inside input folders
+  // correct paths and find all files recursive inside input folders
   file_manager.correct_config(&conf);
 
 #if defined(_WIN32)
@@ -61,6 +59,8 @@ int main(int argc, const char** argv) {
   if (!std::filesystem::exists(fs_output_dir)) {
     std::filesystem::create_directory(fs_output_dir);
   }
+
+  auto time_1 = std::chrono::steady_clock::now();
 
   // parse source files
   ParserCpp parser(conf.compdb_dir,  //

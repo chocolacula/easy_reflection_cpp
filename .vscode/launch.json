@@ -6,7 +6,10 @@
       "type": "lldb",
       "request": "launch",
       "program": "${command:cmake.launchTargetPath}",
-      "args": [],
+      "args": [
+        "-c",
+        "${workspaceFolder}/example/config.yaml"
+      ],
       "cwd": "${workspaceFolder}",
       "env": {
         "PATH": "$PATH:${command:cmake.launchTargetDirectory}"
