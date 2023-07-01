@@ -3,17 +3,17 @@
 [![CMake build and test](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml)
 <a href="https://github.com/fffaraz/awesome-cpp#reflection"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Listed on Awesome C++"></img></a>
 
-It parses C++ sourcecode for special attributes. In the simplest situation you only need mark an object by `ER_REFLECT()` macro. All other work will be done by code generation tool and reflection library.
+It parses C++ source code for special attributes. In the most straightforward situation, you only need to mark an object by `ER_REFLECT()` macro. All other work will be done by the code generation tool and reflection library.
 
-The main idea is use kinda dynamic typing and **Run Time Type Checking** for some type agnostic operations, like copying or taking name of a type.  
-It makes possible determine a variable type and do right job - print, serialize/deserialize or whatever.
+The main idea is to use kinda dynamic typing and **Run Time Type Checking** for some type agnostic operations, like copying or taking the name of a type.  
+It makes it possible to determine a variable type and do the right job - print, serialize/deserialize.
 
 If you are curious about the details of how it works you can find them in [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).  
 
 ## Features
 
 - Linux, MacOS and Windows, x86 and ARM support
-- translate enums to string and vise versa
+- translate enums to string and vice versa
 - support of stl containers like `std::vector`, `std::list`, `std::map`, etc.
 - smart pointers support
 - native serialization directly to an object and without third parties for:
@@ -25,7 +25,7 @@ If you are curious about the details of how it works you can find them in [DEV a
 
 ## Quick start
 
-Take a look at [Installation](readme/installation.md) guide and install the solution.
+Look at [Installation](readme/installation.md) guide and install the solution.
 
 Then define your object and use `ER_REFLECT()` attribute:
 
@@ -60,13 +60,13 @@ For more details see [How To Use](readme/how_to_use.md).
 
 The repository includes `benchmarks` folder, feel free to check it on your own hardware.
 
-JSON on average **Core i5** laptop is faster then [nlohmann json](https://github.com/nlohmann/json).
-Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidjson), deserialization is little faster with `simdjson` parser and more then twice slower without.
+JSON on average **Core i5** laptop is faster than [nlohmann json](https://github.com/nlohmann/json).
+Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidjson), deserialization is a little faster with `simdjson` parser and more than twice slower without.
 
-YAML is blazingly faster then [yaml-cpp](https://github.com/jbeder/yaml-cpp), if I did the benchmark right.
+YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if I did the benchmark right.
 
-> **Note:** Deserialization comparisson is not absolutely fair.  
-Other libraries not always convert string represented values to `int`, `float` or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made object with all values within. And it's still fast despite it takes some time.
+> **Note:** Deserialization comparison is not absolutely fair.  
+Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within. And it's still fast despite it takes some time.
 
 ![Core i5 benchmarks](./benchmarks/performance_chart.png)
 
@@ -82,8 +82,8 @@ The length in bytes of serialized in different ways objects has the following re
 - Prettify `reflection::print()`
 - Add default constructable **SFINAE** guard
 - Add support of move semantic
-- Optimize size of `Expected<>` in parsers
+- Optimize the size of `Expected<>` in parsers
 - Test YAML parser extensively
 - Add parent class fields to serialized fields
-- Add support of user's template classes with different number of template arguments
+- Add support for user's template classes with different numbers of template arguments
 - Add custom allocators in supported containers
