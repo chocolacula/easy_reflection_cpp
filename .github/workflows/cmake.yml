@@ -2,9 +2,9 @@ name: CTest
 
 on:
   push:
-    branches: [main]
+    branches: [llvm-static]
   pull_request:
-    branches: [main]
+    branches: [llvm-static]
   workflow_dispatch: {}
 
 env:
@@ -14,7 +14,7 @@ env:
 jobs:
   build:
     # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # well on Windows or Mac. You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-22.04
@@ -24,10 +24,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y llvm-15-dev libclang-15-dev libclang-cpp15-dev
-          
+
       - name: Checkout repository
         uses: actions/checkout@v2
-        # the second one submodule is vcpkg which is already installed at the virtual environment
+        # other submodules are:
+        # - vcpkg which is already installed at the virtual environment
+        # - llvm-project which is too heavy, use binary release for generator instead
       - run: git submodule update --init library/RE-flex
 
       - name: Configure CMake
@@ -39,8 +41,13 @@ jobs:
           -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15/lib/cmake/llvm
           -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
 
+      - name: Install generator
+        run: |
+          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/untagged-f7e6e69735f6766f9958/er_gen-ubuntu-x64.zip
+          unzip gen.zip -d ${{github.workspace}}/output
+
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build -j $(grep -c 'processor' /proc/cpuinfo) -t tests
 
       - name: Test
         working-directory: ${{github.workspace}}/build

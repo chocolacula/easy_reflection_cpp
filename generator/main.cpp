@@ -10,8 +10,8 @@
 #include "er/serialization/yaml.h"
 #include "parser/parser_cpp.h"
 #include "self_generated/reflection.h"
-#include "to_filename.h"
 #include "tools/files.h"
+#include "tools/to_filename.h"
 
 // tclap
 #include "tclap/CmdLine.h"
@@ -63,11 +63,10 @@ int main(int argc, const char** argv) {
   auto time_1 = std::chrono::steady_clock::now();
 
   // parse source files
-  ParserCpp parser(conf.compdb_dir,  //
-                   conf.input,       //
-                   conf.output_dir);
+  ParserCpp parser(conf.compdb_dir, conf.output_dir);
 
-  auto parsed = parser.parse();
+  auto parsed = parser.parse(conf.input);
+
   auto time_2 = std::chrono::steady_clock::now();
 
   // load templates

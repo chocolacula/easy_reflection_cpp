@@ -24,6 +24,9 @@ endif()
 cmake_policy(SET CMP0048 NEW)
 project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
 
+include(cmake/generate_reflection_code.cmake)
+include(cmake/print_variables.cmake)
+
 include(Dart)
 enable_testing()
 

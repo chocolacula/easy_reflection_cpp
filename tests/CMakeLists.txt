@@ -7,6 +7,7 @@ add_definitions(-DREPEATS=10000)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
@@ -22,15 +23,12 @@ set(SOURCES
     various.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
-add_custom_command(
-    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-    OUTPUT
-        ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp
-    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/er_gen -p -c ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+generate_reflection_code(
+    CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+    OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated
     DEPENDS
         data/tresholds.h
-        data/various.h
-    COMMENT "Generating reflection code")
+        data/various.h)
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 

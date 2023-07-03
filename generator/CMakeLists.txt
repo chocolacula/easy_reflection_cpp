@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(er_gen VERSION ${CMAKE_PROJECT_VERSION})
 
-add_definitions(-DVERSION="${PROJECT_VERSION}")
-
 set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
@@ -13,6 +11,7 @@ else()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
@@ -23,10 +22,13 @@ endif()
 
 set(SOURCES
     main.cpp
+    parser/parser_cpp.cpp
     tools/files.cpp
     self_generated/reflection.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${PROJECT_VERSION}")
 
 find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 include_directories(${TCLAP_INCLUDE_DIRS})
@@ -43,6 +45,7 @@ endif()
 
 ### LLVM and Clang ###
 set(LLVM_ENABLE_RTTI ON)
+set(LLVM_INCLUDE_BENCHMARKS OFF)
 set(LLVM_ENABLE_PROJECTS "clang")
 
 add_subdirectory(llvm-project/llvm EXCLUDE_FROM_ALL)

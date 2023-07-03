@@ -5,37 +5,50 @@ The project consits of two main parts:
 - [Reflection library](../library)
 - [Code generator](../generator)
 
-The generator uses **Clang** libraries to analyse C++ source code. By default the libraries are linked  
-statically to make distribution easier and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).  
+The Easy Reflection C++ Generator utilizes **Clang** libraries to analyze C++ source code. By default, these libraries are statically linked to facilitate distribution and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).
 
-First of all you should decide this option is suitable for you or you have to build the generator manually.  
-If you chose manual option, be patient and update `llvm` along with other submodules first:
+Before getting started, you should decide whether to use the precompiled binary release or build the generator manually. If you choose the manual option, follow these steps:
+
+Make sure to update `llvm` and other submodules by running the following command:
 
 ```bash
 git submodule update --init --recursive
 ```
-Then configure and build generator, CMake do everything for you.
 
-> **Note:** If during **generation** you faced errors like `stddef.h` or `stdarg.h` not found, check include folders, perhaps you need a few symlinks. Don't ignore them, it would lead to analysis errors. 
+Configure and build the generator. CMake will handle everything for you.
+
+Once you have the `er_gen` binary, you can start analyzing your project and generating code. To do this, ensure that your project produces a `compile_commands.json` file. If you're using CMake, you can easily enable this by adding the following line to your CMakeLists.txt file:
+
+```cmake
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+```
+
+### Troubleshooting
+If you encounter errors like `stddef.h` or `stdarg.h` not being found during the generation process, add the following line to your `CMakeLists.txt` file:
+
+```cmake
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+```
 
 ### Windows
 
-You can use MSVC to build your project but the generator works with `compile_commands.json` for analysis, so you should have it.  
-Visual Studio CMake generators doesn't create that file, but you can use [Ninja](https://ninja-build.org/) instead.
+Visual Studio CMake generators do not create `compile_commands.json`. However, you can use [Ninja](https://ninja-build.org/) instead.
 
-In total, to build generator and use Easy Reflection on Windows you have to install and add to `PATH` variable:
+To build `er_gen` and use reflection on Windows, make sure to install the following dependencies and add them to your `PATH`:
 
 - Git
 - Python
-- MSVC compiler
-  - C++ ATL
-  - Windows SDK
 - CMake
 - Ninja
 
+If you choose the MSVC compiler, additionally install:
+
+- C++ ATL
+- Windows SDK
+
 ### Docker
 
-The repository also provides a `Dockerfile` which initializes `Ubuntu 22.04` environment, builds everything and runs tests on startup.
+This repository includes a `Dockerfile` that sets up an `Ubuntu 22.04` environment, builds the generator, and runs tests on startup.
 
 ## Further steps
 
@@ -43,9 +56,7 @@ Another submodule is [vcpkg](https://github.com/microsoft/vcpkg) which manages m
 
 > **Note:** You need **Python** to obtain project version from `vcpkg.json` manifest file. You probably already have it, please install it otherwise.
 
-After you have installed all dependencies you should made a decision you wanna use [simdjson](https://github.com/simdjson/simdjson) for parsing or don't.  
-Native for the solution parser will be available anyway but it's not so fast, though a bit more flexible in map parsing.  
-If for some reason you wanna reduce number of dependencies you can exclude `simdjson` via CMake option:
+After you have installed all the dependencies, you need to decide whether you want to use [simdjson](https://github.com/simdjson/simdjson) for parsing or not. The solution includes a native parser that is available regardless, but it's not as fast. However, the native parser is more flexible when it comes to map parsing. If, for some reason, you want to reduce the number of dependencies, you can exclude `simdjson` by using the following CMake option:
 
 ```bash
 -DUSE_SIMD_JSON=OFF
@@ -68,7 +79,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LLVM clang-cpp)
 
 ### Linux
 
-You can install libraries from package manager of your distro such as **Ubuntu** or **Arch Linux** or build manually:
+You can install libraries from package manager of your distro such as **Ubuntu** or **Arch Linux** or build them from source:
 
 ```bash
 cd llvm-project/build
@@ -78,7 +89,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -DLLVM_ENABLE_RTTI
 
 ### Apple
 
-Apple's macOS doesn't have standard Clang libs by default, but happily you can use brew.
+Apple's macOS doesn't have standard Clang libs by default, but happily you can use `brew`.
 
 ```bash
 brew install llvm
@@ -92,4 +103,4 @@ Don't forget to specify the path to LLVM.
 
 ### Windows
 
-MSVC doesn't support it at all but there is some dark magic with MinGW and Clang you can dive in. Cannot help with that unfortunately.
+Regrettably, MSVC does not support for this feature. However, there is some dark magic with MinGW and Clang you can delve into. Unfortunately, I cannot provide assistance with that particular matter.
