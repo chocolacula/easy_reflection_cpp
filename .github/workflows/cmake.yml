@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Install Clang dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y llvm-15-dev libclang-15-dev libclang-cpp15-dev
+      # - name: Install Clang dependencies
+      #   run: |
+      #     sudo apt-get update
+      #    sudo apt-get install -y llvm-15-dev libclang-15-dev libclang-cpp15-dev
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -37,19 +37,22 @@ jobs:
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: >
           cmake -B ${{github.workspace}}/build
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15/lib/cmake/llvm
           -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
 
+      - name: Get version
+        run: echo "VERSION=${python ./version.py get -f vcpkg.json}" >> $GITHUB_ENV && echo "version is ${{ env.VERSION }}"
+
       - name: Install generator
         run: |
-          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/2.8.0/er_gen-ubuntu22-x64.zip
-          unzip gen.zip -d ${{github.workspace}}/output
-          cmod +x ${{github.workspace}}/output/er_gen
+          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/${{ env.VERSION }}/er_gen-ubuntu22-x64.zip
+          unzip gen.zip -d output
+          cmod +x output/er_gen
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build -j $(grep -c 'processor' /proc/cpuinfo) -t tests
+        run: cmake --build ./build -j $(grep -c 'processor' /proc/cpuinfo) -t tests
 
       - name: Test
-        working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+        working-directory: ${{ github.workspace }}/build
+        run: ctest --rerun-failed --output-on-failure
