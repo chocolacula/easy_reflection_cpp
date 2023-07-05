@@ -31,7 +31,11 @@ include(Dart)
 enable_testing()
 
 add_subdirectory(library)
-add_subdirectory(generator)
+
+if(NOT DISABLE_GENERATOR)
+    add_subdirectory(generator)
+endif()
+
 add_subdirectory(example)
 add_subdirectory(tests)
 add_subdirectory(benchmarks)
