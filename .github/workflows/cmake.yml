@@ -41,7 +41,7 @@ jobs:
 
       - name: Install generator
         run: |
-          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/2.8.0/er_gen-ubuntu22-x64.zip
+          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/2.9.0/er_gen-ubuntu22-x64.zip
           unzip gen.zip -d output
           chmod +x output/er_gen
 
