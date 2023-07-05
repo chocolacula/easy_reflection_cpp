@@ -36,17 +36,17 @@ jobs:
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: >
-          cmake -B ${{github.workspace}}/build
+          cmake -B ${{ github.workspace }}/build
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
           -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15/lib/cmake/llvm
           -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
 
       - name: Get version
-        run: echo "VERSION=${python ./version.py get -f vcpkg.json}" >> $GITHUB_ENV && echo "version is ${{ env.VERSION }}"
+        run: echo "VERSION=${python ./version.py get -f vcpkg.json}" >> $GITHUB_ENV && echo "Version is ${{ env.VERSION }}"
 
       - name: Install generator
         run: |
-          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/${{ env.VERSION }}/er_gen-ubuntu22-x64.zip
+          wget -O gen.zip https://github.com/chocolacula/easy_reflection_cpp/releases/download/2.8.0/er_gen-ubuntu22-x64.zip
           unzip gen.zip -d output
           cmod +x output/er_gen
 
