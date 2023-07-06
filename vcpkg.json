@@ -1,13 +1,36 @@
 {
   "name": "reflection-cpp",
   "version": "2.9.0",
-  "dependencies": [
-    "simdjson",
-    "gtest",
-    "inja",
-    "tclap",
-    "benchmark",
-    "rapidjson",
-    "yaml-cpp"
-  ]
+  "default-features": [
+    "library"
+  ],
+  "features": {
+    "library": {
+      "description": "Reflection library",
+      "dependencies": [
+        "simdjson"
+      ]
+    },
+    "generator": {
+      "description": "Code generation tool",
+      "dependencies": [
+        "inja",
+        "tclap"
+      ]
+    },
+    "tests": {
+      "description": "Generate reflection code and test it",
+      "dependencies": [
+        "gtest"
+      ]
+    },
+    "benchmarks": {
+      "description": "Set of benchmarks",
+      "dependencies": [
+        "benchmark",
+        "rapidjson",
+        "yaml-cpp"
+      ]
+    }
+  }
 }

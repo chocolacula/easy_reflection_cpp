@@ -23,8 +23,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         # other submodules are:
-        # - vcpkg which is already installed at the virtual environment
-        # - llvm-project which is too heavy, use binary release for generator instead
+        #   vcpkg                  - already installed at the virtual environment
+        #   generator/llvm-project - too heavy, download and use generator binary
       - run: git submodule update --init library/RE-flex
 
       # - name: Get version
@@ -36,7 +36,6 @@ jobs:
         run: >
           cmake -B ${{ github.workspace }}/build
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          -DDISABLE_GENERATOR=ON
           -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake
 
       - name: Install generator
