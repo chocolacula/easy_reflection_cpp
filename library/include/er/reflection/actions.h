@@ -12,13 +12,15 @@ struct Actions {
                     size_t (*size)(),                  //
                     void* (*call_new)(void*, size_t),  //
                     void (*call_delete)(void*, bool),  //
-                    void (*copy)(void*, const void*))
-      : reflect(reflect),     //
-        type_name(get_name),  //
-        type_size(size),      //
-        call_new(call_new),   //
-        call_delete(call_delete),
-        copy(copy) {
+                    void (*copy)(void*, const void*),  //
+                    void (*move)(void*, void*))
+      : reflect(reflect),          //
+        type_name(get_name),       //
+        type_size(size),           //
+        call_new(call_new),        //
+        call_delete(call_delete),  //
+        copy(copy),                //
+        move(move) {
   }
 
   constexpr Actions(const Actions& other) = default;
@@ -32,6 +34,7 @@ struct Actions {
   void* (*call_new)(void*, size_t);
   void (*call_delete)(void*, bool);
   void (*copy)(void*, const void*);
+  void (*move)(void*, void*);
 };
 
 }  // namespace er

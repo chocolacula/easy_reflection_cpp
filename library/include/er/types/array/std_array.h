@@ -23,7 +23,8 @@ TypeId TypeId::get(std::array<T, size_v>* /*unused*/) {
                                                  &CommonActions<std::array<T, size_v>>::type_size,    //
                                                  &CommonActions<std::array<T, size_v>>::call_new,     //
                                                  &CommonActions<std::array<T, size_v>>::call_delete,  //
-                                                 &CommonActions<std::array<T, size_v>>::copy)));
+                                                 &CommonActions<std::array<T, size_v>>::copy,         //
+                                                 &CommonActions<std::array<T, size_v>>::move)));
   return id;
 }
 

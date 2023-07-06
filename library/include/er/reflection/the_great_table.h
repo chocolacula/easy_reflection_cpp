@@ -28,7 +28,8 @@ struct TheGreatTable {
                                                 &UnknownActions::type_size,    //
                                                 &UnknownActions::call_new,     //
                                                 &UnknownActions::call_delete,  //
-                                                &UnknownActions::copy)};
+                                                &UnknownActions::copy,         //
+                                                &UnknownActions::move)};
 
     return data;
   }

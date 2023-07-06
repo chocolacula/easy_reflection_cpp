@@ -32,7 +32,8 @@ TypeId TypeId::get({{name}}* /*unused*/) {
                                                  &CommonActions<{{name}}>::type_size,    //
                                                  &CommonActions<{{name}}>::call_new,     //
                                                  &CommonActions<{{name}}>::call_delete,  //
-                                                 &CommonActions<{{name}}>::copy)));
+                                                 &CommonActions<{{name}}>::copy,         //
+                                                 &CommonActions<{{name}}>::move)));
   return id;
 }
 

@@ -26,7 +26,8 @@ TypeId::get(T* ptr) {
                                                  &CommonActions<T>::type_size,   //
                                                  &CommonActions<T>::call_new,    //
                                                  &FloatActions<T>::call_delete,  //
-                                                 &CommonActions<T>::copy)));
+                                                 &CommonActions<T>::copy,        //
+                                                 &CommonActions<T>::move)));
   return id;
 }
 

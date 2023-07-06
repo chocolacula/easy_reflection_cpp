@@ -45,7 +45,8 @@ TypeId TypeId::get(std::unique_ptr<T>* /*unused*/) {
                                                  &CommonActions<std::unique_ptr<T>>::type_size,  //
                                                  &TypeActions<std::unique_ptr<T>>::call_new,     //
                                                  &TypeActions<std::unique_ptr<T>>::call_delete,  //
-                                                 &TypeActions<std::unique_ptr<T>>::copy)));
+                                                 &TypeActions<std::unique_ptr<T>>::copy,         //
+                                                 &CommonActions<std::unique_ptr<T>>::move)));
   return id;
 }
 

@@ -42,7 +42,8 @@ TypeId TypeId::get(std::shared_ptr<T>* /*unused*/) {
                                                  &CommonActions<std::shared_ptr<T>>::type_size,  //
                                                  &TypeActions<std::shared_ptr<T>>::call_new,     //
                                                  &TypeActions<std::shared_ptr<T>>::call_delete,  //
-                                                 &CommonActions<std::shared_ptr<T>>::copy)));
+                                                 &CommonActions<std::shared_ptr<T>>::copy,       //
+                                                 &CommonActions<std::shared_ptr<T>>::move)));
   return id;
 }
 

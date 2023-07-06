@@ -24,7 +24,8 @@ inline TypeId TypeId::get(bool* /*unused*/) {
                                                  &CommonActions<bool>::type_size,  //
                                                  &CommonActions<bool>::call_new,   //
                                                  &BoolActions::call_delete,        //
-                                                 &CommonActions<bool>::copy)));
+                                                 &CommonActions<bool>::copy,       //
+                                                 &CommonActions<bool>::move)));
   return id;
 }
 

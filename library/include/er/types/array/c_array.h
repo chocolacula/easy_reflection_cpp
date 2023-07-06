@@ -36,18 +36,28 @@ struct TypeActions<T[size_v]> {
   }
 
   static void copy(void* to, const void* from) {
+    // TODO fails for complex types
+    std::memcpy(to, from, size_v);
+    // for (auto i = 0; i < size_v; i++) {
+    //   &to[i], &from[i];
+    // }
+  }
+
+  static void move(void* to, void* from) {
+    // TODO fails for complex types
     std::memcpy(to, from, size_v);
   }
 };
 
 template <typename T, size_t size_v>
 TypeId TypeId::get(T (*)[size_v]) {
-  static TypeId id(TheGreatTable::record(Actions(&TypeActions<T[size_v]>::reflect,                  //
-                                                 &CommonActions<std::array<T, size_v>>::type_name,  //
-                                                 &TypeActions<T[size_v]>::type_size,                //
-                                                 &TypeActions<T[size_v]>::call_new,                 //
-                                                 &TypeActions<T[size_v]>::call_delete,              //
-                                                 &TypeActions<T[size_v]>::copy)));
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<T[size_v]>::reflect,      //
+                                                 &CommonActions<T[size_v]>::type_name,  //
+                                                 &TypeActions<T[size_v]>::type_size,    //
+                                                 &TypeActions<T[size_v]>::call_new,     //
+                                                 &TypeActions<T[size_v]>::call_delete,  //
+                                                 &TypeActions<T[size_v]>::copy,         //
+                                                 &TypeActions<T[size_v]>::move)));
   return id;
 }
 

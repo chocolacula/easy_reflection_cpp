@@ -32,7 +32,8 @@ TypeId TypeId::get(Config* /*unused*/) {
                                                  &CommonActions<Config>::type_size,    //
                                                  &CommonActions<Config>::call_new,     //
                                                  &CommonActions<Config>::call_delete,  //
-                                                 &CommonActions<Config>::copy)));
+                                                 &CommonActions<Config>::copy,         //
+                                                 &CommonActions<Config>::move)));
   return id;
 }
 

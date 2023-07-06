@@ -38,6 +38,10 @@ struct CommonActions {
   static void copy(void* to, const void* from) {
     *static_cast<T*>(to) = *static_cast<const T*>(from);
   }
+
+  static void move(void* to, void* from) {
+    *static_cast<T*>(to) = std::move(*static_cast<T*>(from));
+  }
 };
 
 }  // namespace er
