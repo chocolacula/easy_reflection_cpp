@@ -36,16 +36,15 @@ struct TypeActions<T[size_v]> {
   }
 
   static void copy(void* to, const void* from) {
-    // TODO fails for complex types
-    std::memcpy(to, from, size_v);
-    // for (auto i = 0; i < size_v; i++) {
-    //   &to[i], &from[i];
-    // }
+    for (auto i = 0; i < size_v; i++) {
+      static_cast<T*>(to)[i] = static_cast<T*>(from)[i];
+    }
   }
 
   static void move(void* to, void* from) {
-    // TODO fails for complex types
-    std::memcpy(to, from, size_v);
+    for (auto i = 0; i < size_v; i++) {
+      static_cast<T*>(to)[i] = std::move(static_cast<T*>(from)[i]);
+    }
   }
 };
 
