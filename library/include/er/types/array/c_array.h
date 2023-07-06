@@ -36,14 +36,23 @@ struct TypeActions<T[size_v]> {
   }
 
   static void copy(void* to, const void* from) {
-    for (auto i = 0; i < size_v; i++) {
-      static_cast<T*>(to)[i] = static_cast<T*>(from)[i];
+    if constexpr (std::is_fundamental_v<T>) {
+      std::memcpy(to, from, size_v);
+    } else {
+      for (auto i = 0; i < size_v; i++) {
+        static_cast<T*>(to)[i] = static_cast<T*>(from)[i];
+      }
     }
   }
 
   static void move(void* to, void* from) {
-    for (auto i = 0; i < size_v; i++) {
-      static_cast<T*>(to)[i] = std::move(static_cast<T*>(from)[i]);
+    if constexpr (std::is_fundamental_v<T>) {
+      // copy fundamental types anyway
+      std::memcpy(to, from, size_v);
+    } else {
+      for (auto i = 0; i < size_v; i++) {
+        static_cast<T*>(to)[i] = std::move(static_cast<T*>(from)[i]);
+      }
     }
   }
 };
