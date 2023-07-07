@@ -25,4 +25,11 @@ struct Bicycle {
   std::vector<Colors> colors;
 
   constexpr static inline bool kIsCool = true;
+
+  std::string_view tune(Colors color, float wheel_size) {
+    colors.push_back(color);
+    wheel_size_inch = wheel_size;
+
+    return "I am in fresh paint with new wheels";
+  }
 };

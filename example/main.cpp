@@ -1,8 +1,10 @@
 #include <cfloat>
 #include <iostream>
+#include <string_view>
 #include <utility>
 
 #include "data/bicycle.h"
+#include "data/colors.h"
 #include "er/reflection/reflection.h"
 #include "er/serialization/json.h"
 #include "er/serialization/yaml.h"
@@ -67,7 +69,11 @@ int main() {
 
   auto bicycle_info = reflection::reflect(&gt_avalanche);
 
-  // setting a value is possible with runtime but fast type checking and casting
+  auto ex = bicycle_info.get<Object>().get_method("tune").unwrap().invoke<std::string_view>(Colors::kGreen, 27.6F);
+
+  println(ex.unwrap());
+
+  // setting a value is possible with type checking and casting
   // Note: field 'frame_weight' reflected with alias 'weight'
   auto* field_p = bicycle_info.get<Object>().get_field("weight").unwrap().var().rt_cast<float>().unwrap();
   *field_p = 14.9F;

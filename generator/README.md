@@ -14,24 +14,38 @@ The format of object entity is
   "origin" : string, // file path to origin file for analysis
   "bases" : [
     {
-      "access" : int,
+      "access" : string,
       "name" : string,
     }
   ],
   "fields_static" : [
     {
-      "access" : int,
+      "access" : string,
       "name" : string,
-      "alias" : string // equal "name" if ER_ALIAS attribute didn't parse
+      "alias" : string // equal "name" if ER_ALIAS attribute wasn't parsed
     }
   ],
   "fields" : [
     {
-      "access" : int,
+      "access" : string,
       "name" : string,
       "alias" : string
     }
-  ]
+  ],
+  "methods_static" : [
+    {
+      "access" : string,
+      "name" : string,
+      "alias" : string
+    }  
+  ],
+  "methods" : [
+    {
+      "access" : string,
+      "name" : string,
+      "alias" : string
+    }  
+  ],
 }
 ```
 

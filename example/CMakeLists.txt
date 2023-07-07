@@ -17,12 +17,12 @@ set(SOURCES
     main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/reflection.cpp)
 
-generate_reflection_code(
-    CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
-    OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated
-    DEPENDS
-        data/bicycle.h
-        data/colors.h)
+# generate_reflection_code(
+#     CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/config.yaml
+#     OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated
+#     DEPENDS
+#         data/bicycle.h
+#         data/colors.h)
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 

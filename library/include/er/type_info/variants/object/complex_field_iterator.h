@@ -4,7 +4,6 @@
 #include <map>
 #include <string_view>
 
-#include "field_attributes.h"
 #include "field_info.h"
 
 namespace er {
@@ -42,9 +41,9 @@ class ComplexFieldIterator {
   };
 
   bool is_valid() {
-    return !(!right_access() ||           //
-             !right_static_readonly() ||  //
-             (_base == nullptr && !_it->second.is_static()));
+    return right_access() &&           //
+           right_static_readonly() &&  //
+           (_base != nullptr || _it->second.is_static());
   }
 
   void next_valid() {
@@ -60,10 +59,13 @@ class ComplexFieldIterator {
   FieldAttributes _atr;
 
   inline bool right_access() {
+
+    // TODO perhaps we can use different enum for access modifiers
+
     return (_it->second.attributes() & _atr & FieldAttributes::kAnyAccess) != FieldAttributes::kNone;
   }
 
-  // build from Karnaugh Map
+  // built from Karnaugh Map
   inline bool right_static_readonly() {
     bool nx0 = (_it->second.attributes() & FieldAttributes::kReadOnly) == FieldAttributes::kNone;
     bool nx1 = (_it->second.attributes() & FieldAttributes::kStatic) == FieldAttributes::kNone;

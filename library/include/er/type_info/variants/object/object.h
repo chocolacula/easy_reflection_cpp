@@ -10,13 +10,19 @@
 #include "er/tools/format.h"
 #include "er/variable/var.h"
 #include "fields.h"
+#include "methods.h"
 
 namespace er {
 
 /// container of all field names matched to Var structs
 /// just a registry of types and value pointers
 struct Object {
-  Object(Var var, const std::map<std::string_view, FieldDesc>* fields) : _fields(fields), _var(var) {
+  Object(Var var,                                              //
+         const std::map<std::string_view, FieldDesc>* fields,  //
+         const std::map<std::string_view, MethodDesc>* methods)
+      : _var(var),        //
+        _fields(fields),  //
+        _methods(methods) {
   }
 
   Expected<None> assign(Var var) {
@@ -47,13 +53,31 @@ struct Object {
     return Fields(_var.raw(), _fields, access);
   }
 
+  Expected<MethodInfo> get_method(std::string_view name) {
+    auto it = _methods->find(name);
+
+    if (it != _methods->end()) {
+
+      if (_var.is_const()) {
+        if (it->second.is_const()) {
+          return MethodInfo(_var.raw(), &it->second);
+        }
+        return Error(format("Cannot call non const method '{}' on const object", name));
+      }
+
+      return MethodInfo(_var.raw_mut(), &it->second);
+    }
+    return Error(format("There is no method with name: {}", name));
+  }
+
   Var var() {
     return _var;
   }
 
  private:
-  const std::map<std::string_view, FieldDesc>* _fields;
   Var _var;
+  const std::map<std::string_view, FieldDesc>* _fields;
+  const std::map<std::string_view, MethodDesc>* _methods;
 };
 
 }  // namespace er
