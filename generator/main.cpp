@@ -67,10 +67,6 @@ int main(int argc, const char** argv) {
 
   auto parsed = parser.parse(conf.input);
 
-  for (auto&& [k, v] : parsed) {
-    std::cout << k << ": " << v.dump() << std::endl;
-  }
-
   auto time_2 = std::chrono::steady_clock::now();
 
   // load templates

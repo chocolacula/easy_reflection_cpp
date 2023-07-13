@@ -13,8 +13,8 @@ class ComplexFieldIterator {
   using item = std::pair<std::string_view, FieldInfo>;
 
  public:
-  ComplexFieldIterator(const void* base, const_iterator it, const_iterator end, FieldAttributes atr)  //
-      : _base(base), _it(it), _end(end), _atr(atr) {
+  ComplexFieldIterator(const void* base, const_iterator it, const_iterator end, Access acc, bool include_readonly)  //
+      : _base(base), _it(it), _end(end), _acc(acc), _include_readonly(include_readonly) {
   }
 
   ComplexFieldIterator& operator++() noexcept {
@@ -55,22 +55,20 @@ class ComplexFieldIterator {
  private:
   const void* _base;
   const_iterator _it;
-  const_iterator _end;
-  FieldAttributes _atr;
+  const const_iterator _end;
+  const Access _acc;
+  const bool _include_readonly;
 
   inline bool right_access() {
-
-    // TODO perhaps we can use different enum for access modifiers
-
-    return (_it->second.attributes() & _atr & FieldAttributes::kAnyAccess) != FieldAttributes::kNone;
+    return (_it->second.access() & _acc & (Access::kPublic | Access::kProtected | Access::kPrivate)) != Access::kNone;
   }
 
   // built from Karnaugh Map
   inline bool right_static_readonly() {
-    bool nx0 = (_it->second.attributes() & FieldAttributes::kReadOnly) == FieldAttributes::kNone;
-    bool nx1 = (_it->second.attributes() & FieldAttributes::kStatic) == FieldAttributes::kNone;
-    bool x2 = (_atr & FieldAttributes::kReadOnly) != FieldAttributes::kNone;
-    bool x3 = (_atr & FieldAttributes::kStatic) != FieldAttributes::kNone;
+    bool nx0 = !_it->second.is_readonly();
+    bool nx1 = (_it->second.access() & Access::kStatic) == Access::kNone;
+    bool x2 = _include_readonly;
+    bool x3 = (_acc & Access::kStatic) != Access::kNone;
 
     return (nx0 || x2) && (nx1 || x3);
   }

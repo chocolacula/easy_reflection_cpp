@@ -6,7 +6,6 @@
 
 #include "er/error/error.h"
 #include "er/type_id.h"
-#include "method_attributes.h"
 #include "method_desc.h"
 
 namespace er {

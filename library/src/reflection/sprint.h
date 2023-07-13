@@ -5,7 +5,6 @@
 #include "er/reflection/reflection.h"
 #include "er/tools/stringify.h"
 #include "er/type_info/type_info.h"
-#include "er/type_info/variants/object/field_attributes.h"
 
 namespace er {
 
@@ -18,7 +17,7 @@ void sprint(const TypeInfo& info, std::string* result, int indention) {
         if (!result->empty()) {
           *result += '\n';
         }
-        for (auto&& record : o.get_fields(FieldAttributes::kAll)) {
+        for (auto&& record : o.get_fields(Access::kAll, true)) {
           // indent a row
           *result += std::string(indention, ' ');
           // add the field name and trailing whitespace

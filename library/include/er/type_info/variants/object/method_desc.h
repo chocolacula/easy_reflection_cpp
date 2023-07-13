@@ -2,17 +2,17 @@
 
 #include <type_traits>
 
+#include "access.h"
 #include "er/tools/traits.h"
 #include "er/type_id.h"
 #include "er/variable/var.h"
-#include "method_attributes.h"
 
 namespace er {
 
 struct MethodDesc {
- public:
-  MethodDesc(Expected<None> (*fn)(void* res, void* obj, const std::vector<Var>& args), MethodAttributes acc)
-      : _fn(fn), _atr(acc) {
+  MethodDesc(Expected<None> (*fn)(void* res, void* obj, const std::vector<Var>& args),  //
+             Access acc)
+      : _fn(fn), _acc(acc) {
   }
 
   Expected<None> invoke(void* res, void* obj, const std::vector<Var>& args) const {
@@ -20,32 +20,32 @@ struct MethodDesc {
   }
 
   bool is_const() const {
-    return (_atr & MethodAttributes::kStatic) != MethodAttributes::kNone;
+    return (_acc & Access::kConst) != Access::kNone;
   }
 
   bool is_static() const {
-    return (_atr & MethodAttributes::kStatic) != MethodAttributes::kNone;
+    return (_acc & Access::kStatic) != Access::kNone;
   }
 
   bool is_public() const {
-    return (_atr & MethodAttributes::kPublic) != MethodAttributes::kNone;
+    return (_acc & Access::kPublic) != Access::kNone;
   }
 
   bool is_protected() const {
-    return (_atr & MethodAttributes::kProtected) != MethodAttributes::kNone;
+    return (_acc & Access::kProtected) != Access::kNone;
   }
 
   bool is_private() const {
-    return (_atr & MethodAttributes::kPrivate) != MethodAttributes::kNone;
+    return (_acc & Access::kPrivate) != Access::kNone;
   }
 
-  MethodAttributes attributes() const {
-    return _atr;
+  Access access() const {
+    return _acc;
   }
 
  private:
-  Expected<None> (*_fn)(void* res, void* obj, const std::vector<Var>& args);
-  MethodAttributes _atr;
+  Expected<None> (*const _fn)(void* res, void* obj, const std::vector<Var>& args);
+  const Access _acc;
 };
 
 }  // namespace er

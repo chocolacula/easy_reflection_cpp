@@ -7,8 +7,8 @@
 namespace er {
 
 struct Methods {
-  Methods(void* base, const std::map<std::string_view, MethodDesc>* map, MethodAttributes access)  //
-      : _base(base), _map(map), _access(access) {
+  Methods(void* base, const std::map<std::string_view, MethodDesc>* map, Access acc)  //
+      : _base(base), _map(map), _acc(acc) {
   }
 
   size_t size() const {
@@ -16,7 +16,7 @@ struct Methods {
   }
 
   ComplexMethodIterator begin() {
-    ComplexMethodIterator it{_base, _map->begin(), _map->end(), _access};
+    ComplexMethodIterator it{_base, _map->begin(), _map->end(), _acc};
     if (!it.is_valid()) {
       it.next_valid();
     }
@@ -29,9 +29,9 @@ struct Methods {
   }
 
  private:
-  void* _base;
+  const void* _base;
   const std::map<std::string_view, MethodDesc>* _map;
-  MethodAttributes _access;
+  const Access _acc;
 };
 
 }  // namespace er

@@ -46,11 +46,11 @@ struct Object {
     if (it != _fields->end()) {
       return FieldInfo(_var.raw(), &it->second);
     }
-    return Error(format("There is no field with name: {}", name));
+    return Error(format("There is no field with name: '{}'", name));
   }
 
-  Fields get_fields(FieldAttributes access = FieldAttributes::kPublic) const {
-    return Fields(_var.raw(), _fields, access);
+  Fields get_fields(Access access = Access::kPublic, bool include_readonly = false) const {
+    return Fields(_var.raw(), _fields, access, include_readonly);
   }
 
   Expected<MethodInfo> get_method(std::string_view name) {
@@ -67,7 +67,7 @@ struct Object {
 
       return MethodInfo(_var.raw_mut(), &it->second);
     }
-    return Error(format("There is no method with name: {}", name));
+    return Error(format("There is no method with name: '{}'", name));
   }
 
   Var var() {

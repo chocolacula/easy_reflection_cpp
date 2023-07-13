@@ -7,8 +7,8 @@
 namespace er {
 
 struct Fields {
-  Fields(const void* base, const std::map<std::string_view, FieldDesc>* map, FieldAttributes access)  //
-      : _base(base), _map(map), _access(access) {
+  Fields(const void* base, const std::map<std::string_view, FieldDesc>* map, Access access, bool include_readonly)  //
+      : _base(base), _map(map), _access(access), _include_readonly(include_readonly) {
   }
 
   size_t size() const {
@@ -16,7 +16,7 @@ struct Fields {
   }
 
   ComplexFieldIterator begin() {
-    ComplexFieldIterator it{_base, _map->begin(), _map->end(), _access};
+    ComplexFieldIterator it{_base, _map->begin(), _map->end(), _access, _include_readonly};
     if (!it.is_valid()) {
       it.next_valid();
     }
@@ -31,7 +31,8 @@ struct Fields {
  private:
   const void* _base;
   const std::map<std::string_view, FieldDesc>* _map;
-  FieldAttributes _access;
+  const Access _access;
+  const bool _include_readonly;
 };
 
 }  // namespace er

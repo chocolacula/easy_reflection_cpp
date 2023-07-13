@@ -1,8 +1,10 @@
 #pragma once
 
+#include <ios>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <unordered_set>
 
 #include "context.h"
@@ -12,6 +14,7 @@
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Tooling/Tooling.h"
+#include "llvm/Support/Casting.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -62,22 +65,22 @@ struct JsonBuilder {
     json["origin"] = file_name(c);
 
     if (_options.count(ErReflectAttr::Option::Base) != 0) {
-      auto& arr_bases = json["bases"];
+      auto parents = nlohmann::json::array();
 
       for (auto&& b : c->bases()) {
         nlohmann::json item;
 
-        item["access"] = JsonBuilder::access_str(b.getAccessSpecifier());
+        item["access"] = access_str(b.getAccessSpecifier());
         item["name"] = b.getType()->getAsRecordDecl()->getQualifiedNameAsString();
 
-        arr_bases.push_back(item);
+        parents.push_back(std::move(item));
       }
+      json.emplace("parents", std::move(parents));
     }
 
-    auto& fields_static = json["fields_static"];
-    auto& fields = json["fields"];
-    auto& func_static = json["func_static"];
-    auto& func = json["func"];
+    auto fields_static = nlohmann::json::array();
+    auto fields = nlohmann::json::array();
+    auto func = nlohmann::json::array();
 
     for (auto&& d : c->getPrimaryContext()->decls()) {
 
@@ -87,17 +90,12 @@ struct JsonBuilder {
 
       } else if (const auto* v = dyn_cast<VarDecl>(d)) {
 
-        add_field(&fields_static, v);
+        add_field(&fields, v);
 
       } else if (const auto* f = dyn_cast<FunctionDecl>(d)) {
-        if (f->isStatic()) {
 
-          add_function(&func_static, f, name);
+        add_function(&func, f, name);
 
-        } else {
-
-          add_function(&func, f, name);
-        }
       } else if (const auto* nc = dyn_cast<CXXRecordDecl>(d)) {
         if (!nc->isThisDeclarationADefinition() ||  //
             nc->hasAttr<ErReflectAttr>()) {
@@ -116,6 +114,9 @@ struct JsonBuilder {
         add_enum(ne);
       }
     }
+    json.emplace("fields_static", std::move(fields_static));
+    json.emplace("fields", std::move(fields));
+    json.emplace("func", std::move(func));
 
     _ctx->result.emplace(std::move(name), std::move(json));
   }
@@ -168,7 +169,7 @@ struct JsonBuilder {
     auto& func = functions->emplace_back();
 
     set_name(&func, f);
-    func["access"] = access_str(acc);
+    func["acc"] = access_arr(f);
     func["return"] = f->getDeclaredReturnType().getAsString();
 
     auto& params = func["params"];
@@ -177,12 +178,12 @@ struct JsonBuilder {
     }
   }
 
-  void add_field(nlohmann::json* fields, const DeclaratorDecl* f) {
-    if (f->hasAttr<ErExcludeAttr>()) {
+  void add_field(nlohmann::json* fields, const ValueDecl* v) {
+    if (v->template hasAttr<ErExcludeAttr>()) {
       return;
     }
 
-    auto acc = f->getAccess();
+    auto acc = v->getAccess();
     if ((acc != clang::AS_public && _options.count(ErReflectAttr::Option::NonPublic) == 0) ||
         _options.count(ErReflectAttr::Option::Data) == 0) {
       return;
@@ -190,12 +191,12 @@ struct JsonBuilder {
 
     auto& field = fields->emplace_back();
 
-    set_name(&field, f);
-    field["access"] = access_str(acc);
-    field["type"] = type_str(f);
+    set_name(&field, v);
+    field["acc"] = access_arr(v);
+    field["type"] = type_str(v);
   }
 
-  inline std::string type_str(const DeclaratorDecl* decl) const {
+  inline std::string type_str(const ValueDecl* decl) const {
     const PrintingPolicy pp(_opts);
     return QualType::getAsString(decl->getType().split(), pp);
   }
@@ -216,8 +217,30 @@ struct JsonBuilder {
     return rel;
   }
 
+  static inline nlohmann::json::array_t access_arr(const ValueDecl* decl) {
+    nlohmann::json::array_t acc;
+
+    acc.emplace_back(access_str(decl->getAccess()));
+
+    if (const auto* f = dyn_cast<FunctionDecl>(decl)) {
+      if (dyn_cast<FunctionType>(decl->getType())->isConst()) {
+        acc.emplace_back("kConst");
+      }
+      if (f->isStatic()) {
+        acc.emplace_back("kStatic");
+      }
+    } else {
+      if (decl->getType().isConstQualified()) {
+        acc.emplace_back("kConst");
+      }
+      if (isa<VarDecl>(decl)) {
+        acc.emplace_back("kStatic");
+      }
+    }
+    return acc;
+  }
+
   static inline std::string access_str(AccessSpecifier access) {
-    // fast convert to er/info/access.h Access enum constants string representation
     switch (access) {
       case clang::AS_public:
         return "kPublic";

@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "access.h"
 #include "er/type_id.h"
-#include "field_attributes.h"
 #include "field_desc.h"
 
 namespace er {
@@ -63,7 +63,7 @@ class FieldInfo {
   const void* _base;
   const FieldDesc* _data;
 
-  static void* shift(const void* base, size_t offset) {
+  static void* shift(const void* base, uintptr_t offset) {
     return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(base) + offset);
   }
 };

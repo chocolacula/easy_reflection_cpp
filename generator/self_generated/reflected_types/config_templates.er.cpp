@@ -2,7 +2,6 @@
 
 // clang-format off
 #include "er/reflection/the_great_table.h"
-#include "er/type_info/variants/object/field_attributes.h"
 #include "er/types/common_actions.h"
 #include "er/types/type_actions.h"
 
@@ -14,14 +13,12 @@ struct TypeActions<Config::Templates> {
     auto* p = static_cast<Config::Templates*>(value);
 
     static std::map<std::string_view, FieldDesc> fields {
-      {"header", FieldDesc::create_member(p, &p->header, FieldAttributes::kPublic)},
-      {"enum", FieldDesc::create_member(p, &p->for_enum, FieldAttributes::kPublic)},
-      {"object", FieldDesc::create_member(p, &p->object, FieldAttributes::kPublic)},
-
+      {"header", FieldDesc(&Config::Templates::header, Access::kPublic)},
+      {"enum", FieldDesc(&Config::Templates::for_enum, Access::kPublic)},
+      {"object", FieldDesc(&Config::Templates::object, Access::kPublic)},
     };
-
-    static std::map<std::string_view, MethodDesc> methods {};
-
+    static std::map<std::string_view, MethodDesc> methods {
+    };
     return Object(Var(p, is_const), &fields, &methods);
   }
 };

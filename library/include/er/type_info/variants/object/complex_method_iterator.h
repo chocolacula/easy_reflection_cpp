@@ -13,8 +13,8 @@ class ComplexMethodIterator {
   using item = std::pair<std::string_view, MethodInfo>;
 
  public:
-  ComplexMethodIterator(void* base, const_iterator it, const_iterator end, MethodAttributes atr)  //
-      : _base(base), _it(it), _end(end), _atr(atr) {
+  ComplexMethodIterator(const void* base, const_iterator it, const_iterator end, Access acc)  //
+      : _base(base), _it(it), _end(end), _acc(acc) {
   }
 
   ComplexMethodIterator& operator++() noexcept {
@@ -41,9 +41,7 @@ class ComplexMethodIterator {
   };
 
   bool is_valid() {
-    return right_access() &&  //
-                              //  right_static_readonly() &&  //
-           (_base != nullptr || _it->second.is_static());
+    return right_access() && (_base != nullptr || _it->second.is_static());
   }
 
   void next_valid() {
@@ -53,24 +51,14 @@ class ComplexMethodIterator {
   }
 
  private:
-  void* _base;
+  const void* _base;
   const_iterator _it;
-  const_iterator _end;
-  MethodAttributes _atr;
+  const const_iterator _end;
+  const Access _acc;
 
   inline bool right_access() {
-    return (_it->second.attributes() & _atr & MethodAttributes::kAnyAccess) != MethodAttributes::kNone;
+    return (_it->second.access() & _acc & (Access::kPublic | Access::kProtected | Access::kPrivate)) != Access::kNone;
   }
-
-  // built from Karnaugh Map
-  // inline bool right_static_readonly() {
-  //   bool nx0 = (_it->second.attributes() & MethodAttributes::kReadOnly) == MethodAttributes::kNone;
-  //   bool nx1 = (_it->second.attributes() & MethodAttributes::kStatic) == MethodAttributes::kNone;
-  //   bool x2 = (_atr & MethodAttributes::kReadOnly) != MethodAttributes::kNone;
-  //   bool x3 = (_atr & MethodAttributes::kStatic) != MethodAttributes::kNone;
-
-  //   return (nx0 || x2) && (nx1 || x3);
-  // }
 };
 
 }  // namespace er

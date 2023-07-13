@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "colors.h"
-#include "er/attributes.h"
 
 struct [[er::reflect]] Bicycle {
   Bicycle() = default;
@@ -23,7 +22,6 @@ struct [[er::reflect]] Bicycle {
 
   constexpr static inline bool kIsCool = true;
 
-  [[er::alias("tune_shit")]]
   std::string_view tune(Colors color, float wheel_size) {
     colors.push_back(color);
     wheel_size_inch = wheel_size;
