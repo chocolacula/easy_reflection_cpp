@@ -18,21 +18,18 @@ struct TypeActions<{{name}}> {
       {% endfor -%}
       {% for item in fields -%}
         {"{{item.alias}}", FieldDesc::create_member(p, &p->{{item.name}}, FieldAttributes::{{item.access}})},
-      {%- if loop.is_last -%}
-      };
-      {%- endif %}
+    {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
-
     static std::map<std::string_view, MethodDesc> func {
       {% for item in func_static -%}
         {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, MethodAttributes::{{item.access}})},
       {% endfor -%}
       {% for item in func -%}
         {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, MethodAttributes::{{item.access}})},
+    {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
     };
-
-    return Object(Var(p, is_const), &fields, &func);
+    return Object(Var(p, is_const), &fields);
   }
 
 {% for item in func_static -%}
