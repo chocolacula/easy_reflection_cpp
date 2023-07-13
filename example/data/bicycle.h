@@ -7,8 +7,7 @@
 #include "colors.h"
 #include "er/attributes.h"
 
-ER_REFLECT()
-struct Bicycle {
+struct [[er::reflect]] Bicycle {
   Bicycle() = default;
 
   int id;
@@ -16,20 +15,24 @@ struct Bicycle {
   std::string manufacturer;
   std::string model;
 
-  ER_ALIAS(weight)
-  float frame_weight;
+  [[er::alias("weight")]] float frame_weight;
 
-  ER_ALIAS(wheel_size)
-  float wheel_size_inch;
+  [[er::alias("wheel_size")]] float wheel_size_inch;
 
   std::vector<Colors> colors;
 
   constexpr static inline bool kIsCool = true;
 
+  [[er::alias("tune_shit")]]
   std::string_view tune(Colors color, float wheel_size) {
     colors.push_back(color);
     wheel_size_inch = wheel_size;
 
     return "I am in fresh paint with new wheels";
+  }
+
+  [[er::alias("double")]]
+  static int double_sum(int a, int b) {
+    return (a + b) * 2;
   }
 };

@@ -13,7 +13,7 @@ struct TypeActions<Config> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Config*>(value);
 
-    static std::map<std::string_view, FieldDesc> map {
+    static std::map<std::string_view, FieldDesc> fields {
       {"compdb_dir", FieldDesc::create_member(p, &p->compdb_dir, FieldAttributes::kPublic)},
       {"templates", FieldDesc::create_member(p, &p->templates, FieldAttributes::kPublic)},
       {"input", FieldDesc::create_member(p, &p->input, FieldAttributes::kPublic)},
@@ -21,7 +21,9 @@ struct TypeActions<Config> {
 
     };
 
-    return Object(Var(p, is_const), &map);
+    static std::map<std::string_view, MethodDesc> methods {};
+
+    return Object(Var(p, is_const), &fields, &methods);
   }
 };
 

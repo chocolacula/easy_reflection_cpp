@@ -67,6 +67,10 @@ int main(int argc, const char** argv) {
 
   auto parsed = parser.parse(conf.input);
 
+  for (auto&& [k, v] : parsed) {
+    std::cout << k << ": " << v.dump() << std::endl;
+  }
+
   auto time_2 = std::chrono::steady_clock::now();
 
   // load templates
@@ -125,7 +129,7 @@ int main(int argc, const char** argv) {
     inja_env.render_to(output_h, template_header, json);
     output_h.close();
 
-    if (json["id"].get<int>() == 0) {
+    if (json["kind"].get<int>() == 0) {
       inja_env.render_to(output_cpp, template_object, json);
     } else {
       inja_env.render_to(output_cpp, template_enum, json);

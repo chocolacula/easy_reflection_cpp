@@ -13,14 +13,16 @@ struct TypeActions<Config::Templates> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<Config::Templates*>(value);
 
-    static std::map<std::string_view, FieldDesc> map {
+    static std::map<std::string_view, FieldDesc> fields {
       {"header", FieldDesc::create_member(p, &p->header, FieldAttributes::kPublic)},
       {"enum", FieldDesc::create_member(p, &p->for_enum, FieldAttributes::kPublic)},
       {"object", FieldDesc::create_member(p, &p->object, FieldAttributes::kPublic)},
 
     };
 
-    return Object(Var(p, is_const), &map);
+    static std::map<std::string_view, MethodDesc> methods {};
+
+    return Object(Var(p, is_const), &fields, &methods);
   }
 };
 

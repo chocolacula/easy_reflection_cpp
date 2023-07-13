@@ -6,16 +6,7 @@
 
 #include "nlohmann/json.hpp"
 
-struct AttrReflect {
-  bool withNonPublic = false;
-  bool withBase = false;
-};
-
 struct Context {
-  std::unordered_map<unsigned, AttrReflect> reflect_map;
-  std::unordered_map<unsigned, std::string> alias_map;
-  std::unordered_set<unsigned> excludes;
-
   std::string_view output_dir;
 
   // clangTooling run analysis for each input file
