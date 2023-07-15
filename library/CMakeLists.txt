@@ -24,6 +24,8 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
+update_submodule(RE-flex)
+
 add_subdirectory(RE-flex)
 target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLibStatic)
 
