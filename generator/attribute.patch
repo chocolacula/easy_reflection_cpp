@@ -1,0 +1,129 @@
+diff --git a/clang/include/clang/Basic/Attr.td b/clang/include/clang/Basic/Attr.td
+index d449a2fe7f8f..cdbef418fce8 100644
+--- a/clang/include/clang/Basic/Attr.td
++++ b/clang/include/clang/Basic/Attr.td
+@@ -4127,3 +4127,25 @@ def ReadOnlyPlacement : InheritableAttr {
+   let Subjects = SubjectList<[Record]>;
+   let Documentation = [ReadOnlyPlacementDocs];
+ }
++
++def ErReflect : InheritableAttr {
++  let Spellings = [CXX11<"er", "reflect", 1>];
++  let Subjects = SubjectList<[CXXRecord, Enum]>;
++  let Args = [VariadicEnumArgument<"Options", "Option",
++              ["all", "base", "nonPublic", "data", "func"],
++              ["All", "Base", "NonPublic", "Data", "Func"]>];
++  let Documentation = [ErReflectDocs];
++}
++
++def ErAlias : InheritableAttr {
++  let Spellings = [CXX11<"er", "alias", 1>];
++  let Subjects = SubjectList<[Field, Function, CXXRecord]>;
++  let Args = [StringArgument<"Name">];
++  let Documentation = [ErAliasDocs];
++}
++
++def ErIgnore : InheritableAttr {
++  let Spellings = [CXX11<"er", "ignore", 1>];
++  let Subjects = SubjectList<[Field, Function, CXXRecord]>;
++  let Documentation = [ErIgnoreDocs];
++}
+diff --git a/clang/include/clang/Basic/AttrDocs.td b/clang/include/clang/Basic/AttrDocs.td
+index 6d7a3ffd2d52..a9f52bce1230 100644
+--- a/clang/include/clang/Basic/AttrDocs.td
++++ b/clang/include/clang/Basic/AttrDocs.td
+@@ -6847,3 +6847,31 @@ def ReadOnlyPlacementDocs : Documentation {
+      ``enforce_read_only_placement`` attribute.
+   }];
+ }
++
++def ErReflectDocs : Documentation {
++  let Category = DocCatFunction;
++  let Content = [{
++The attribute marks an object for later analysis and code generation. It accepts
++optional arguments with the following settings:
++
++* ``Base``      - includes entities from the base class
++* ``NonPublic`` - includes protected and private members
++* ``Data``      - includes fields and static member variables
++* ``Func``      - includes methods
++* ``All``       - a combination of all the options above, the same as an empty argument
++  }];
++}
++
++def ErAliasDocs : Documentation {
++  let Category = DocCatFunction;
++  let Content = [{
++Set alias for an entity as ``[[er::alias("new_name")]]``
++  }];
++}
++
++def ErIgnoreDocs : Documentation {
++  let Category = DocCatFunction;
++  let Content = [{
++The attribute prevents the generation of reflection code for the marked entity.
++  }];
++}
+diff --git a/clang/lib/Sema/SemaDeclAttr.cpp b/clang/lib/Sema/SemaDeclAttr.cpp
+index a303c7f57280..f0551d2860b5 100644
+--- a/clang/lib/Sema/SemaDeclAttr.cpp
++++ b/clang/lib/Sema/SemaDeclAttr.cpp
+@@ -8534,6 +8534,39 @@ EnforceTCBLeafAttr *Sema::mergeEnforceTCBLeafAttr(
+       *this, D, AL);
+ }
+ 
++/// Handle Easy Reflection main 'reflect' attribute.
++static void handleErReflect(Sema &S, Decl *D, const ParsedAttr &AL) {
++  SmallVector<ErReflectAttr::Option, 4> Options;
++
++  for (unsigned I = 0, E = AL.getNumArgs(); I != E; ++I) {
++    StringRef OptStr;
++    if (!S.checkStringLiteralArgumentAttr(AL, I, OptStr))
++      continue;
++
++    ErReflectAttr::Option Option;
++    if (!ErReflectAttr::ConvertStrToOption(OptStr, Option)) {
++      S.Diag(AL.getLoc(), diag::warn_attribute_type_not_supported)
++          << AL << "'" + std::string(OptStr) + "'";
++      continue;
++    }
++
++    Options.push_back(Option);
++  }
++
++  D->addAttr(::new (S.Context)
++                 ErReflectAttr(S.Context, AL, Options.data(), Options.size()));
++}
++
++/// Handle Easy Reflection 'alias' attribute.
++static void handleErAlias(Sema &S, Decl *D, const ParsedAttr &AL) {
++  StringRef Name;
++
++  if (!S.checkStringLiteralArgumentAttr(AL, 0, Name))
++    return;
++
++  D->addAttr(::new (S.Context) ErAliasAttr(S.Context, AL, Name));
++}
++
+ //===----------------------------------------------------------------------===//
+ // Top Level Sema Entry Points
+ //===----------------------------------------------------------------------===//
+@@ -9347,6 +9380,18 @@ ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D, const ParsedAttr &AL,
+   case ParsedAttr::AT_UsingIfExists:
+     handleSimpleAttribute<UsingIfExistsAttr>(S, D, AL);
+     break;
++
++  case ParsedAttr::AT_ErReflect:
++    handleErReflect(S, D, AL);
++    break;
++
++  case ParsedAttr::AT_ErAlias:
++    handleErAlias(S, D, AL);
++    break;
++
++  case ParsedAttr::AT_ErIgnore:
++    handleSimpleAttribute<ErIgnoreAttr>(S, D, AL);
++    break;
+   }
+ }
+ 

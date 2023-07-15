@@ -44,6 +44,12 @@ if(WIN32)
 endif()
 
 ### LLVM and Clang ###
+update_submodule(llvm-project)
+
+message(STATUS "Applying patch to llvm-project")
+execute_process(COMMAND ${GIT_EXECUTABLE} apply -q ../attribute.patch
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/llvm-project)
+
 set(LLVM_ENABLE_RTTI ON)
 set(LLVM_INCLUDE_BENCHMARKS OFF)
 set(LLVM_ENABLE_PROJECTS "clang")
