@@ -137,7 +137,7 @@ struct JsonBuilder {
     auto& arr = json["constants"];
 
     for (auto&& c : e->enumerators()) {
-      if (c->hasAttr<ErExcludeAttr>()) {
+      if (c->hasAttr<ErIgnoreAttr>()) {
         continue;
       }
       auto& item = arr.emplace_back();
@@ -148,7 +148,7 @@ struct JsonBuilder {
   }
 
   void add_function(nlohmann::json* functions, const FunctionDecl* f, const std::string& class_name) {
-    if (f->hasAttr<ErExcludeAttr>()) {
+    if (f->hasAttr<ErIgnoreAttr>()) {
       return;
     }
 
@@ -179,7 +179,7 @@ struct JsonBuilder {
   }
 
   void add_field(nlohmann::json* fields, const ValueDecl* v) {
-    if (v->template hasAttr<ErExcludeAttr>()) {
+    if (v->template hasAttr<ErIgnoreAttr>()) {
       return;
     }
 
@@ -207,7 +207,8 @@ struct JsonBuilder {
     // filesystem::path used to get relative path for #include "<path>"
     auto fs_path = std::filesystem::path(path.begin(), path.end());
 
-    // add additional step back cause in output_dir is another one directory 'reflected_types'
+    // add additional step back cause in output_dir is another directory
+    // 'reflected_types'
     std::string rel = "../";
     rel += std::filesystem::relative(fs_path, _ctx->output_dir).string();
 #if defined(_WIN32)

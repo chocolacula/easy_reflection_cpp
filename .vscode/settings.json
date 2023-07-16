@@ -3,9 +3,8 @@
   "cmake.buildDirectory": "${workspaceRoot}/build/${buildType}",
   "cmake.copyCompileCommands": "${workspaceRoot}/build/compile_commands.json",
   "cmake.configureSettings": {
-    "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake",
     "ENABLE_GENERATOR": "ON",
-    "ENABLE_BENCHMARKS": "ON"
+    "ENABLE_BENCHMARKS": "ON",
     // "LLVM_TARGETS_TO_BUILD": "X86",
     // "LLVM_TARGETS_TO_BUILD": "AArch64",
     // macOS
