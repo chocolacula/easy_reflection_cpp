@@ -4,13 +4,51 @@
 function(update_submodule SUBMODULE)
     find_package(Git QUIET)
 
+    if (NOT Git_FOUND)
+        message(ERROR "git not found!")
+        return()
+    endif()
+
     if(Git_FOUND)
         message(STATUS "Updating git submodule ${SUBMODULE}")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive ${SUBMODULE}
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL 0)
-            message(FATAL_ERROR "Update failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+                        RESULT_VARIABLE GIT_RESULT)
+        if(NOT GIT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Update failed with ${GIT_RESULT}")
+        endif()
+    endif()
+endfunction()
+
+# Apply git patch to a repository.
+# Arguments:
+#   FILENAME - relative path to the applying patch file
+#   WORKDIR  - directory with a repo where to run applying the patch
+function(apply_patch FILENAME WORKDIR)
+    find_package(Git QUIET)
+
+    if (NOT Git_FOUND)
+        message(ERROR "git not found!")
+        return()
+    endif()
+
+    set(FULL_WORKDIR ${CMAKE_CURRENT_SOURCE_DIR}/${WORKDIR})
+    if(EXISTS ${FULL_WORKDIR}/patched)
+        # Don't forget to add the file in a patch using `git add -N patched`.
+        file(STRINGS ${FULL_WORKDIR}/patched IS_PATCHED LIMIT_COUNT 1)
+    endif()
+
+    message(STATUS "Applying patch to ${WORKDIR}")
+    if ("${IS_PATCHED}" STREQUAL "true")
+        message(STATUS "${WORKDIR} is already patched")
+    else()
+        execute_process(COMMAND ${GIT_EXECUTABLE} apply ${FILENAME}
+                        WORKING_DIRECTORY ${FULL_WORKDIR}
+                        RESULT_VARIABLE GIT_RESULT)
+        if(GIT_RESULT EQUAL 0)
+            message(STATUS "${WORKDIR} was patched!")
+        else()
+            message(ERROR "apply failed with ${GIT_RESULT}")
         endif()
     endif()
 endfunction()

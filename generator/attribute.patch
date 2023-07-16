@@ -127,3 +127,10 @@ index a303c7f57280..f0551d2860b5 100644
    }
  }
  
+diff --git a/patched b/patched
+new file mode 100644
+index 000000000000..27ba77ddaf61
+--- /dev/null
++++ b/patched
+@@ -0,0 +1 @@
++true

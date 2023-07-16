@@ -7,15 +7,7 @@ The project consits of two main parts:
 
 The Easy Reflection C++ Generator utilizes **Clang** libraries to analyze C++ source code. By default, these libraries are statically linked to facilitate distribution and provide precompiled binary [releases](https://github.com/chocolacula/easy_reflection_cpp/releases).
 
-Before getting started, you should decide whether to use the precompiled binary release or build the generator manually. If you choose the manual option, follow these steps:
-
-Make sure to update `llvm` and other submodules by running the following command:
-
-```bash
-git submodule update --init --recursive
-```
-
-Configure and build the generator. CMake will handle everything for you.
+Before getting started, you should decide whether to use the precompiled binary release or build the generator manually. If you choose the manual option, configure and build the generator. CMake will handle everything for you.
 
 Once you have the `er_gen` binary, you can start analyzing your project and generating code. To do this, ensure that your project produces a `compile_commands.json` file. If you're using CMake, you can easily enable this by adding the following line to your CMakeLists.txt file:
 
@@ -24,6 +16,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ```
 
 ### Troubleshooting
+
 If you encounter errors like `stddef.h` or `stdarg.h` not being found during the generation process, add the following line to your `CMakeLists.txt` file:
 
 ```cmake
@@ -64,7 +57,7 @@ After you have installed all the dependencies, you need to decide whether you wa
 
 ## LLVM & Clang dynamic linking
 
-It is not supported officialy but nevertheless it exists. 
+It is not supported officialy but nevertheless it exists.
 
 Replace lines in the end of [CMakeLists.txt](../generator/CMakeLists.txt)
 

@@ -43,6 +43,8 @@ project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
 
 include(cmake/tools.cmake)
 
+update_submodule(vcpkg)
+
 include(Dart)
 enable_testing()
 
