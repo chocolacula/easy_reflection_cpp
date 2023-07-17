@@ -13,28 +13,20 @@ struct TypeActions<{{name}}> {
     auto* p = static_cast<{{name}}*>(value);
 
     static std::map<std::string_view, FieldDesc> fields {
-      {% for item in fields_static -%}
-        {"{{item.alias}}", FieldDesc::create_static(&{{name}}::{{item.name}}, FieldAttributes::{{item.access}})},
-      {% endfor -%}
       {% for item in fields -%}
-        {"{{item.alias}}", FieldDesc::create_member(p, &p->{{item.name}}, FieldAttributes::{{item.access}})},
+        {"{{item.alias}}", FieldDesc(&{{name}}::{{item.name}}, Access::{{join(item.acc," | Access::")}})},
     {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
-    static std::map<std::string_view, MethodDesc> func {
-      {% for item in func_static -%}
-        {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, MethodAttributes::{{item.access}})},
-      {% endfor -%}
+    static std::map<std::string_view, MethodDesc> funcs {
       {% for item in func -%}
-        {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, MethodAttributes::{{item.access}})},
+        {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, Access::{{join(item.acc," | Access::")}})},
     {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
-    };
-    return Object(Var(p, is_const), &fields);
+    return Object(Var(p, is_const), &fields, &funcs);
   }
-
-{% for item in func_static -%}
+{% for item in func %}
   static Expected<None> invoke_{{item.name}}(void* res, void* obj, const std::vector<Var>& args) {
-    if (args.size() != {{length(func_static)}}) {
+    if (args.size() != {{length(func)}}) {
       return Error("Number of arguments is not the same as in the callable");
     }
 
@@ -45,55 +37,18 @@ struct TypeActions<{{name}}> {
     const {{type}}& a{{loop.index}} = *static_cast<const {{type}}*>(args[{{loop.index}}].raw());
 
     {% endfor -%}
-
-    auto* p = static_cast<{{name}}*>(obj);
 
     {% if item.return -%}
     *reinterpret_cast<{{item.return}}*>(res) = //
     {% endif -%}
-    std::invoke(&{{name}}::{{item.name}},
-    {% for i in range(length(item.params)) -%}
-      {% if not loop.is_last -%}
-        a{{loop.index}},
-      {% else %}
-        a{{loop.index}});
-      {% endif %}
-    {% endfor %}
-
+    std::invoke(&{{name}}::{{item.name}}, {% if not ("kStatic" in item.acc) %}static_cast<{{name}}*>(obj),{% endif %}
+      {% for i in range(length(item.params)) -%}
+        a{{loop.index}}{% if not loop.is_last %},
+      {% else %});{% endif -%}
+      {% endfor %}
     return None();
   }
-{% endfor %}
-{% for item in func -%}
-  static Expected<None> invoke_{{item.name}}(void* res, void* obj, const std::vector<Var>& args) {
-    if (args.size() != {{length(func_static)}}) {
-      return Error("Number of arguments is not the same as in the callable");
-    }
-
-    {% for type in item.params -%}
-    if (args[{{loop.index}}].type() != TypeId::get<{{type}}>()) {
-      return Error(format("Type Expected: {{type}}, revceived: {}", reflection::type_name(args[{{loop.index}}].type())));
-    }
-    const {{type}}& a{{loop.index}} = *static_cast<const {{type}}*>(args[{{loop.index}}].raw());
-
-    {% endfor %}
-
-    auto* p = static_cast<{{name}}*>(obj);
-
-    {% if item.return %}
-    *reinterpret_cast<{{item.return}}*>(res) = //
-    {% endif %}
-    std::invoke(&{{name}}::{{item.name}}, p,
-    {% for i in range(length(item.params)) -%}
-      {% if not loop.is_last -%}
-        a{{loop.index}},
-      {%- else -%}
-        a{{loop.index}});
-      {%- endif %}
-    {% endfor -%}
-
-    return None();
-  }
-{% endfor %}
+{% endfor -%}
 };
 
 template <>
