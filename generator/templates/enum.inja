@@ -11,15 +11,12 @@ template <>
 struct TypeActions<{{name}}> {
   static TypeInfo reflect(void* value, bool is_const) {
 
-    static constexpr ConstexprMap<{{name}}, {{length(constants)}}> constants{
-    // be aware of use sequential '{' with template engines
-    {
-      {
-        {% for item in constants -%}
-        {{"{"}}{{name}}::{{item.name}}, "{{item.alias}}"},
-        {% endfor %}
-    }}};
-
+    static constexpr ConstexprMap<{{name}}, {{length(constants)}}> constants {% if length(constants) != 0 %}{{"{{{"}}
+      {% else %}{};{% endif -%}
+      {% for item in constants -%}
+      {{"{"}}{{name}}::{{item.name}}, "{{item.alias}}"},
+    {% if not loop.is_last %}  {% else %}}}};{% endif -%}
+      {% endfor %}
     return Enum(static_cast<{{name}}*>(value), is_const, constants);
   }
 };

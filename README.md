@@ -27,11 +27,10 @@ If you are curious about the details of how it works you can find them in [DEV a
 
 Look at [Installation](readme/installation.md) guide and install the solution.
 
-Then define your object and use `ER_REFLECT()` attribute:
+Then define your object and use `er::reflect` attribute:
 
 ```cpp
-ER_REFLECT()
-class Object {
+class [[er::reflect]] Object {
  public:
   std::string field_str;
   int field_int;

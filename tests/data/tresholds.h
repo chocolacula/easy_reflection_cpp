@@ -6,10 +6,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "er/attributes.h"
-
-ER_REFLECT()
-struct Tresholds {
+struct [[er::reflect]] Tresholds {
   uint8_t u8_min = 0;
   uint16_t u16_min = 0;
   uint32_t u32_min = 0;

@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "complex_method_iterator.h"
+#include "method_iterator.h"
 
 namespace er {
 
@@ -15,12 +15,8 @@ struct Methods {
     return _map->size();
   }
 
-  ComplexMethodIterator begin() {
-    ComplexMethodIterator it{_base, _map->begin(), _map->end(), _acc};
-    if (!it.is_valid()) {
-      it.next_valid();
-    }
-    return it;
+  MethodIterator begin() {
+    return {_map, _base, _acc};
   }
 
   // iterator type is not the same as begin

@@ -19,14 +19,11 @@
 #include <vector>
 
 #include "../random/random.h"
-#include "er/attributes.h"
 #include "pointers.h"
 
-ER_REFLECT()
-enum class Numbers { kOne, kTwo, kThree };
+enum class [[er::reflect]] Numbers { kOne, kTwo, kThree };
 
-ER_REFLECT()
-struct Various {
+struct [[er::reflect]] Various {
   Various() = default;
 
   Various(const Various& other) {

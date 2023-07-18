@@ -6,11 +6,9 @@
 
 #include "../random/random.h"
 #include "../tools.h"
-#include "er/attributes.h"
 #include "simple.h"
 
-ER_REFLECT()
-struct Pointers {
+struct [[er::reflect]] Pointers {
   Pointers() = default;
 
   Pointers(const Pointers& other)

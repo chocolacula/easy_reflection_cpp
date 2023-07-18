@@ -32,7 +32,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ReflexLibStatic)
 option(USE_SIMD_JSON "Enable SIMD JSON deserialization provider" ON)
 
 if (USE_SIMD_JSON)
-    add_definitions(-DUSE_SIMD_JSON)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC USE_SIMD_JSON)
 
     find_package(simdjson CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE simdjson::simdjson)

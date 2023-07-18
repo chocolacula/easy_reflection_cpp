@@ -5,10 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "er/attributes.h"
-
-ER_REFLECT()
-struct Twitter {
+struct [[er::reflect]] Twitter {
   struct Status {
     struct Metadata {
       std::string result_type;
@@ -53,8 +50,7 @@ struct Twitter {
         } description;
       } entities;
 
-      ER_ALIAS(protected)
-      bool is_protected;
+      [[er::alias("protected")]] bool is_protected;
 
       uint32_t followers_count;
       uint32_t friends_count;

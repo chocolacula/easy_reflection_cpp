@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <unordered_set>
 
+#include "clang/AST/Type.h"
 #include "context.h"
 
 // clang
@@ -78,7 +79,6 @@ struct JsonBuilder {
       json.emplace("parents", std::move(parents));
     }
 
-    auto fields_static = nlohmann::json::array();
     auto fields = nlohmann::json::array();
     auto func = nlohmann::json::array();
 
@@ -94,13 +94,13 @@ struct JsonBuilder {
 
       } else if (const auto* f = dyn_cast<FunctionDecl>(d)) {
 
-        add_function(&func, f, name);
+        add_function(&func, f, c->getNameAsString());
 
       } else if (const auto* nc = dyn_cast<CXXRecordDecl>(d)) {
         if (!nc->isThisDeclarationADefinition() ||  //
             nc->hasAttr<ErReflectAttr>()) {
           // skip nested classes with dedicated 'reflect' attribute,
-          // handle them further as root declaration
+          // handle them further as root declarations
           continue;
         }
         add_class(nc);
@@ -108,13 +108,12 @@ struct JsonBuilder {
       } else if (const auto* ne = dyn_cast<EnumDecl>(d)) {
         if (ne->hasAttr<ErReflectAttr>()) {
           // skip nested enums with dedicated 'reflect' attribute,
-          // handle them further as root declaration
+          // handle them further as root declarations
           continue;
         }
         add_enum(ne);
       }
     }
-    json.emplace("fields_static", std::move(fields_static));
     json.emplace("fields", std::move(fields));
     json.emplace("func", std::move(func));
 
@@ -172,10 +171,11 @@ struct JsonBuilder {
     func["acc"] = access_arr(f);
     func["return"] = f->getDeclaredReturnType().getAsString();
 
-    auto& params = func["params"];
+    auto params = nlohmann::json::array();
     for (auto&& p : f->parameters()) {
-      params.emplace_back(type_str(p));
+      params.emplace_back(type_str(p->getType(), true));
     }
+    func.emplace("params", std::move(params));
   }
 
   void add_field(nlohmann::json* fields, const ValueDecl* v) {
@@ -193,12 +193,22 @@ struct JsonBuilder {
 
     set_name(&field, v);
     field["acc"] = access_arr(v);
-    field["type"] = type_str(v);
+    field["type"] = type_str(v->getType());
   }
 
-  inline std::string type_str(const ValueDecl* decl) const {
+  inline std::string type_str(QualType type, bool remove_cvref = false) const {
     const PrintingPolicy pp(_opts);
-    return QualType::getAsString(decl->getType().split(), pp);
+
+    SplitQualType split;
+
+    if (remove_cvref) {
+      type = type.getNonReferenceType();
+      split = type.split();
+      split.Quals.removeCVRQualifiers();
+    } else {
+      split = type.split();
+    }
+    return QualType::getAsString(split, pp);
   }
 
   std::string file_name(const NamedDecl* decl) const {

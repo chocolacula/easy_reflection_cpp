@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../print.h"
 #include "colors.h"
 
 struct [[er::reflect]] Bicycle {
@@ -22,15 +23,10 @@ struct [[er::reflect]] Bicycle {
 
   constexpr static inline bool kIsCool = true;
 
-  std::string_view tune(Colors color, float wheel_size) {
-    colors.push_back(color);
-    wheel_size_inch = wheel_size;
+  size_t set_color(const std::vector<Colors>& new_colors) {
+    colors = new_colors;
+    println("The bike has been refinished");
 
-    return "I am in fresh paint with new wheels";
-  }
-
-  [[er::alias("double")]]
-  static int double_sum(int a, int b) {
-    return (a + b) * 2;
+    return colors.size();
   }
 };

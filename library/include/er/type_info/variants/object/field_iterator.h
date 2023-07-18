@@ -8,21 +8,32 @@
 
 namespace er {
 
-class ComplexFieldIterator {
+/// Skip iterator for fields collection, steps over items with unwanted properties
+class FieldIterator {
   using const_iterator = std::map<std::string_view, FieldDesc>::const_iterator;
-  using item = std::pair<std::string_view, FieldInfo>;
 
  public:
-  ComplexFieldIterator(const void* base, const_iterator it, const_iterator end, Access acc, bool include_readonly)  //
-      : _base(base), _it(it), _end(end), _acc(acc), _include_readonly(include_readonly) {
+  FieldIterator(const std::map<std::string_view, FieldDesc>* map,  //
+                const void* base,                                  //
+                Access acc,                                        //
+                bool include_readonly)
+      : _it(map->begin()),  //
+        _end(map->cend()),  //
+        _base(base),        //
+        _acc(acc),          //
+        _include_readonly(include_readonly) {
+    // start from a valid element
+    if (!is_valid()) {
+      next_valid();
+    }
   }
 
-  ComplexFieldIterator& operator++() noexcept {
+  FieldIterator& operator++() noexcept {
     next_valid();
     return *this;
   };
 
-  ComplexFieldIterator operator++(int) noexcept {
+  FieldIterator operator++(int) noexcept {
     auto t = *this;
     ++(*this);
     return t;
@@ -36,9 +47,16 @@ class ComplexFieldIterator {
     return _it != other;
   };
 
-  item operator*() const noexcept {
+  auto operator*() const noexcept {
     return std::make_pair(_it->first, FieldInfo(_base, &_it->second));
   };
+
+ private:
+  const_iterator _it;
+  const const_iterator _end;
+  const void* _base;
+  const Access _acc;
+  const bool _include_readonly;
 
   bool is_valid() {
     return right_access() &&           //
@@ -51,13 +69,6 @@ class ComplexFieldIterator {
       ++_it;
     } while (!is_valid() && _it != _end);
   }
-
- private:
-  const void* _base;
-  const_iterator _it;
-  const const_iterator _end;
-  const Access _acc;
-  const bool _include_readonly;
 
   inline bool right_access() {
     return (_it->second.access() & _acc & (Access::kPublic | Access::kProtected | Access::kPrivate)) != Access::kNone;

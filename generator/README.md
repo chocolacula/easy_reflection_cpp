@@ -1,47 +1,31 @@
 # er_gen
 
-Code generation tool for Easy Reflection based on Clang tools.
-
-It combines parsed data into one json entity and forwards it to inja tempate engine.
+Code generation tool for Easy Reflection based on Clang tools. It combines parsed data into one json entity and forwards it to inja tempate engine.
 
 The format of object entity is
 
 ```json
 {
-  "id" : 0, // 0 is object id
+  "kind" : 0, // 0 for objects
   "name" : string,  // full name including all namespaces
   "file_name" : string, // full name converted to snake_case with extension
   "origin" : string, // file path to origin file for analysis
   "bases" : [
     {
-      "access" : string,
-      "name" : string,
-    }
-  ],
-  "fields_static" : [
-    {
-      "access" : string,
-      "name" : string,
-      "alias" : string // equal "name" if ER_ALIAS attribute wasn't parsed
+      "access" : [ "kPublic" | "kProtected" | "kPrivate"],
+      "name" : string, // full name including all namespaces
     }
   ],
   "fields" : [
     {
-      "access" : string,
+      "acc" : [ "kPublic" | "kProtected" | "kPrivate" | "kConst" | "kStatic" ],
       "name" : string,
       "alias" : string
     }
   ],
-  "methods_static" : [
-    {
-      "access" : string,
-      "name" : string,
-      "alias" : string
-    }  
-  ],
   "methods" : [
     {
-      "access" : string,
+      "acc" : [ "kPublic" | "kProtected" | "kPrivate" | "kConst" | "kStatic" ],
       "name" : string,
       "alias" : string
     }  
@@ -53,7 +37,7 @@ format of an enum entity is
 
 ```json
 {
-  "id" : 1, // 1 is enum id
+  "kind" : 1, // 1 for enums
   "name" : string,  // full name including all namespaces
   "file_name" : string, // full name converted to snake_case with extension
   "origin" : string, // file path to origin file for analysis

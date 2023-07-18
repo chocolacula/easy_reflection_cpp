@@ -86,6 +86,15 @@ function(generate_reflection_code)
         COMMENT "Generating reflection code")
 endfunction()
 
+# Suppress compiler warnings for [[er:: ... ]] attribute names
+function(disable_attribute_warnings)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        add_compile_options("-Wno-attributes")
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        add_compile_options("-Wno-unknown-attributes")
+    endif()
+endfunction()
+
 # Print variables that match the optional parameter.
 # Arguments:
 #   FILTER - print only variables matching this string, print all if it's empty

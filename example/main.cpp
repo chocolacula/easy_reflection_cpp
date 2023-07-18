@@ -69,10 +69,6 @@ int main() {
 
   auto bicycle_info = reflection::reflect(&gt_avalanche);
 
-  auto ex = bicycle_info.get<Object>().get_method("tune").unwrap().invoke<std::string_view>(Colors::kGreen, 27.6F);
-
-  println(ex.unwrap());
-
   // setting a value is possible with type checking and casting
   // Note: field 'frame_weight' reflected with alias 'weight'
   auto* field_p = bicycle_info.get<Object>().get_field("weight").unwrap().var().rt_cast<float>().unwrap();
@@ -108,6 +104,14 @@ int main() {
 
   // TypeInfo made from nullptr could print static fields only
   println("\n{}", reflection::sprint(static_info));
+
+  // The big surprise is you can invoke methods!
+  auto ex = bicycle_info.get<Object>()
+                .get_method("set_color")
+                .unwrap()
+                .invoke<size_t>(std::vector<Colors>{Colors::kWhite, Colors::kGray, Colors::kBlue});
+
+  println("It has {} colors now\n", ex.unwrap());
 
   // it supports even smart pointers by proxying nested type to reflection system
   auto smart_ptr = std::make_unique<Bicycle>();

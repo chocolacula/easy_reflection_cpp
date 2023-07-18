@@ -3,11 +3,8 @@
 #include <cstdint>
 #include <string>
 
-#include "er/attributes.h"
-
 /// has size more then Box can optimize in a stack memory
-ER_REFLECT()
-struct BigOne {
+struct [[er::reflect]] BigOne {
   uint64_t int1;
   uint64_t int2;
   uint64_t int3;

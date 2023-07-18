@@ -12,36 +12,41 @@ struct TypeActions<{{name}}> {
   static TypeInfo reflect(void* value, bool is_const) {
     auto* p = static_cast<{{name}}*>(value);
 
-    static std::map<std::string_view, FieldDesc> fields {
+    static std::map<std::string_view, FieldDesc> fields {% if length(fields) != 0 %}{
+      {% else %}{};{% endif -%}
       {% for item in fields -%}
         {"{{item.alias}}", FieldDesc(&{{name}}::{{item.name}}, Access::{{join(item.acc," | Access::")}})},
     {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
-    static std::map<std::string_view, MethodDesc> funcs {
+    static std::map<std::string_view, MethodDesc> methods {% if length(func) != 0 %}{
+      {% else %}{};{% endif -%}
       {% for item in func -%}
         {"{{item.alias}}", MethodDesc(&invoke_{{item.name}}, Access::{{join(item.acc," | Access::")}})},
     {% if not loop.is_last %}  {% else %}};{% endif -%}
       {% endfor %}
-    return Object(Var(p, is_const), &fields, &funcs);
+    return Object(Var(p, is_const), &fields, &methods);
   }
 {% for item in func %}
-  static Expected<None> invoke_{{item.name}}(void* res, void* obj, const std::vector<Var>& args) {
-    if (args.size() != {{length(func)}}) {
+  static Expected<None> invoke_{{item.name}}(Var res, void* obj, const std::vector<Var>& args) {
+    if (args.size() != {{length(item.params)}}) {
       return Error("Number of arguments is not the same as in the callable");
     }
 
     {% for type in item.params -%}
     if (args[{{loop.index}}].type() != TypeId::get<{{type}}>()) {
-      return Error(format("Type Expected: {{type}}, revceived: {}", reflection::type_name(args[{{loop.index}}].type())));
+      return Error(format("Argument type expected: {{type}}, received: {}", reflection::type_name(args[{{loop.index}}].type())));
     }
     const {{type}}& a{{loop.index}} = *static_cast<const {{type}}*>(args[{{loop.index}}].raw());
 
     {% endfor -%}
 
     {% if item.return -%}
-    *reinterpret_cast<{{item.return}}*>(res) = //
+    if (res.type() != TypeId::get<{{item.return}}>()) {
+      return Error(format("Return type expected: {{item.return}}, received: {}", reflection::type_name(res.type())));
+    }
+    *reinterpret_cast<{{item.return}}*>(res.raw_mut()) = //
     {% endif -%}
-    std::invoke(&{{name}}::{{item.name}}, {% if not ("kStatic" in item.acc) %}static_cast<{{name}}*>(obj),{% endif %}
+    std::invoke(&{{name}}::{{item.name}}{% if not ("kStatic" in item.acc) %}, static_cast<{{name}}*>(obj){% endif %}{% if length(item.params) != 0 %},{% else %});{% endif %}
       {% for i in range(length(item.params)) -%}
         a{{loop.index}}{% if not loop.is_last %},
       {% else %});{% endif -%}

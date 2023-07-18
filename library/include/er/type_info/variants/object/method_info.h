@@ -40,16 +40,16 @@ class MethodInfo {
     std::vector<Var> v_args;
     fold_args(&v_args, args...);
 
-    return _data->invoke(nullptr, _base, v_args);
+    return _data->invoke(Var(), _base, v_args);
   }
 
   template <typename RetT, typename... Args>
   Expected<RetT> invoke(const Args&... args) const {
     std::vector<Var> v_args;
-    fold_args(&v_args, args...);
+    fold_args(&v_args, &args...);
 
     RetT ret;
-    return _data->invoke(&ret, _base, v_args)
+    return _data->invoke(Var(&ret), _base, v_args)
         .match_move(                                            //
             [](Error&& err) -> Expected<RetT> { return err; },  //
             [&](auto&& _) -> Expected<RetT> { return ret; });
@@ -80,16 +80,16 @@ class MethodInfo {
   const MethodDesc* _data;
 
   template <typename ArgT, typename... Args>
-  void fold_args(std::vector<Var>* v_args, const ArgT& arg, const Args&... other) const {
-    v_args->push_back(Var(&arg));
+  void fold_args(std::vector<Var>* v_args, const ArgT* arg, const Args*... other) const {
+    v_args->push_back(Var(arg));
 
     fold_args(v_args, other...);
   }
 
   template <typename ArgT>
-  void fold_args(std::vector<Var>* v_args, const ArgT& arg) const {
+  void fold_args(std::vector<Var>* v_args, const ArgT* arg) const {
 
-    v_args->push_back(Var(&arg));
+    v_args->push_back(Var(arg));
   }
 };
 

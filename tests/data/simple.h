@@ -3,10 +3,7 @@
 #include <string>
 #include <utility>
 
-#include "er/attributes.h"
-
-ER_REFLECT()
-struct Simple {
+struct [[er::reflect]] Simple {
   Simple() : v1(0){};
 
   Simple(const Simple& other) {

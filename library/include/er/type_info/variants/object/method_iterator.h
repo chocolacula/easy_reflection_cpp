@@ -8,21 +8,31 @@
 
 namespace er {
 
-class ComplexMethodIterator {
+/// Skip iterator for methods collection, steps over items with unwanted properties
+class MethodIterator {
   using const_iterator = std::map<std::string_view, MethodDesc>::const_iterator;
   using item = std::pair<std::string_view, MethodInfo>;
 
  public:
-  ComplexMethodIterator(const void* base, const_iterator it, const_iterator end, Access acc)  //
-      : _base(base), _it(it), _end(end), _acc(acc) {
+  MethodIterator(const std::map<std::string_view, MethodDesc>* map,  //
+                 const void* base,                                   //
+                 Access acc)
+      : _it(map->begin()),  //
+        _end(map->cend()),  //
+        _base(base),        //
+        _acc(acc) {
+    // start from a valid element
+    if (!is_valid()) {
+      next_valid();
+    }
   }
 
-  ComplexMethodIterator& operator++() noexcept {
+  MethodIterator& operator++() noexcept {
     next_valid();
     return *this;
   };
 
-  ComplexMethodIterator operator++(int) noexcept {
+  MethodIterator operator++(int) noexcept {
     auto t = *this;
     ++(*this);
     return t;
@@ -36,9 +46,15 @@ class ComplexMethodIterator {
     return _it != other;
   };
 
-  item operator*() const noexcept {
+  auto operator*() const noexcept {
     return std::make_pair(_it->first, MethodInfo(_base, &_it->second));
   };
+
+ private:
+  const_iterator _it;
+  const const_iterator _end;
+  const void* _base;
+  const Access _acc;
 
   bool is_valid() {
     return right_access() && (_base != nullptr || _it->second.is_static());
@@ -49,12 +65,6 @@ class ComplexMethodIterator {
       ++_it;
     } while (!is_valid() && _it != _end);
   }
-
- private:
-  const void* _base;
-  const_iterator _it;
-  const const_iterator _end;
-  const Access _acc;
 
   inline bool right_access() {
     return (_it->second.access() & _acc & (Access::kPublic | Access::kProtected | Access::kPrivate)) != Access::kNone;

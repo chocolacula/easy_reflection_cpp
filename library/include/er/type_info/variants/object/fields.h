@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "complex_field_iterator.h"
+#include "field_iterator.h"
 
 namespace er {
 
@@ -15,12 +15,8 @@ struct Fields {
     return _map->size();
   }
 
-  ComplexFieldIterator begin() {
-    ComplexFieldIterator it{_base, _map->begin(), _map->end(), _access, _include_readonly};
-    if (!it.is_valid()) {
-      it.next_valid();
-    }
-    return it;
+  FieldIterator begin() {
+    return {_map, _base, _access, _include_readonly};
   }
 
   // iterator type is not the same as begin

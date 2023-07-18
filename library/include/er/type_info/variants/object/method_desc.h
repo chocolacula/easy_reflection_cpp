@@ -10,12 +10,12 @@
 namespace er {
 
 struct MethodDesc {
-  MethodDesc(Expected<None> (*fn)(void* res, void* obj, const std::vector<Var>& args),  //
+  MethodDesc(Expected<None> (*fn)(Var res, void* obj, const std::vector<Var>& args),  //
              Access acc)
       : _fn(fn), _acc(acc) {
   }
 
-  Expected<None> invoke(void* res, void* obj, const std::vector<Var>& args) const {
+  Expected<None> invoke(Var res, void* obj, const std::vector<Var>& args) const {
     return _fn(res, obj, args);
   }
 
@@ -44,7 +44,7 @@ struct MethodDesc {
   }
 
  private:
-  Expected<None> (*const _fn)(void* res, void* obj, const std::vector<Var>& args);
+  Expected<None> (*const _fn)(Var res, void* obj, const std::vector<Var>& args);
   const Access _acc;
 };
 

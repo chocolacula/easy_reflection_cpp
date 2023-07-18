@@ -49,7 +49,9 @@ Another submodule is [vcpkg](https://github.com/microsoft/vcpkg) which manages m
 
 > **Note:** You need **Python** to obtain project version from `vcpkg.json` manifest file. You probably already have it, please install it otherwise.
 
-After you have installed all the dependencies, you need to decide whether you want to use [simdjson](https://github.com/simdjson/simdjson) for parsing or not. The solution includes a native parser that is available regardless, but it's not as fast. However, the native parser is more flexible when it comes to map parsing. If, for some reason, you want to reduce the number of dependencies, you can exclude `simdjson` by using the following CMake option:
+After installing all the dependencies, you need to decide whether you want to use `simdjson` for parsing or not. While `simdjson` provides the fastest performance on supported hardware, `rapidjson` might be faster in virtual environments. The solution includes a native parser that is available regardless. It offers more flexibility when it comes to map parsing but not as fast.
+
+If, for some reason, you want to exclude `simdjson` from the dependencies, you can use the following **CMake** option:
 
 ```bash
 -DUSE_SIMD_JSON=OFF

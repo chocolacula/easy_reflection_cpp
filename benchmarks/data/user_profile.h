@@ -3,10 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "er/attributes.h"
-
-ER_REFLECT()
-struct UserProfile {
+struct [[er::reflect]] UserProfile {
   uint64_t user_id;
 
   struct UserName {

@@ -20,6 +20,8 @@
 // yaml-cpp
 #include "yaml-cpp/yaml.h"
 
+namespace {
+
 struct SetUp {
   static std::string_view json() {
     static std::string json;
@@ -70,7 +72,7 @@ struct SetUp {
   }
 };
 
-static void json_er_serialization(benchmark::State& state) {
+void json_er_serialization(benchmark::State& state) {
   auto profile = er::serialization::json::from_string<UserProfile>(SetUp::json()).unwrap();
 
   for (auto _ : state) {
@@ -81,7 +83,7 @@ static void json_er_serialization(benchmark::State& state) {
 }
 BENCHMARK(json_er_serialization);
 
-static void json_er_deserialization(benchmark::State& state) {
+void json_er_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto profile = er::serialization::json::from_string<UserProfile>(SetUp::json()).unwrap();
 
@@ -91,7 +93,7 @@ static void json_er_deserialization(benchmark::State& state) {
 BENCHMARK(json_er_deserialization);
 
 #ifdef USE_SIMD_JSON
-static void simd_json_er_deserialization(benchmark::State& state) {
+void simd_json_er_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto profile = er::serialization::simd_json::from_string<UserProfile>(SetUp::json()).unwrap();
 
@@ -101,7 +103,7 @@ static void simd_json_er_deserialization(benchmark::State& state) {
 BENCHMARK(simd_json_er_deserialization);
 #endif
 
-static void yaml_er_serialization(benchmark::State& state) {
+void yaml_er_serialization(benchmark::State& state) {
   auto profile = er::serialization::yaml::from_string<UserProfile>(SetUp::yaml()).unwrap();
 
   std::string str;
@@ -113,7 +115,7 @@ static void yaml_er_serialization(benchmark::State& state) {
 }
 BENCHMARK(yaml_er_serialization);
 
-static void yaml_er_deserialization(benchmark::State& state) {
+void yaml_er_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto profile = er::serialization::yaml::from_string<UserProfile>(SetUp::yaml()).unwrap();
 
@@ -122,7 +124,7 @@ static void yaml_er_deserialization(benchmark::State& state) {
 }
 BENCHMARK(yaml_er_deserialization);
 
-static void binary_er_serialization(benchmark::State& state) {
+void binary_er_serialization(benchmark::State& state) {
   auto profile = er::serialization::json::from_string<UserProfile>(SetUp::json()).unwrap();
 
   for (auto _ : state) {
@@ -133,7 +135,7 @@ static void binary_er_serialization(benchmark::State& state) {
 }
 BENCHMARK(binary_er_serialization);
 
-static void binary_er_deserialization(benchmark::State& state) {
+void binary_er_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto profile = er::serialization::binary::from_vector<UserProfile>(SetUp::binary()).unwrap();
 
@@ -142,7 +144,7 @@ static void binary_er_deserialization(benchmark::State& state) {
 }
 BENCHMARK(binary_er_deserialization);
 
-static void json_nlohmann_serialization(benchmark::State& state) {
+void json_nlohmann_serialization(benchmark::State& state) {
   auto json_obj = nlohmann::json::parse(SetUp::json());
 
   for (auto _ : state) {
@@ -153,7 +155,7 @@ static void json_nlohmann_serialization(benchmark::State& state) {
 }
 BENCHMARK(json_nlohmann_serialization);
 
-static void json_nlohmann_deserialization(benchmark::State& state) {
+void json_nlohmann_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto json_obj = nlohmann::json::parse(SetUp::json());
 
@@ -162,7 +164,7 @@ static void json_nlohmann_deserialization(benchmark::State& state) {
 }
 BENCHMARK(json_nlohmann_deserialization);
 
-static void rapid_json_serialization(benchmark::State& state) {
+void rapid_json_serialization(benchmark::State& state) {
   rapidjson::Document json_obj;
   json_obj.Parse(SetUp::json().data());
 
@@ -178,7 +180,7 @@ static void rapid_json_serialization(benchmark::State& state) {
 }
 BENCHMARK(rapid_json_serialization);
 
-static void rapid_json_deserialization(benchmark::State& state) {
+void rapid_json_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     rapidjson::Document json_obj;
     json_obj.Parse(SetUp::json().data());
@@ -188,7 +190,7 @@ static void rapid_json_deserialization(benchmark::State& state) {
 }
 BENCHMARK(rapid_json_deserialization);
 
-static void yaml_cpp_serialization(benchmark::State& state) {
+void yaml_cpp_serialization(benchmark::State& state) {
   auto yaml_obj = YAML::Load(SetUp::yaml().data());
 
   std::string str;
@@ -204,7 +206,7 @@ static void yaml_cpp_serialization(benchmark::State& state) {
 }
 BENCHMARK(yaml_cpp_serialization);
 
-static void yaml_cpp_deserialization(benchmark::State& state) {
+void yaml_cpp_deserialization(benchmark::State& state) {
   for (auto _ : state) {
     auto yaml_obj = YAML::Load(SetUp::yaml().data());
 
@@ -212,3 +214,5 @@ static void yaml_cpp_deserialization(benchmark::State& state) {
   }
 }
 BENCHMARK(yaml_cpp_deserialization);
+
+}  // namespace
