@@ -71,7 +71,7 @@ struct JsonBuilder {
       for (auto&& b : c->bases()) {
         nlohmann::json item;
 
-        item["access"] = access_str(b.getAccessSpecifier());
+        item["acc"] = access_str(b.getAccessSpecifier());
         item["name"] = b.getType()->getAsRecordDecl()->getQualifiedNameAsString();
 
         parents.push_back(std::move(item));
@@ -115,7 +115,7 @@ struct JsonBuilder {
       }
     }
     json.emplace("fields", std::move(fields));
-    json.emplace("func", std::move(func));
+    json.emplace("methods", std::move(func));
 
     _ctx->result.emplace(std::move(name), std::move(json));
   }
@@ -284,14 +284,16 @@ struct JsonBuilder {
       for (auto&& option : r->options()) {
         opts.insert(option);
       }
-
-      // empty options == All
-      if (opts.empty() || opts.count(ErReflectAttr::Option::All) != 0) {
-        opts.insert(ErReflectAttr::Option::Base);
-        opts.insert(ErReflectAttr::Option::NonPublic);
-        opts.insert(ErReflectAttr::Option::Data);
-        opts.insert(ErReflectAttr::Option::Func);
-      }
+    }
+    if (opts.count(ErReflectAttr::Option::All) != 0) {
+      opts.insert(ErReflectAttr::Option::Base);
+      opts.insert(ErReflectAttr::Option::NonPublic);
+      opts.insert(ErReflectAttr::Option::Data);
+      opts.insert(ErReflectAttr::Option::Func);
+    }
+    if (opts.empty()) {
+      // default state
+      opts.insert(ErReflectAttr::Option::Data);
     }
     return opts;
   }

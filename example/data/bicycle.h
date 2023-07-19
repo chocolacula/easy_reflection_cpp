@@ -7,7 +7,7 @@
 #include "../print.h"
 #include "colors.h"
 
-struct [[er::reflect]] Bicycle {
+struct [[er::reflect("all")]] Bicycle {
   Bicycle() = default;
 
   int id;

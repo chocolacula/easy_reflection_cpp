@@ -3,7 +3,7 @@
 [![CMake build and test](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml)
 <a href="https://github.com/fffaraz/awesome-cpp#reflection"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Listed on Awesome C++"></img></a>
 
-It parses C++ source code for special attributes. In the most straightforward situation, you only need to mark an object by `ER_REFLECT()` macro. All other work will be done by the code generation tool and reflection library.
+It parses C++ source code for special attributes. In the most straightforward situation, you only need to mark an object by `[[er::reflect]]` attribute. All other work will be done by the code generation tool and reflection library.
 
 The main idea is to use kinda dynamic typing and **Run Time Type Checking** for some type agnostic operations, like copying or taking the name of a type.  
 It makes it possible to determine a variable type and do the right job - print, serialize/deserialize.
@@ -14,6 +14,7 @@ If you are curious about the details of how it works you can find them in [DEV a
 
 - Linux, MacOS and Windows, x86 and ARM support
 - translate enums to string and vice versa
+- invoke methods
 - support of stl containers like `std::vector`, `std::list`, `std::map`, etc.
 - smart pointers support
 - native serialization directly to an object and without third parties for:

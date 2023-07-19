@@ -1,6 +1,6 @@
-# er_gen
+# Easy Reflection Generator
 
-Code generation tool for Easy Reflection based on Clang tools. It combines parsed data into one json entity and forwards it to inja tempate engine.
+Code generation tool for based on Clang tools. It combines parsed data into json entities and forwards them to inja tempate engine.
 
 The format of object entity is
 
@@ -12,22 +12,24 @@ The format of object entity is
   "origin" : string, // file path to origin file for analysis
   "bases" : [
     {
-      "access" : [ "kPublic" | "kProtected" | "kPrivate"],
-      "name" : string, // full name including all namespaces
+      "acc" : [ "kPublic" | "kProtected" | "kPrivate"],
+      "name" : string // full name including all namespaces
     }
   ],
   "fields" : [
     {
       "acc" : [ "kPublic" | "kProtected" | "kPrivate" | "kConst" | "kStatic" ],
+      "alias" : string,
       "name" : string,
-      "alias" : string
+      "type": string
     }
   ],
   "methods" : [
     {
       "acc" : [ "kPublic" | "kProtected" | "kPrivate" | "kConst" | "kStatic" ],
+      "alias" : string,
       "name" : string,
-      "alias" : string
+      "type": string
     }  
   ],
 }

@@ -18,13 +18,41 @@ class Employee {
 
 To get data from **MongoDB** and map it to the class instance you only need to do few simple actions:
 
-Add `[[er::reflect]]` attribute before class name
+Add `[[er::reflect(...)]]` attribute before class name
 
 ```cpp
-class [[er::reflect]] Employee {
+class [[er::reflect("data")]] Employee {
  public:
   std::string name;
 ...
+```
+You have the ability to customize which part of an object will be reflected by utilizing the following options:
+
+- `"base"` - include fields and methods from base class
+- `"nonPublic"` - include protected and private
+- `"data"` - fields
+- `"func"` - methods and static functions
+- `"all"` - combination of all options above
+
+The empty options is equal to `"data"`.
+
+Standard serializers skip non public and static fields, to change that, you have to write you own serializer. Just copy existing one to somewhere under `er::serialization` namespace and change the line:
+
+```cpp
+for (auto&& record : o.get_fields()) {
+```
+
+to something like:
+
+```cpp
+for (auto&& record : o.get_fields(Access::kPublic | Access::kProtected | Access::kPrivate)) {
+```
+
+Please be aware of using `static` fields. In the event that they are modified during the serialization/deserialization process, it may lead to unexpected behavior for other instances of the class. It is recommended to avoid writing to `static` fields in such scenarios. However, if it is absolutely necessary to access them, you can do so by passing a `nullptr` of the specific type.
+
+```cpp
+Employee* ptr = nullptr;
+auto reflected = reflection::reflect(ptr);
 ```
 
 You can use aliases if the data in json have different field names, for example you wanna rename field `name` to `full_name` during serialization:
@@ -37,39 +65,7 @@ class [[er::reflect]] Employee {
 ...
 ```
 
-By default **private** fields will be omitted, to reflect them add:
-
-```cpp
-class [[er::reflect]] Employee {
- public:
-  std::string name;
-...
-```
-
-But note they are fields for **reflection** NOT for **serialization**. It makes possible to read values or print them.
-
-Standard serializers skip non public and static fields, to change that, you have to write you own serializer. Just copy existing one to somewhere under `er::serialization` namespace and change line:
-
-```cpp
-for (auto&& record : o.get_fields()) {
-```
-
-to something like:
-
-```cpp
-for (auto&& record : o.get_fields(Access::kPublic | Access::kProtected | Access::kPrivate)) {
-```
-
-Please be aware of using `static` fields. It's possible to have access to them by passing `nullptr` of particular type:
-
-```cpp
-Employee* ptr = nullptr;
-auto reflected = reflection::reflect(ptr);
-```
-
-If the fields were set during serialization/deserialization process, it would be at least unexpected for other instances of a class.  
-
-To exclude any non desired fields use `[[er::ignore]]` attribute.
+To exclude any undesired fields use `[[er::ignore]]` attribute.
 
 Then setup the generator tool by editing `config.yaml` file. The most important key in the file is:
 
@@ -131,14 +127,10 @@ auto employee = serialization::simd_json::from_string<Employee>(str_from_mongo).
 ...
 ```
 
-Please see [example](../example/main.cpp) for more details.
+Please see [example](../example) for more details.
 
 ## Strings
 
 It's not easy to make decision how to deserialize strings. `std::string_view` and `const char*` are strings but in the same time just references to data nomater const or not.
 
-While you deserialize data which you received from someware you cannot just take a reference, you need something to own data.  
-
-Use `std::string` to own and serialize/deserialize data and reference types like something const which you could print or analyze but not set while deserialization.  
-
-For this reason reflection marks `std::string_view` and `C strings` by special `read only` attribute and does not serialize.
+While you deserialize data which you received from someware you cannot just take a reference, you need something to own data. Use `std::string` to own and serialize/deserialize data and reference types like something const which you could print or analyze but not set while deserialization. For this reason reflection marks `std::string_view` and `C strings` by special `read only` attribute and does not serialize.
