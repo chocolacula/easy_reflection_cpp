@@ -9,7 +9,7 @@ struct [[er::reflect]] Config {
 
   struct Templates {
     std::string header;
-    [[er::reflect("enum")]] std::string for_enum;
+    [[er::alias("enum")]] std::string for_enum;
     std::string object;
   } templates;
 
