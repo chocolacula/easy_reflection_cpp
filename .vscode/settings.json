@@ -7,11 +7,10 @@
     "ENABLE_BENCHMARKS": "ON",
     // "LLVM_TARGETS_TO_BUILD": "X86",
     // "LLVM_TARGETS_TO_BUILD": "AArch64",
+    // "VCPKG_FORCE_SYSTEM_BINARIES": "ON",
     // macOS
     // "CMAKE_OSX_SYSROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
     // Windows
     // "CMAKE_GENERATOR": "Ninja",
-    // "VCPKG_FORCE_SYSTEM_BINARIES": "ON",
-    // "VCPKG_TARGET_TRIPLET": "x64-windows-static"
   }
 }

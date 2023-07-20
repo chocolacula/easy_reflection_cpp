@@ -93,6 +93,8 @@ function(disable_attribute_warnings)
     # matches Clang and AppleClang
     elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         add_compile_options("-Wno-unknown-attributes")
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        add_compile_options("/wd5030")
     endif()
 endfunction()
 
