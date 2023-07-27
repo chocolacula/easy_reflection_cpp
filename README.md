@@ -28,7 +28,7 @@ If you are curious about the details of how it works you can find them in [DEV a
 
 Look at [Installation](readme/installation.md) guide and install the solution.
 
-Then define your object and use `er::reflect` attribute:
+Then define your object and use `[[er::reflect]]`:
 
 ```cpp
 class [[er::reflect]] Object {
@@ -65,8 +65,7 @@ Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidj
 
 YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if I did the benchmark right.
 
-> **Note:** Deserialization comparison is not absolutely fair.  
-Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within. And it's still fast despite it takes some time.
+> **Note:** Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within. And it's still fast despite it takes some time.
 
 ![Core i5 benchmarks](./benchmarks/performance_chart.png)
 
