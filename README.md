@@ -67,8 +67,19 @@ YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if 
 
 > **Note:** Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within. And it's still fast despite it takes some time.
 
-![Core i5 benchmarks](./benchmarks/performance_chart.png)
+<p align="center">
+  <img src="./benchmarks/performance_chart.png" alt="Core i5 benchmarks">
+</p>
 
-The length in bytes of serialized in different ways objects has the following relation:
+<p align="center">
+  <img src="./benchmarks/memory_chart.png" alt="Memory">
+</p>
+<p align="center">The ratio of the content length in bytes</p>
 
-![Memory](./benchmarks/memory_chart.png)
+## Thanks
+
+JetBrains for Open Source Support
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" style="width:128px;height:128px;">
+
