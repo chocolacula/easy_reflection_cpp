@@ -60,12 +60,11 @@ For more details see [How To Use](readme/how_to_use.md).
 
 The repository includes `benchmarks` folder, feel free to check it on your own hardware.
 
-JSON on average **Core i5** laptop is faster than [nlohmann json](https://github.com/nlohmann/json).
-Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidjson), deserialization is a little faster with `simdjson` parser and more than twice slower without.
+JSON is faster than [nlohmann json](https://github.com/nlohmann/json). Serialization is the same fast as [rapid json](https://github.com/Tencent/rapidjson), deserialization is a little faster with `simdjson` parser and more than twice slower without.
 
 YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if I did the benchmark right.
 
-> **Note:** Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within. And it's still fast despite it takes some time.
+> **Note:** Other libraries do not always convert string-represented values to `int`, `float`, or `bool` and don't create instances of `std::string` until you call something like `.get<int>()`. **Easy Reflection**, on the other hand, provides ready-made objects with all values within.
 
 <p align="center">
   <img src="./benchmarks/performance_chart.png" alt="Core i5 benchmarks">
@@ -81,5 +80,8 @@ YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if 
 JetBrains for Open Source Support
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" style="width:128px;height:128px;">
+<a href="https://jb.gg/OpenSourceSupport">
+  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" style="width:128px;height:128px;">
+</a>
+
 
