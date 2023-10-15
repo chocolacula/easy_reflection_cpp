@@ -1,6 +1,6 @@
 #pragma once
 
-#include "er/type_info/variants/sequence/isequence.h"
+#include "er/tools/sizeof.h"
 #include "list/std_deque.h"
 #include "list/std_list.h"
 #include "queue/std_queue.h"
@@ -90,12 +90,8 @@ struct Sequence {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of sequence has the same sizeof()
-  char _mem[sizeof(StdVector<int>)];
+  char _mem[Sizeof<StdVector<int>, StdList<int>, StdDeque<int>, StdStack<int>,  //
+                   StdQueue<int>, StdSet<int>, StdUnorderedSet<int>>::max()];
 
   inline const ISequence* impl() const {
     return reinterpret_cast<const ISequence*>(&_mem[0]);

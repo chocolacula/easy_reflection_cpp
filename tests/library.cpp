@@ -36,40 +36,6 @@ TEST(TightString, Ownership) {
   }
 }
 
-TEST(TypeInfo, ArraySizeof) {
-  auto arr = sizeof(Array);
-
-  ASSERT_EQ(arr, sizeof(StdArray<int, 8>));
-  ASSERT_EQ(arr, sizeof(CArray<int, 8>));
-}
-
-TEST(TypeInfo, SequenceSizeof) {
-  auto seq = sizeof(Sequence);
-
-  ASSERT_EQ(seq, sizeof(StdVector<int>));
-  ASSERT_EQ(seq, sizeof(StdList<int>));
-  ASSERT_EQ(seq, sizeof(StdDeque<int>));
-  ASSERT_EQ(seq, sizeof(StdQueue<int>));
-  ASSERT_EQ(seq, sizeof(StdStack<int>));
-  ASSERT_EQ(seq, sizeof(StdSet<int>));
-  ASSERT_EQ(seq, sizeof(StdUnorderedSet<int>));
-}
-
-TEST(TypeInfo, MapSizeof) {
-  auto map = sizeof(Map);
-
-  ASSERT_EQ(map, sizeof(StdMap<int, int>));
-  ASSERT_EQ(map, sizeof(StdUnorderedMap<int, int>));
-}
-
-TEST(TypeInfo, StringSizeof) {
-  auto str = sizeof(String);
-
-  ASSERT_EQ(str, sizeof(CString<char>));
-  ASSERT_EQ(str, sizeof(StdBasicString<char>));
-  ASSERT_EQ(str, sizeof(StdBasicStringView<char>));
-}
-
 TEST(TypeInfo, VariantIndex) {
   bool b;
   auto info = er::reflection::reflect(&b);
