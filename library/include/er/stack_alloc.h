@@ -9,20 +9,20 @@ class StackAlloc {
 public:
     using value_type = T;
     using pointer = T*;
-    using const_pointer = const T*;
+}
     using reference = T&;
     using const_reference = const T&;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
 
     pointer allocate(size_type n) {
-        if constexpr (sizeof(T) > size) {
+        if (sizeof(T) > size) {
             return static_cast<pointer>(::operator new(n * sizeof(T)));
         } else {
             return static_cast<pointer>(::operator new(n * sizeof(T), std::nothrow));
         }
     }
-    
+
     void deallocate(pointer p, size_type n) {
         if (reinterpret_cast<uintptr_t>(p) >= reinterpret_cast<uintptr_t>(&_stack) &&
             reinterpret_cast<uintptr_t>(p) < reinterpret_cast<uintptr_t>(&_stack) + size) {
@@ -50,7 +50,7 @@ public:
         return std::addressof(x);
     }
 
-    const_pointer address(const_reference x) const noexcept {
+    const T* address(const_reference x) const noexcept {
         return std::addressof(x);
     }
 
