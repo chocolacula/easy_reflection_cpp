@@ -40,17 +40,14 @@ struct Floating final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of Float wrapper has the same sizeof()
-  char _mem[sizeof(Float<float>)];
-
+  #include "er/tools/sizeof.h"
+  
+  char _mem[er::tools::Sizeof<Float<float>, Float<double>>::max];
+  
   inline const IFloating* impl() const {
     return reinterpret_cast<const IFloating*>(&_mem[0]);
   }
-
+  
   inline IFloating* impl() {
     return reinterpret_cast<IFloating*>(&_mem[0]);
   }
