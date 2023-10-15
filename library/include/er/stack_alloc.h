@@ -24,10 +24,11 @@ public:
     }
 
     void deallocate(pointer p, size_type n) {
-        if (sizeof(T) > size) {
+        if (sizeof(T) * n > size) {
             ::operator delete(p);
+        } else {
+            // do nothing, stack memory is automatically freed
         }
-        // else do nothing, stack memory is automatically freed
     }
 
     template <typename U, typename... Args>
