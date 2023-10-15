@@ -45,13 +45,7 @@ public:
         return std::max<size_type>(1, size / sizeof(T));
     }
 
-    pointer address(reference x) const noexcept {
-        return std::addressof(x);
-    }
-
-    const T* address(const_reference x) const noexcept {
-        return std::addressof(x);
-    }
+    // Removed deprecated methods
 
     StackAlloc() = default;
     StackAlloc(const StackAlloc&) = default;
