@@ -16,13 +16,13 @@ public:
     using difference_type = ptrdiff_t;
 
     pointer allocate(size_type n) {
-        if (sizeof(T) > size) {
+        if constexpr (sizeof(T) > size) {
             return static_cast<pointer>(::operator new(n * sizeof(T)));
         } else {
             return static_cast<pointer>(::operator new(n * sizeof(T), std::nothrow));
         }
     }
-
+    
     void deallocate(pointer p, size_type n) {
         if (reinterpret_cast<uintptr_t>(p) >= reinterpret_cast<uintptr_t>(&_stack) &&
             reinterpret_cast<uintptr_t>(p) < reinterpret_cast<uintptr_t>(&_stack) + size) {
