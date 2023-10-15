@@ -38,7 +38,7 @@ public:
 
     template <typename U>
     void destroy(U* p) {
-        p->~U();
+        std::destroy(p);
     }
 
     size_type max_size() const noexcept {
