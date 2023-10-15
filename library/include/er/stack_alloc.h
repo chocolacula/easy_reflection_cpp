@@ -24,12 +24,10 @@ public:
     }
 
     void deallocate(pointer p, size_type n) {
-        if (reinterpret_cast<uintptr_t>(p) >= reinterpret_cast<uintptr_t>(&_stack) &&
-            reinterpret_cast<uintptr_t>(p) < reinterpret_cast<uintptr_t>(&_stack) + size) {
-            // do nothing, stack memory is automatically freed
-        } else {
+        if (sizeof(T) > size) {
             ::operator delete(p);
         }
+        // else do nothing, stack memory is automatically freed
     }
 
     template <typename U, typename... Args>
