@@ -79,17 +79,16 @@ struct Array final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of array has the same sizeof()
-  char _mem[sizeof(StdArray<int, 0>)];
-
+  #include "er/tools/sizeof.h"
+  
+  // ...
+  
+  char _mem[er::tools::Sizeof<CArray<int, 0>, StdArray<int, 0>>::max];
+  
   inline const IArray* impl() const {
     return reinterpret_cast<const IArray*>(&_mem[0]);
   }
-
+  
   inline IArray* impl() {
     return reinterpret_cast<IArray*>(&_mem[0]);
   }
