@@ -9,11 +9,11 @@ class StackAlloc {
 public:
     using value_type = T;
     using pointer = T*;
-}
     using reference = T&;
     using const_reference = const T&;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
+}
 
     pointer allocate(size_type n) {
         if (sizeof(T) * n > size) {
@@ -38,14 +38,20 @@ public:
 
     template <typename U>
     void destroy(U* p) {
-        std::destroy(p);
+        p->~U();
     }
 
     size_type max_size() const noexcept {
         return std::max<size_type>(1, size / sizeof(T));
     }
 
-    // Removed deprecated methods
+    pointer address(reference x) const noexcept {
+        return std::addressof(x);
+    }
+
+    const T* address(const_reference x) const noexcept {
+        return std::addressof(x);
+    }
 
     StackAlloc() = default;
     StackAlloc(const StackAlloc&) = default;
