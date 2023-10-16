@@ -80,7 +80,7 @@ struct Array final {
   }
 
  private:
-  char _mem[Sizeof<CArray<int, 1>, StdArray<int, 1>>::max];
+  char _mem[Sizeof<CArray<int, 1>, StdArray<int, 1>>::max()];
 
   inline const IArray* impl() const {
     return reinterpret_cast<const IArray*>(&_mem[0]);
