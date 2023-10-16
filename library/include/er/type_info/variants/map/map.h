@@ -69,7 +69,7 @@ struct Map final {
   }
 
  private:
-  char _mem[Sizeof<StdMap<int, int>, StdUnorderedMap<int, int>>::max];
+  char _mem[Sizeof<StdMap<int, int>, StdUnorderedMap<int, int>>::max()];
 
   inline const IMap* impl() const {
     return reinterpret_cast<const IMap*>(&_mem[0]);
