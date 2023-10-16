@@ -49,7 +49,7 @@ struct String final {
   }
 
  private:
-  char _mem[Sizeof<CString<char>, StdBasicString<char>, StdBasicStringView<char>>::max];
+  char _mem[Sizeof<CString<char>, StdBasicString<char>, StdBasicStringView<char>>::max()];
 
   inline const IString* impl() const {
     return reinterpret_cast<const IString*>(&_mem[0]);
