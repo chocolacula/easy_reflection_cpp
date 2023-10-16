@@ -68,7 +68,7 @@ struct Integer {
   }
 
  private:
-  char _mem[sizeof(Int<int>)];
+  char _mem[Sizeof<Int<int>>::max()];
 
   inline const IInteger* impl() const {
     return reinterpret_cast<const IInteger*>(&_mem[0]);
