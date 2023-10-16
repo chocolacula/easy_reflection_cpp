@@ -37,10 +37,8 @@ struct Enum final {
   };
 
  private:
-  #include "er/tools/sizeof.h"
-  
-  char _mem[er::tools::Sizeof<EnumImpl<int, 0>>::max];
-  
+  char _mem[sizeof(EnumImpl<int, 0>)];
+
   inline const IEnum* impl() const {
     return reinterpret_cast<const IEnum*>(&_mem[0]);
   }

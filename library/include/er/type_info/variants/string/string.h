@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "c_string.h"
+#include "er/tools/sizeof.h"
 #include "istring.h"
 #include "std_basic_string.h"
 #include "std_basic_string_view.h"
@@ -48,12 +49,7 @@ struct String final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of string has the same sizeof()
-  char _mem[sizeof(CString<char>)];
+  char _mem[Sizeof<CString<char>, StdBasicString<char>, StdBasicStringView<char>>::max];
 
   inline const IString* impl() const {
     return reinterpret_cast<const IString*>(&_mem[0]);

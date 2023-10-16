@@ -68,14 +68,12 @@ struct Integer {
   }
 
  private:
-  #include "er/tools/sizeof.h"
-  
-  char _mem[er::tools::Sizeof<Int<int>, Int<unsigned int>, Int<long>, Int<unsigned long>, Int<long long>, Int<unsigned long long>>::max];
-  
+  char _mem[sizeof(Int<int>)];
+
   inline const IInteger* impl() const {
     return reinterpret_cast<const IInteger*>(&_mem[0]);
   }
-  
+
   inline IInteger* impl() {
     return reinterpret_cast<IInteger*>(&_mem[0]);
   }

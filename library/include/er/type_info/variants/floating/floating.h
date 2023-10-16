@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "./float.h"
+#include "float.h"
 #include "ifloating.h"
 
 namespace er {
@@ -40,14 +40,12 @@ struct Floating final {
   }
 
  private:
-  #include "er/tools/sizeof.h"
-  
-  char _mem[er::tools::Sizeof<Float<float>, Float<double>>::max];
-  
+  char _mem[sizeof(Float<double>)];
+
   inline const IFloating* impl() const {
     return reinterpret_cast<const IFloating*>(&_mem[0]);
   }
-  
+
   inline IFloating* impl() {
     return reinterpret_cast<IFloating*>(&_mem[0]);
   }

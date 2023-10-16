@@ -4,7 +4,8 @@
 #include <utility>
 
 #include "c_array.h"
-#include "er/type_info/variants/array/iarray.h"
+#include "er/tools/sizeof.h"
+#include "iarray.h"
 #include "std_array.h"
 
 namespace er {
@@ -79,16 +80,12 @@ struct Array final {
   }
 
  private:
-  #include "er/tools/sizeof.h"
-  
-  // ...
-  
-  char _mem[er::tools::Sizeof<CArray<int, 0>, StdArray<int, 0>>::max];
-  
+  char _mem[Sizeof<CArray<int, 1>, StdArray<int, 1>>::max];
+
   inline const IArray* impl() const {
     return reinterpret_cast<const IArray*>(&_mem[0]);
   }
-  
+
   inline IArray* impl() {
     return reinterpret_cast<IArray*>(&_mem[0]);
   }
