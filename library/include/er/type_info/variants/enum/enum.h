@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "enum_impl.h"
-#include "er/type_info/variants/enum/ienum.h"
+#include "ienum.h"
 
 namespace er {
 

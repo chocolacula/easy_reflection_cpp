@@ -40,8 +40,8 @@ struct Floating final {
   }
 
  private:
-  char _mem[Sizeof<Float<double>>::max()];
-  
+  char _mem[sizeof(Float<double>)];
+
   inline const IFloating* impl() const {
     return reinterpret_cast<const IFloating*>(&_mem[0]);
   }
