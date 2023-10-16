@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+namespace er {
+
 template <typename T, typename... Args>
 struct Sizeof {
   static constexpr size_t max() {
@@ -15,3 +17,5 @@ struct Sizeof<T> {
     return sizeof(T);
   }
 };
+
+}  // namespace er

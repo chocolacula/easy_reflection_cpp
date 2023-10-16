@@ -1,5 +1,6 @@
 #pragma once
 
+#include "er/tools/sizeof.h"
 #include "imap.h"
 #include "std_map.h"
 #include "std_unordered_map.h"
@@ -68,12 +69,7 @@ struct Map final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of map has the same sizeof()
-  char _mem[sizeof(StdMap<int, int>)];
+  char _mem[Sizeof<StdMap<int, int>, StdUnorderedMap<int, int>>::max()];
 
   inline const IMap* impl() const {
     return reinterpret_cast<const IMap*>(&_mem[0]);

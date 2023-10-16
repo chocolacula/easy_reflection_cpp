@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "enum_impl.h"
-#include "er/type_info/variants/enum/ienum.h"
+#include "ienum.h"
 
 namespace er {
 
@@ -37,11 +37,6 @@ struct Enum final {
   };
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of array has the same sizeof()
   char _mem[sizeof(EnumImpl<int, 0>)];
 
   inline const IEnum* impl() const {

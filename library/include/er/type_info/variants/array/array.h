@@ -4,7 +4,8 @@
 #include <utility>
 
 #include "c_array.h"
-#include "er/type_info/variants/array/iarray.h"
+#include "er/tools/sizeof.h"
+#include "iarray.h"
 #include "std_array.h"
 
 namespace er {
@@ -79,12 +80,7 @@ struct Array final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of array has the same sizeof()
-  char _mem[sizeof(StdArray<int, 0>)];
+  char _mem[Sizeof<CArray<int, 1>, StdArray<int, 1>>::max()];
 
   inline const IArray* impl() const {
     return reinterpret_cast<const IArray*>(&_mem[0]);

@@ -68,11 +68,6 @@ struct Integer {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of Int wrapper has the same sizeof()
   char _mem[sizeof(Int<int>)];
 
   inline const IInteger* impl() const {

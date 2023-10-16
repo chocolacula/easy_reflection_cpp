@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "./float.h"
+#include "float.h"
 #include "ifloating.h"
 
 namespace er {
@@ -40,12 +40,7 @@ struct Floating final {
   }
 
  private:
-  // a little hack to reduce dynamic memory allocation
-  // this approach is little faster then use shared_ptr but still faster
-  //
-  // it's just a memory bunch for a pointer and is_const flag
-  // all kinds of Float wrapper has the same sizeof()
-  char _mem[sizeof(Float<float>)];
+  char _mem[sizeof(Float<double>)];
 
   inline const IFloating* impl() const {
     return reinterpret_cast<const IFloating*>(&_mem[0]);
