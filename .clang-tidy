@@ -14,6 +14,7 @@ Checks: >
   -fuchsia-default-arguments-calls,
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
+  -readability-identifier-length,
   google-explicit-constructor,
   readability-isolate-declaration
 

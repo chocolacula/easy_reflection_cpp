@@ -1,7 +1,10 @@
 #include "er/reflection/reflection.h"
 
+#include <_types/_uint8_t.h>
+
 #include <cstddef>
 #include <iostream>
+#include <memory_resource>
 
 #include "er/reflection/the_great_table.h"
 #include "er/types/all_types.h"
@@ -46,12 +49,12 @@ size_t reflection::type_size(TypeId id) {
   return TheGreatTable::data()[id.number()].type_size();
 }
 
-void* reflection::call_new(TypeId id, void* place, size_t place_size) {
-  return TheGreatTable::data()[id.number()].call_new(place, place_size);
+void* reflection::call_new(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc) {
+  return TheGreatTable::data()[id.number()].call_new(alloc, n);
 }
 
-void reflection::call_delete(Var variable, bool in_place) {
-  TheGreatTable::data()[variable.type().number()].call_delete(variable.raw_mut(), in_place);
+void reflection::call_delete(Var variable, std::pmr::polymorphic_allocator<uint8_t>* alloc) {
+  TheGreatTable::data()[variable.type().number()].call_delete(alloc, variable.raw_mut(), n);
   variable.dispose();
 }
 

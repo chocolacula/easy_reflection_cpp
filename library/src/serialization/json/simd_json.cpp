@@ -161,6 +161,8 @@ Expected<None> deserialize_recursive(TypeInfo* info, dom::element elem) {
         return Error(format("Expected Object but {} found", info->get_kind_str()));
       }
       break;
+    case dom::element_type::NULL_VALUE:
+      break;
   }
   return None();
 }

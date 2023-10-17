@@ -1,5 +1,7 @@
 #pragma once
 
+#include <_types/_uint8_t.h>
+
 #include <cstddef>
 
 #include "er/reflection/the_great_table.h"
@@ -18,21 +20,12 @@ struct CommonActions {
     return sizeof(T);
   }
 
-  static void* call_new(void* place, size_t place_size) {
-    if (place_size >= sizeof(T)) {
-      new (place) T();
-      return place;
-    }
-    auto* p = new T();
-    return p;
+  static uint8_t* call_new(Actions::palloc_t* alloc, size_t n) {
+    return alloc->allocate(n);
   }
 
-  static void call_delete(void* pointer, bool in_place) {
-    if (in_place) {
-      static_cast<T*>(pointer)->~T();
-    } else {
-      delete static_cast<T*>(pointer);
-    }
+  static void call_delete(Actions::palloc_t* alloc, uint8_t* p, size_t n) {
+    return alloc->deallocate(p, n);
   }
 
   static void copy(void* to, const void* from) {

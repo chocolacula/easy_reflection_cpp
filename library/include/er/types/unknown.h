@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+
+#include "er/reflection/actions.h"
 #include "er/type_info/type_info.h"
 
 namespace er {
@@ -17,19 +20,19 @@ struct UnknownActions {
     return 0;
   }
 
-  static void* call_new(void* place, size_t place_size) {
+  static uint8_t* call_new(Actions::palloc_t* /*alloc*/, size_t /*n*/) {
     throw std::runtime_error("Cannot alloc a value for unknown type");
   }
 
-  static void call_delete(void* pointer, bool in_place) {
+  static void call_delete(Actions::palloc_t* /*alloc*/, uint8_t* /*p*/, size_t /*n*/) {
     throw std::runtime_error("Cannot delete a value with unknown type");
   }
 
-  static void copy(void* to, const void* from) {
+  static void copy(void* /*to*/, const void* /*from*/) {
     throw std::runtime_error("Cannot copy a value with unknown type");
   }
 
-  static void move(void* to, void* from) {
+  static void move(void* /*to*/, void* /*from*/) {
     throw std::runtime_error("Cannot move a value with unknown type");
   }
 
