@@ -23,12 +23,12 @@ struct TheGreatTable {
   // static initialization fiasco guard to guarantee the first place for UnknownActions
   static std::vector<Actions>& data_guard() {
     // zero index for unknown type
-    static std::vector<Actions> data = {Actions(&UnknownActions::reflect,      //
-                                                &UnknownActions::type_name,    //
-                                                &UnknownActions::type_size,    //
-                                                &UnknownActions::call_new,     //
-                                                &UnknownActions::call_delete,  //
-                                                &UnknownActions::copy,         //
+    static std::vector<Actions> data = {Actions(&UnknownActions::reflect,    //
+                                                &UnknownActions::type_name,  //
+                                                &UnknownActions::type_size,  //
+                                                &UnknownActions::construct,  //
+                                                &UnknownActions::destroy,    //
+                                                &UnknownActions::copy,       //
                                                 &UnknownActions::move)};
 
     return data;

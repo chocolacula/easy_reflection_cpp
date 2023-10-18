@@ -1,7 +1,5 @@
 #pragma once
 
-#include <_types/_uint8_t.h>
-
 #include <cstddef>
 
 #include "er/reflection/the_great_table.h"
@@ -20,12 +18,12 @@ struct CommonActions {
     return sizeof(T);
   }
 
-  static uint8_t* call_new(Actions::palloc_t* alloc, size_t n) {
-    return alloc->allocate(n);
+  static void construct(void* p) {
+    new (p) T();
   }
 
-  static void call_delete(Actions::palloc_t* alloc, uint8_t* p, size_t n) {
-    return alloc->deallocate(p, n);
+  static void call_delete(void* p) {
+    static_cast<T*>(p)->~T();
   }
 
   static void copy(void* to, const void* from) {
