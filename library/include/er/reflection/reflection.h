@@ -35,8 +35,8 @@ void print(const T* pointer) {
 
 size_t type_size(TypeId id);
 
-void* call_new(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc, size_t n);
-void call_delete(Var variable, std::pmr::polymorphic_allocator<uint8_t>* alloc, size_t n);
+void construct(Var variable);
+void destroy(Var variable);
 
 Expected<None> copy(Var to, Var from);
 

@@ -27,12 +27,12 @@ struct TypeActions<Config> {
 
 template <>
 TypeId TypeId::get(Config* /*unused*/) {
-  static TypeId id(TheGreatTable::record(Actions(&TypeActions<Config>::reflect,        //
-                                                 &CommonActions<Config>::type_name,    //
-                                                 &CommonActions<Config>::type_size,    //
-                                                 &CommonActions<Config>::call_new,     //
-                                                 &CommonActions<Config>::call_delete,  //
-                                                 &CommonActions<Config>::copy,         //
+  static TypeId id(TheGreatTable::record( Actions(&TypeActions<Config>::reflect,      //
+                                                 &CommonActions<Config>::type_name,  //
+                                                 &CommonActions<Config>::type_size,  //
+                                                 &CommonActions<Config>::construct,  //
+                                                 &CommonActions<Config>::destroy,    //
+                                                 &CommonActions<Config>::copy,       //
                                                  &CommonActions<Config>::move)));
   return id;
 }

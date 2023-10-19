@@ -22,7 +22,7 @@ struct CommonActions {
     new (p) T();
   }
 
-  static void call_delete(void* p) {
+  static void destroy(void* p) {
     static_cast<T*>(p)->~T();
   }
 

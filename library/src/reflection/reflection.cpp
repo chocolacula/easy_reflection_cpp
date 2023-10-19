@@ -49,13 +49,12 @@ size_t reflection::type_size(TypeId id) {
   return TheGreatTable::data()[id.number()].type_size();
 }
 
-void* reflection::call_new(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc) {
-  return TheGreatTable::data()[id.number()].call_new(alloc, n);
+void reflection::construct(Var variable) {
+  return TheGreatTable::data()[variable.type().number()].construct(variable.raw_mut());
 }
 
-void reflection::call_delete(Var variable, std::pmr::polymorphic_allocator<uint8_t>* alloc) {
-  TheGreatTable::data()[variable.type().number()].call_delete(alloc, variable.raw_mut(), n);
-  variable.dispose();
+void reflection::destroy(Var variable) {
+  TheGreatTable::data()[variable.type().number()].destroy(variable.raw_mut());
 }
 
 Expected<None> reflection::copy(Var to, Var from) {

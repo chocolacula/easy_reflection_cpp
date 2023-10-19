@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -6,8 +8,11 @@
 namespace er {
 
 struct BuffAlloc final : public std::pmr::polymorphic_allocator<uint8_t> {
+  BuffAlloc() : kSize(0) {
+  }
+
   template <size_t size>
-  BuffAlloc(std::array<uint8_t, size>* arr) : _buff(arr->data()), kSize(size) {
+  explicit BuffAlloc(std::array<uint8_t, size>* arr) : _buff(arr->data()), kSize(size) {
   }
 
   BuffAlloc(uint8_t* p, size_t size) : _buff(p), kSize(size) {
@@ -31,5 +36,7 @@ struct BuffAlloc final : public std::pmr::polymorphic_allocator<uint8_t> {
   uint8_t* _buff;
   const size_t kSize;
 };
+
+static inline BuffAlloc DefaultAlloc;
 
 }  // namespace er

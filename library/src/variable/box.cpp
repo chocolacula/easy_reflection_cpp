@@ -1,40 +1,37 @@
 #include "er/variable/box.h"
 
+#include <_types/_uint8_t.h>
+
+#include "er/buff_alloc.h"
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 
 using namespace er;
 
-Box::Box(TypeId id) : _type(id) {
-  auto* ptr = reflection::call_new(id, &_data.stack_mem[0], kMemSize);
-
-  if (ptr == &_data.stack_mem[0]) {
-    _optimized = true;
-  } else {
-    _optimized = false;
-    _data.ptr = ptr;
-  }
+Box::Box(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc) : _alloc(alloc) {
+  _var = Var(_alloc->allocate(reflection::type_size(id)), id, false);
+  reflection::construct(_var);
 }
 
 Box::~Box() {
-  void* ptr = _optimized ? &_data.stack_mem[0] : _data.ptr;
-  reflection::call_delete(Var(ptr, _type, false), _optimized);
+  auto size = reflection::type_size(_var.type());
+  auto* p = reinterpret_cast<uint8_t*>(_var.raw_mut());
+
+  reflection::destroy(_var);
+  _alloc->deallocate(p, size);
 }
 
 Var Box::var() {
-  if (_optimized) {
-    return Var(&_data.stack_mem[0], _type, false);
-  }
-  return Var(_data.ptr, _type, false);
+  return _var;
 }
 
 Box Box::clone() {
-  Box new_one(_type);
+  Box new_one(_var.type());
   reflection::copy(new_one.var(), var());
   return new_one;
 }
 
 // TODO make it available only while testing
 bool Box::uses_heap() const {
-  return !_optimized;
+  return true;
 }
