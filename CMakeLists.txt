@@ -8,6 +8,8 @@ set(CMAKE_TOOLCHAIN_FILE vcpkg/scripts/buildsystems/vcpkg.cmake)
 cmake_policy(SET CMP0091 NEW)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+cmake_policy(SET CMP0075 NEW)
+
 # Get version from vcpkg.json manifest
 find_program(PYTHON "python3")
 if(NOT PYTHON)

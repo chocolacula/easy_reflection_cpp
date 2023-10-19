@@ -1,14 +1,14 @@
 #include "er/variable/box.h"
 
-#include <_types/_uint8_t.h>
+#include <cstdint>
 
-#include "er/buff_alloc.h"
+#include "er/alloc/alloc.h"
 #include "er/reflection/reflection.h"
 #include "er/types/all_types.h"
 
 using namespace er;
 
-Box::Box(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc) : _alloc(alloc) {
+Box::Box(TypeId id, palloc_t* alloc) : _alloc(alloc) {
   _var = Var(_alloc->allocate(reflection::type_size(id)), id, false);
   reflection::construct(_var);
 }

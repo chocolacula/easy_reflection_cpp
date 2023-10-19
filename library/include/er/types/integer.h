@@ -10,12 +10,6 @@ struct IntActions {
   static TypeInfo reflect(void* value, bool is_const) {
     return TypeInfo(Integer(static_cast<T*>(value), is_const));
   }
-
-  static void call_delete(void* pointer, bool in_place) {
-    if (!in_place) {
-      delete static_cast<T*>(pointer);
-    }
-  }
 };
 
 template <typename T>
@@ -25,7 +19,7 @@ TypeId::get(T* ptr) {
                                                  &CommonActions<T>::type_name,  //
                                                  &CommonActions<T>::type_size,  //
                                                  &CommonActions<T>::construct,  //
-                                                 &IntActions<T>::call_delete,   //
+                                                 &CommonActions<T>::destroy,    //
                                                  &CommonActions<T>::copy,       //
                                                  &CommonActions<T>::move)));
   return id;

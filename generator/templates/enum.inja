@@ -23,12 +23,12 @@ struct TypeActions<{{name}}> {
 
 template <>
 TypeId TypeId::get({{name}}* /*unused*/) {
-  static TypeId id(TheGreatTable::record(Actions(&TypeActions<{{name}}>::reflect,        //
-                                                 &CommonActions<{{name}}>::type_name,    //
-                                                 &CommonActions<{{name}}>::type_size,    //
-                                                 &CommonActions<{{name}}>::call_new,     //
-                                                 &CommonActions<{{name}}>::call_delete,  //
-                                                 &CommonActions<{{name}}>::copy,         //
+  static TypeId id(TheGreatTable::record(Actions(&TypeActions<{{name}}>::reflect,      //
+                                                 &CommonActions<{{name}}>::type_name,  //
+                                                 &CommonActions<{{name}}>::type_size,  //
+                                                 &CommonActions<{{name}}>::construct,  //
+                                                 &CommonActions<{{name}}>::destroy,    //
+                                                 &CommonActions<{{name}}>::copy,       //
                                                  &CommonActions<{{name}}>::move)));
   return id;
 }

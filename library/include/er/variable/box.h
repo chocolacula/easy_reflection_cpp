@@ -2,7 +2,7 @@
 
 #include <memory_resource>
 
-#include "er/buff_alloc.h"
+#include "er/alloc/alloc.h"
 #include "er/tools/sizeof.h"
 #include "var.h"
 
@@ -12,11 +12,11 @@ struct Box {
   Box(const Box& other) = delete;
   Box& operator=(const Box& other) = delete;
 
-  Box(std::pmr::polymorphic_allocator<uint8_t>* alloc = &DefaultAlloc){};
+  Box(palloc_t* alloc = &default_alloc) : _alloc(alloc){};
   Box(Box&& other) noexcept = default;
   Box& operator=(Box&& other) noexcept = default;
 
-  explicit Box(TypeId id, std::pmr::polymorphic_allocator<uint8_t>* alloc = &DefaultAlloc);
+  explicit Box(TypeId id, palloc_t* alloc = &default_alloc);
   ~Box();
 
   Var var();
@@ -26,7 +26,7 @@ struct Box {
 
  private:
   Var _var;
-  std::pmr::polymorphic_allocator<uint8_t>* _alloc;
+  palloc_t* _alloc;
 
   // max size of stack memory for dynamic allocation optimization
   // static const size_t kMemSize = Sizeof<std::unordered_map<int, int>, std::map<int, int>>::max();

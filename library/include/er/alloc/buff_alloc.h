@@ -3,11 +3,12 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-#include <memory_resource>
+
+#include "alloc.h"
 
 namespace er {
 
-struct BuffAlloc final : public std::pmr::polymorphic_allocator<uint8_t> {
+struct BuffAlloc final : public palloc_t {
   BuffAlloc() : kSize(0) {
   }
 
@@ -20,14 +21,14 @@ struct BuffAlloc final : public std::pmr::polymorphic_allocator<uint8_t> {
 
   uint8_t* allocate(size_t n) {
     if (n > kSize) {
-      return std::pmr::polymorphic_allocator<uint8_t>::allocate(n);
+      return palloc_t::allocate(n);
     }
     return static_cast<uint8_t*>(_buff);
   }
 
   void deallocate(uint8_t* p, size_t n) {
     if (n > kSize) {
-      std::pmr::polymorphic_allocator<uint8_t>::deallocate(p, n);
+      palloc_t::deallocate(p, n);
     }
     // else do nothing, stack memory is automatically freed
   }
@@ -36,7 +37,5 @@ struct BuffAlloc final : public std::pmr::polymorphic_allocator<uint8_t> {
   uint8_t* _buff;
   const size_t kSize;
 };
-
-static inline BuffAlloc DefaultAlloc;
 
 }  // namespace er

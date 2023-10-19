@@ -17,22 +17,6 @@ struct TypeActions<std::shared_ptr<T>> {
   static TypeInfo reflect(void* value, bool is_const) {
     return {Pointer(static_cast<std::shared_ptr<T>*>(value), is_const)};
   }
-
-  static void* call_new(void* place, size_t place_size) {
-    if (place_size >= sizeof(std::shared_ptr<T>)) {
-      new (place) std::shared_ptr<T>(new T());
-      return place;
-    }
-    throw std::runtime_error("Not enough memory for new std::shared_ptr");
-  }
-
-  static void call_delete(void* pointer, bool in_place) {
-    if (in_place) {
-      static_cast<std::shared_ptr<T>*>(pointer)->~shared_ptr();
-    } else {
-      throw std::runtime_error("std::shared_ptr should be in_place");
-    }
-  }
 };
 
 template <typename T>
@@ -40,8 +24,8 @@ TypeId TypeId::get(std::shared_ptr<T>* /*unused*/) {
   static TypeId id(TheGreatTable::record(Actions(&TypeActions<std::shared_ptr<T>>::reflect,      //
                                                  &CommonActions<std::shared_ptr<T>>::type_name,  //
                                                  &CommonActions<std::shared_ptr<T>>::type_size,  //
-                                                 &TypeActions<std::shared_ptr<T>>::call_new,     //
-                                                 &TypeActions<std::shared_ptr<T>>::call_delete,  //
+                                                 &CommonActions<std::shared_ptr<T>>::construct,  //
+                                                 &CommonActions<std::shared_ptr<T>>::destroy,    //
                                                  &CommonActions<std::shared_ptr<T>>::copy,       //
                                                  &CommonActions<std::shared_ptr<T>>::move)));
   return id;

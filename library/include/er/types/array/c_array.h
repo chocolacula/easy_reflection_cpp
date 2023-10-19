@@ -20,7 +20,7 @@ struct TypeActions<T[size_v]> {
     return sizeof(T[size_v]);
   }
 
-  static void* call_new(void* place, size_t place_size) {
+  static void* construct(void* place, size_t place_size) {
     if (place_size >= sizeof(T)) {
       new (place) T[size_v]{};
       return place;
@@ -29,7 +29,7 @@ struct TypeActions<T[size_v]> {
     return p;
   }
 
-  static void call_delete(void* pointer, bool in_place) {
+  static void destroy(void* pointer, bool in_place) {
     if (!in_place) {
       delete[] static_cast<T*>(pointer);
     }
@@ -62,8 +62,8 @@ TypeId TypeId::get(T (*)[size_v]) {
   static TypeId id(TheGreatTable::record(Actions(&TypeActions<T[size_v]>::reflect,      //
                                                  &CommonActions<T[size_v]>::type_name,  //
                                                  &TypeActions<T[size_v]>::type_size,    //
-                                                 &TypeActions<T[size_v]>::call_new,     //
-                                                 &TypeActions<T[size_v]>::call_delete,  //
+                                                 &TypeActions<T[size_v]>::construct,    //
+                                                 &TypeActions<T[size_v]>::destroy,      //
                                                  &TypeActions<T[size_v]>::copy,         //
                                                  &TypeActions<T[size_v]>::move)));
   return id;
