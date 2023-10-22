@@ -1,7 +1,5 @@
 #include "er/reflection/reflection.h"
 
-#include <_types/_uint8_t.h>
-
 #include <cstddef>
 #include <iostream>
 #include <memory_resource>
