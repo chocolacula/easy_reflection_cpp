@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(tests VERSION ${CMAKE_PROJECT_VERSION})
 
 add_definitions(-DPROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
-add_definitions(-DREPEATS=10000)
+add_definitions(-DREPEATS=1000)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

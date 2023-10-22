@@ -9,20 +9,19 @@
 namespace er {
 
 struct Box {
+  Box(palloc_t* alloc = &default_alloc) : _alloc(alloc){};
+
   Box(const Box& other) = delete;
   Box& operator=(const Box& other) = delete;
 
-  Box(palloc_t* alloc = &default_alloc) : _alloc(alloc){};
-  Box(Box&& other) noexcept = default;
-  Box& operator=(Box&& other) noexcept = default;
+  Box(Box&& other) noexcept;
+  Box& operator=(Box&& other) noexcept;
 
   explicit Box(TypeId id, palloc_t* alloc = &default_alloc);
   ~Box();
 
   Var var();
   Box clone();
-
-  bool uses_heap() const;
 
  private:
   Var _var;

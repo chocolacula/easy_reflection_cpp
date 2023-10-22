@@ -12,7 +12,7 @@ template <typename T>
 struct TypeActions<std::unique_ptr<T>> {
 
   static TypeInfo reflect(void* value, bool is_const) {
-    return {Pointer(static_cast<std::shared_ptr<T>*>(value), is_const)};
+    return {Pointer(static_cast<std::unique_ptr<T>*>(value), is_const)};
   }
 
   static void copy(void* to, const void* from) {

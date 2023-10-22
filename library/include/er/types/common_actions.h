@@ -26,6 +26,9 @@ struct CommonActions {
     static_cast<T*>(p)->~T();
   }
 
+  static void nop(void* p) {
+  }
+
   static void copy(void* to, const void* from) {
     *static_cast<T*>(to) = *static_cast<const T*>(from);
   }

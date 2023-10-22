@@ -13,11 +13,25 @@ Box::Box(TypeId id, palloc_t* alloc) : _alloc(alloc) {
   reflection::construct(_var);
 }
 
-Box::~Box() {
-  auto size = reflection::type_size(_var.type());
-  auto* p = reinterpret_cast<uint8_t*>(_var.raw_mut());
+Box::Box(Box&& other) noexcept : _var(other._var), _alloc(other._alloc) {
+  // prevent resource deletion
+  other._var.dispose();
+}
 
+Box& Box::operator=(Box&& other) noexcept {
+  _var = other._var;
+  _alloc = other._alloc;
+
+  // prevent resource deletion
+  other._var.dispose();
+  return *this;
+}
+
+Box::~Box() {
   reflection::destroy(_var);
+
+  auto* p = reinterpret_cast<uint8_t*>(_var.raw_mut());
+  auto size = reflection::type_size(_var.type());
   _alloc->deallocate(p, size);
 }
 
@@ -29,9 +43,4 @@ Box Box::clone() {
   Box new_one(_var.type());
   reflection::copy(new_one.var(), var());
   return new_one;
-}
-
-// TODO make it available only while testing
-bool Box::uses_heap() const {
-  return true;
 }

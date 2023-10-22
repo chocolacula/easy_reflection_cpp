@@ -1,5 +1,6 @@
 #pragma once
 
+#include "er/tools/sizeof.h"
 #include "ipointer.h"
 #include "std_shared_ptr.h"
 #include "std_unique_ptr.h"

@@ -20,19 +20,20 @@ struct TypeActions<T[size_v]> {
     return sizeof(T[size_v]);
   }
 
-  static void* construct(void* place, size_t place_size) {
-    if (place_size >= sizeof(T)) {
-      new (place) T[size_v]{};
-      return place;
+  static void construct(void* p) {
+    if constexpr (!std::is_fundamental_v<T>) {
+      new (p) T[size_v];
     }
-    auto* p = new T[size_v];
-    return p;
+    // do nothing for fundamental
   }
 
-  static void destroy(void* pointer, bool in_place) {
-    if (!in_place) {
-      delete[] static_cast<T*>(pointer);
+  static void destroy(void* p) {
+    if constexpr (!std::is_fundamental_v<T>) {
+      for (auto i = 0; i < size_v; i++) {
+        static_cast<T*>(p)[i].~T();
+      }
     }
+    // do nothing for fundamental
   }
 
   static void copy(void* to, const void* from) {

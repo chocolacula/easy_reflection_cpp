@@ -18,8 +18,8 @@ TypeId::get(T* ptr) {
   static TypeId id(TheGreatTable::record(Actions(&FloatActions<T>::reflect,     //
                                                  &CommonActions<T>::type_name,  //
                                                  &CommonActions<T>::type_size,  //
-                                                 &CommonActions<T>::construct,  //
-                                                 &CommonActions<T>::destroy,    //
+                                                 &CommonActions<T>::nop,        //
+                                                 &CommonActions<T>::nop,        //
                                                  &CommonActions<T>::copy,       //
                                                  &CommonActions<T>::move)));
   return id;

@@ -54,6 +54,9 @@ void reflection::construct(Var variable) {
 }
 
 void reflection::destroy(Var variable) {
+  if (variable.raw() == nullptr) {
+    return;
+  }
   TheGreatTable::data()[variable.type().number()].destroy(variable.raw_mut());
 }
 

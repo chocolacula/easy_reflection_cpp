@@ -45,9 +45,12 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
   }
 
   std::string anchor;
+  // dereference anchor
   if (_token == '*') {
-    anchor = get_word();
-    auto& box = _anchors[anchor.substr(1, anchor.size() - 1)];
+    anchor = get_word().substr(1, anchor.size() - 1);
+    auto& box = _anchors[anchor];
+
+    // there is a type check
     __retry(reflection::copy(info->var(), box.var()));
 
     next();
@@ -55,8 +58,9 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
     return None();
   }
 
+  // defining anchor
   if (_token == '&') {
-    anchor = get_word();
+    anchor = get_word().substr(1, anchor.size() - 1);
     next();
   }
 
@@ -114,11 +118,10 @@ Expected<None> ParserYaml::parse(TypeInfo* info) {
       break;
   }
 
-  if (!anchor.empty() && anchor[0] == '&') {
-    auto name = anchor.substr(1, anchor.size() - 1);
-    _anchors.emplace(name, Box(info->var().type()));
+  if (!anchor.empty()) {
+    _anchors.emplace(anchor, Box(info->var().type()));
 
-    reflection::copy(_anchors[name].var(), info->var());
+    reflection::copy(_anchors[anchor].var(), info->var());
   }
 
   return ex;
@@ -204,9 +207,6 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
 
   auto info = reflection::reflect(Var(nullptr, nested_type, false));
   while (!is_end(_token)) {
-    Box box(nested_type);  // Box should be a new object for each iteration
-    info.unsafe_assign(box.var().raw_mut());
-
     auto ind_next = get_border();
     if (ind_next < ind_first) {
       break;
@@ -216,6 +216,9 @@ Expected<None> ParserYaml::parse_seq(TypeId nested_type, std::function<Expected<
       return error_token(_token);
     }
     next();  // skip '-' itself
+
+    Box box(nested_type);  // Box should be a new object for each iteration
+    info.unsafe_assign(box.var().raw_mut());
 
     __retry(parse(&info));
     __retry(add(i, box.var()));

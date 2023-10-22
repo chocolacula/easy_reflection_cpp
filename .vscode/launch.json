@@ -7,8 +7,9 @@
       "request": "launch",
       "program": "${command:cmake.launchTargetPath}",
       "args": [
-        "-c",
-        "${workspaceFolder}/example/config.yaml"
+        // "--gtest_filter=SerializationYaml.Anchors"
+        // "-c",
+        // "${workspaceFolder}/example/config.yaml"
       ],
       "cwd": "${workspaceFolder}",
       "env": {

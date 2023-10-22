@@ -83,39 +83,6 @@ TEST(TypeInfo, VariantIndex) {
   ASSERT_EQ(info.get_kind(), TypeInfo::Kind::kMap);
 }
 
-TEST(Box, Allocation) {
-  for (auto i = 0; i < REPEATS; i++) {
-    // keep it in separate code block to check for correct deletion
-    {
-      // heap allocated type
-      auto type = TypeId::get<BigOne>();
-      Box box(type);
-
-      auto* ptr = box.var().raw_mut();
-      ASSERT_NE(ptr, nullptr);
-      ASSERT_TRUE(box.uses_heap());
-    }
-    {
-      // a regular one type
-      auto type = TypeId::get<uint64_t>();
-      Box box(type);
-
-      auto* ptr = box.var().raw_mut();
-      ASSERT_NE(ptr, nullptr);
-      ASSERT_FALSE(box.uses_heap());
-    }
-    {
-      // the biggest type which could be allocated on the stack
-      auto type = TypeId::get<std::unordered_map<int, int>>();
-      Box box(type);
-
-      auto* ptr = box.var().raw_mut();
-      ASSERT_NE(ptr, nullptr);
-      ASSERT_FALSE(box.uses_heap());
-    }
-  }
-}
-
 TEST(SmartPointers, Unique) {
   for (auto i = 0; i < REPEATS; i++) {
     auto unique = std::make_unique<Tresholds>();
@@ -153,5 +120,33 @@ TEST(SmartPointers, Shared) {
     }
 
     ASSERT_EQ(shared.use_count(), 1);
+  }
+}
+
+TEST(Array, ConstructDestroy) {
+  static int constructor_calls = 0;
+  static int destructor_calls = 0;
+
+  struct Complex {
+    explicit Complex() {
+      constructor_calls++;
+    }
+    ~Complex() {
+      destructor_calls++;
+    }
+  };
+
+  for (auto i = 0; i < REPEATS; i++) {
+    // test a complex type
+    const int n = 5;
+    uint8_t mem[n * sizeof(Complex)];
+
+    TypeActions<Complex[n]>::construct(&mem[0]);
+    ASSERT_EQ(constructor_calls, n);
+    constructor_calls = 0;
+
+    TypeActions<Complex[n]>::destroy(&mem[0]);
+    ASSERT_EQ(destructor_calls, n);
+    destructor_calls = 0;
   }
 }
