@@ -30,7 +30,6 @@ Visual Studio CMake generators do not create `compile_commands.json`. However, y
 To build `er_gen` and use reflection on Windows, make sure to install the following dependencies and add them to your `PATH`:
 
 - Git
-- Python
 - CMake
 - Ninja
 
@@ -46,8 +45,6 @@ This repository includes a `Dockerfile` that sets up an `Ubuntu 22.04` environme
 ## Further steps
 
 Another submodule is [vcpkg](https://github.com/microsoft/vcpkg) which manages most of the dependencies, all of them will be installed by CMake automatically.
-
-> **Note:** You need **Python** to obtain project version from `vcpkg.json` manifest file. You probably already have it, please install it otherwise.
 
 After installing all the dependencies, you need to decide whether you want to use `simdjson` for parsing or not. While `simdjson` provides the fastest performance on supported hardware, `rapidjson` might be faster in virtual environments. The solution includes a native parser that is available regardless. It offers more flexibility when it comes to map parsing but not as fast.
 

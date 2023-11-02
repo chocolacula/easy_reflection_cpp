@@ -1,12 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.19)
 
 project(benchmarks VERSION ${CMAKE_PROJECT_VERSION})
 
 add_definitions(-DPROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 disable_attribute_warnings()
 

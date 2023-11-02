@@ -1,32 +1,22 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.19)
 
 include(cmake/tools.cmake)
 update_submodule(vcpkg)
+set_policies()
 
 set(CMAKE_TOOLCHAIN_FILE vcpkg/scripts/buildsystems/vcpkg.cmake)
 
-cmake_policy(SET CMP0091 NEW)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
-cmake_policy(SET CMP0075 NEW)
-
 # Get version from vcpkg.json manifest
-find_program(PYTHON "python3")
-if(NOT PYTHON)
-    find_program(PYTHON "python")
-endif()
+file(READ "${CMAKE_SOURCE_DIR}/vcpkg.json" VCPKG_MANIFEST_JSON)
 
-if(NOT PYTHON)
-    message(WARNING "Python is not found")
-endif()
-
-execute_process(COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/version.py
-    get -f ${CMAKE_SOURCE_DIR}/vcpkg.json
-    OUTPUT_VARIABLE VCPKG_MANIFEST_PROJECT_VERSION
-    ERROR_VARIABLE  VCPKG_VERSION_ERROR)
+string(JSON
+    VCPKG_MANIFEST_PROJECT_VERSION
+    ERROR_VARIABLE VCPKG_VERSION_ERROR
+    GET ${VCPKG_MANIFEST_JSON} "version")
 
 if(VCPKG_VERSION_ERROR)
     message(WARNING ${VCPKG_VERSION_ERROR})
+    set(VCPKG_MANIFEST_PROJECT_VERSION "0.0.0")
 endif()
 
 # Enable vcpkg features
@@ -45,8 +35,11 @@ if(ENABLE_BENCHMARKS)
 endif()
 
 # Setup project
-cmake_policy(SET CMP0048 NEW)
 project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 include(Dart)
 enable_testing()

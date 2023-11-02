@@ -98,6 +98,14 @@ function(disable_attribute_warnings)
     endif()
 endfunction()
 
+# Helper function to set all policies
+function(set_policies)
+    cmake_policy(SET CMP0075 NEW) # required library macro
+    cmake_policy(SET CMP0048 NEW) # project version
+    cmake_policy(SET CMP0091 NEW) # MSVC runtime library
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endfunction()
+
 # Print variables that match the optional parameter.
 # Arguments:
 #   FILTER - print only variables matching this string, print all if it's empty
