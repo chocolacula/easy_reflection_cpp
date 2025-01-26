@@ -8,7 +8,7 @@ It parses C++ source code for special attributes. In the most straightforward si
 The main idea is to use kinda dynamic typing for some type agnostic operations, like copying or getting the name of a type.  
 It makes it possible to determine a variable type and do the right job - print, serialize/deserialize.
 
-If you are curious about the details of how it works you can find them in [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).  
+It's generally a proof of concept, created with the idea that it could be used for many years. If you are curious about the details of how it works, you can find them in [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).  
 
 ## Features
 
@@ -83,5 +83,3 @@ JetBrains for Open Source Support
 <a href="https://jb.gg/OpenSourceSupport">
   <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" style="width:128px;height:128px;">
 </a>
-
-

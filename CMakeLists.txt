@@ -6,19 +6,6 @@ set_policies()
 
 set(CMAKE_TOOLCHAIN_FILE vcpkg/scripts/buildsystems/vcpkg.cmake)
 
-# Get version from vcpkg.json manifest
-file(READ "${CMAKE_SOURCE_DIR}/vcpkg.json" VCPKG_MANIFEST_JSON)
-
-string(JSON
-    VCPKG_MANIFEST_PROJECT_VERSION
-    ERROR_VARIABLE VCPKG_VERSION_ERROR
-    GET ${VCPKG_MANIFEST_JSON} "version")
-
-if(VCPKG_VERSION_ERROR)
-    message(WARNING ${VCPKG_VERSION_ERROR})
-    set(VCPKG_MANIFEST_PROJECT_VERSION "0.0.0")
-endif()
-
 # Enable vcpkg features
 option(ENABLE_TESTS      "Enable tests"      ON)
 option(ENABLE_GENERATOR  "Enable generator"  OFF)
@@ -35,13 +22,12 @@ if(ENABLE_BENCHMARKS)
 endif()
 
 # Setup project
-project(easy_reflection VERSION ${VCPKG_MANIFEST_PROJECT_VERSION})
+project(easy_reflection VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
-include(Dart)
 enable_testing()
 
 add_subdirectory(library)

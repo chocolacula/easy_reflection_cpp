@@ -1,0 +1,30 @@
+name: bump
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    if: ${{ ! startsWith(github.event.head_commit.message, 'Version bumped') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0 # we need all history to get tags and analyze commits
+
+      - run: |
+          git config user.name "Maxim Voloshin"
+          git config user.email "mvolloshin@gmail.com"
+
+      - name: Install verbm
+        run: pipx install verbm
+
+      - name: Bump version
+        run: verbm up auto --commit --tag --push

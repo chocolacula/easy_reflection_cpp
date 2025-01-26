@@ -20,8 +20,12 @@
 #include "inja/inja.hpp"
 #include "inja/template.hpp"
 
+namespace {
+const char* const kVersion = "0.1.0";
+}  // namespace
+
 int main(int argc, const char** argv) {
-  TCLAP::CmdLine cmd("Easy Reflection code generator", ' ', VERSION);
+  TCLAP::CmdLine cmd("Easy Reflection code generator", ' ', kVersion);
 
   Files file_manager;
 

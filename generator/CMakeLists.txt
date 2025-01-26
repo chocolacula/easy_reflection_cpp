@@ -25,8 +25,6 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${PROJECT_VERSION}")
-
 find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 include_directories(${TCLAP_INCLUDE_DIRS})
 
