@@ -1,7 +1,7 @@
 .idea
 .vs
 .cache
-.DS_Store
+
 output
 cmake-build*
 build
@@ -9,3 +9,5 @@ build
 example/generated
 tests/generated
 benchmarks/generated
+
+.DS_Store

@@ -1,0 +1,11 @@
+version: 0.1.0
+
+template: "$major.$minor.$patch"
+
+source:
+  - file: ./vcpkg.json
+    template: '"version": "$version",'
+  - file: ./CMakeLists.txt
+    template: project(easy_reflection VERSION $version)
+  - file: ./generator/main.cpp
+    template: 'const char* const kVersion = "$version";'

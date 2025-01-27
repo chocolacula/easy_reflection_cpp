@@ -25,8 +25,6 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${PROJECT_VERSION}")
-
 find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 include_directories(${TCLAP_INCLUDE_DIRS})
 
@@ -44,18 +42,18 @@ endif()
 update_submodule(llvm-project)
 apply_patch(../attribute.patch llvm-project)
 
-set(LLVM_ENABLE_RTTI ON)
-set(LLVM_INCLUDE_BENCHMARKS OFF)
-set(LLVM_ENABLE_PROJECTS "clang")
+set(LLVM_ENABLE_RTTI ON CACHE INTERNAL "enable runtime type information")
+set(LLVM_INCLUDE_BENCHMARKS OFF CACHE INTERNAL "avoid building benchmarks")
+set(LLVM_ENABLE_PROJECTS "clang" CACHE INTERNAL "build llvm with clang")
 
 add_subdirectory(llvm-project/llvm EXCLUDE_FROM_ALL)
 
 include_directories(
-  llvm-project/llvm/include
-  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/include
-  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/utils/bazel/llvm-project-overlay/llvm/include
-  llvm-project/clang/include
-  ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/tools/clang/include)
+    llvm-project/llvm/include
+    ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/include
+    ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/utils/bazel/llvm-project-overlay/llvm/include
+    llvm-project/clang/include
+    ${CMAKE_CURRENT_BINARY_DIR}/llvm-project/llvm/tools/clang/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     clangAST
