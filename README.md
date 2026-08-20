@@ -1,14 +1,15 @@
-# Easy Reflection solution for C++
+# Easy Reflection for C++
 
 [![CMake build and test](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml/badge.svg)](https://github.com/chocolacula/reflection_cpp/actions/workflows/cmake.yml)
 <a href="https://github.com/fffaraz/awesome-cpp#reflection"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Listed on Awesome C++"></img></a>
 
+This project is mostly a proof of concept, built on the idea that something we need and want could have been implemented many years ago. If you're curious about the details of how it works, you can find them in this [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).
+Many parts were made just for fun, so they may look interesting or weird. If you want something similar in production, use [glaze](https://github.com/stephenberry/glaze) instead.
+
 It parses C++ source code for special attributes. In the most straightforward situation, you only need to mark an object by `[[er::reflect]]` attribute. All other work will be done by the code generation tool and reflection library.
 
 The main idea is to use kinda dynamic typing for some type agnostic operations, like copying or getting the name of a type.  
-It makes it possible to determine a variable type and do the right job - print, serialize/deserialize.
-
-It's generally a proof of concept, created with the idea that it could be used for many years. If you are curious about the details of how it works, you can find them in [DEV article](https://dev.to/chocolacula/how-to-write-reflection-for-c-4527).  
+It makes it possible to determine the type in runtime and do the right job - print, serialize/deserialize.
 
 ## Features
 
