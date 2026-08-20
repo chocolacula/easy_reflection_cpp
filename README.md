@@ -75,12 +75,3 @@ YAML is blazingly faster than [yaml-cpp](https://github.com/jbeder/yaml-cpp) if 
   <img src="./benchmarks/memory_chart.png" alt="Memory">
 </p>
 <p align="center">The ratio of the content length in bytes</p>
-
-## Thanks
-
-JetBrains for Open Source Support
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://jb.gg/OpenSourceSupport">
-  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" style="width:128px;height:128px;">
-</a>
